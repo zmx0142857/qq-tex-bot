@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "mathjax-full": "^3.1.4",
+    "mirai-js": "^1.7.2",
+    "svg2png": "^4.1.1"
+  },
+  "name": "qq-tex-bot",
+  "version": "1.0.0",
+  "description": "render tex formula on qq",
+  "main": "index.js",
+  "repository": "https://gitee.com/zmx0142857/qq-tex-bot",
+  "author": "zmx <892298182@qq.com>",
+  "license": "MIT"
+}
