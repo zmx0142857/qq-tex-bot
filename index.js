@@ -5,7 +5,13 @@ const { am2tex } = require('./asciimath')
 const fs = require('pn/fs')
 const path = require('path')
 const child = require('child_process')
-const config = require('./config')
+let config
+try {
+  config = require('./config')
+} catch (e) {
+  console.error('缺少配置文件 config.js, 请按 README.md 提示操作')
+  process.exit(1)
+}
 
 const bot = new Bot()
 
@@ -51,7 +57,7 @@ function groupAutoreply (process) {
     if (message) {
       bot.sendMessage({
         group: sender.group.id,
-        quote: messageChain[0].id,
+        //quote: messageChain[0].id,
         message
       }).catch(console.error)
     }
