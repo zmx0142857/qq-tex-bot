@@ -52,6 +52,7 @@ function groupAutoreply (process) {
   bot.on('GroupMessage', async ({ messageChain, sender }) => {
     //console.log(sender.group.id)
     if (!config.groups.includes(sender.group.id)) return
+    if (!messageChain[1]) return
     const { text } = messageChain[1]
     const message = await process(text, sender)
     if (message) {
