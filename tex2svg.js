@@ -71,16 +71,29 @@ module.exports = function tex2svg (formula) {
   return MathJax.tex2svgPromise(formula, config).then(node =>
     MathJax.startup.adaptor.innerHTML(node)
   )
-  // svg 的宽高单位从 ex 改为 px
   .then(svg => {
+    // 宽高单位从 ex 改为 px
     const w = /width="[^e]*ex"/
     const h = /height="[^e]*ex"/
     const width = parseFloat(svg.match(w)[0].slice(7)) * config.ex * 2
     const height = parseFloat(svg.match(h)[0].slice(8)) * config.ex * 2
     //console.log(width, height)
-    return svg.replace(w, `width="${width}"`)
+
+    // 加白边
+    //viewBox="-100 -983.9 5492.7 1188.9"
+    const v = /viewBox="([^"]*)"/
+    const matchV = svg.match(v)
+    if (matchV) {
+      const viewBox = matchV[1].split(' ')
+        .map(parseFloat)
+        .map((x,i) => i < 2 ? x - 100 : x + 200)
+        .join(' ')
+      svg = svg.replace(v, `viewBox="${viewBox}"`)
+    }
+
+    return svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
-      .replace('data-background="true"', 'fill="#fff"')
+      .replace('data-background="true"', 'fill="#fff"') // 背景色
   })
   .catch(() => {
     throw new Error('公式格式有误')

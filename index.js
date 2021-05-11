@@ -52,9 +52,9 @@ function groupAutoreply (process) {
   bot.on('GroupMessage', async ({ messageChain, sender }) => {
     //console.log(sender.group.id)
     if (!config.groups.includes(sender.group.id)) return
-    if (!messageChain[1]) return
-    const { text } = messageChain[1]
-    const message = await process(text, sender)
+    const msg = messageChain[messageChain.length-1]
+    if (!msg || msg.type !== 'Plain') return
+    const message = await process(msg.text, sender)
     if (message) {
       bot.sendMessage({
         group: sender.group.id,
@@ -81,7 +81,7 @@ function magick (promise) {
       child.exec(`magick tmp.svg ${path.join(config.image.path, config.image.name)}`, err => {
         if (err) reject(err)
         else {
-          console.log('formula done')
+          //console.log('formula done')
           resolve([{ type: 'Image', path: config.image.name }])
         }
       })
@@ -97,7 +97,7 @@ function phantom (promise) {
       path.join(config.image.path, config.image.name), buf)
     )
     .then(() => {
-      console.log('formula done')
+      //console.log('formula done')
       return [{ type: 'Image', path: config.image.name }]
     })
     .catch(console.error)
