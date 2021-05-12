@@ -1,10 +1,12 @@
-const { Bot, Message, Middleware } = require('mirai-js')
+const { Bot, Message } = require('mirai-js')
 const tex2svg = require('./tex2svg')
 const svg2png = require('svg2png')
 const { am2tex } = require('./asciimath')
 const fs = require('pn/fs')
 const path = require('path')
 const child = require('child_process')
+const cli = require('./cli')
+
 let config
 try {
   config = require('./config')
@@ -121,8 +123,19 @@ function tex2png (text, sender) {
   }
 }
 
+function sendMsg (input) {
+  input = input.trim()
+  if (input) {
+    bot.sendMessage({
+      group: config.groups[0],
+      message: textMsg(input)
+    }).catch(console.error)
+  }
+}
+
 (async () => {
   await connect()
   //autoreply(tex2png)
   groupAutoreply(tex2png)
+  cli(sendMsg)
 })()

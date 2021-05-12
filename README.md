@@ -62,3 +62,18 @@ module.exports = {
 ```shell
 node index.js
 ```
+
+## mirai-api-http 使用
+
+登录
+```
+http post /auth '{"authKey":"***"}'
+```
+认证
+```
+http post /verify '{"sessionKey":"***","qq":2071245907}'
+```
+发消息
+```
+http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChain":[{"type":"Plain","text":"本机器人不支持QQ表情喔~"}]}'
+```
