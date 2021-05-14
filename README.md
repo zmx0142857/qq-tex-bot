@@ -77,3 +77,30 @@ http post /verify '{"sessionKey":"***","qq":2071245907}'
 ```
 http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChain":[{"type":"Plain","text":"本机器人不支持QQ表情喔~"}]}'
 ```
+
+## FAQs
+
+- 如何编写多行文字 / 公式?
+
+  可以用 `gather` 环境
+  ```
+  /tex
+  \begin{gather}
+  x^2 \\ y^2
+  \end{gather}
+  ```
+  或者 `\displaylines`:
+  ```
+  /tex
+  \displaylines{ x=a+b \\ y=b+c }
+  ```
+  或者用矩阵:
+  ```
+  /am
+  {: "第一行"; "第二行" :}
+  ```
+
+## TODO
+
+- 表情符宽度问题
+- 根据指定宽度自动断行: 目前不支持. http://docs.mathjax.org/en/latest/output/linebreaks.html

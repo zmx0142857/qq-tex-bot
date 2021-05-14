@@ -6,7 +6,7 @@ const cli = readline.createInterface({
 })
 
 cli.on('close', () => {
-  console.log('\ncli closed') // 正确换行
+  console.log('\ncli closed. ctrl-c again to exit') // 正确换行
 })
 
 module.exports = function interact (callback) {
