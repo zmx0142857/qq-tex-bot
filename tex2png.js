@@ -49,12 +49,12 @@ function phantom (promise) {
 
 const imageEngine = config.image.engine === 'magick' ? magick : phantom
 
-const commands = [
-  [/^\/tex/, () => imageEngine(tex2svg(text))],
-  [/^\/am/, () => imageEngine(tex2svg(am2tex(text)))],
-]
-
 module.exports = function tex2png (text, sender) {
+  const commands = [
+    [/^\/tex/, () => imageEngine(tex2svg(text))],
+    [/^\/am/, () => imageEngine(tex2svg(am2tex(text)))],
+  ]
+
   // 寻找第一个匹配的命令, 并执行
   for ([key, method] of commands) {
     if (!key.test(text)) continue
