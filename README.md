@@ -44,9 +44,9 @@ module.exports = {
     authKey: '', // mirai-api-http 提供的 authKey
     qq: 123456, // 机器人的 qq 号
   },
-  groups: [
-    123456, // 机器人加入的群
-  ],
+  groups: {
+    123456: '群名称'
+  },
   image: {
     engine: 'magick', // 或 phantom
     path: '', // 'mirai/data/net.mamoe.mirai-api-http/images' 的绝对路径
@@ -62,6 +62,14 @@ module.exports = {
 ```shell
 node index.js
 ```
+
+## cli
+
+机器人的简单命令行界面
+
+- `/ls`: 查看当前加入的所有群
+- `/cd [index]`: 切换到第 index 个群, 如省略 index, 则显示当前的群
+- `文字消息`: 发送文字消息到当前的群
 
 ## mirai-api-http 使用
 

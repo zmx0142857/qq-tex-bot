@@ -1,4 +1,5 @@
 const readline = require('readline')
+const config = require('./config')
 
 const cli = readline.createInterface({
   input: process.stdin,
