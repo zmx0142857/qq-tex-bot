@@ -9,6 +9,10 @@
 - `/tex`: tex 公式, 较复杂, 但功能更全;
 - `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言.
 
+![图1](img/S10509-115328.jpg)
+
+![图2](img/S10509-115344.jpg)
+
 ## 快速上手
 
 ### 1. 安装 mirai
@@ -45,7 +49,7 @@ module.exports = {
     qq: 123456, // 机器人的 qq 号
   },
   groups: {
-    123456: '群名称'
+    112233: '群名称'
   },
   image: {
     engine: 'magick', // 或 phantom
