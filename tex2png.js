@@ -52,8 +52,8 @@ const imageEngine = config.image.engine === 'magick' ? magick : phantom
 module.exports = function tex2png (text, sender) {
   const displaylines = text => '\\displaylines{' + text + '}'
   const commands = [
-    [/^\/tex/, () => imageEngine(tex2svg(text))],
-    [/^\/am/, () => imageEngine(tex2svg(displaylines(
+    [/^\/tex/i, () => imageEngine(tex2svg(text))],
+    [/^\/am/i, () => imageEngine(tex2svg(displaylines(
       text.split('\n').map(am2tex).join(' \\\\ ')
     )))],
   ]

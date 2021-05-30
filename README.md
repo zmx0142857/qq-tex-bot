@@ -92,8 +92,20 @@ http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChai
 
 ## FAQs
 
+- 电脑端打 `/am` 会变成表情怎么办?
+
+  解决方法1: 右键单击输入框, 关闭表情快捷键
+
+  解决方法2: 使用 `/AM`
+
 - 如何编写多行文字 / 公式?
 
+  更新: `/am` 现在直接支持多行公式:
+  ```
+  /am
+  "第一行"
+  "第二行"
+  ```
   可以用 `gather` 环境
   ```
   /tex
@@ -110,12 +122,6 @@ http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChai
   ```
   /am
   {: "第一行"; "第二行" :}
-  ```
-  更新: `/am` 现在直接支持多行公式:
-  ```
-  /am
-  "第一行"
-  "第二行"
   ```
 
 ## TODO
