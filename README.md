@@ -111,6 +111,12 @@ http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChai
   /am
   {: "第一行"; "第二行" :}
   ```
+  更新: `/am` 现在直接支持多行公式:
+  ```
+  /am
+  "第一行"
+  "第二行"
+  ```
 
 ## TODO
 
