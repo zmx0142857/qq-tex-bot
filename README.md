@@ -73,7 +73,8 @@ node index.js
 
 - `/ls`: 查看当前加入的所有群
 - `/cd [index]`: 切换到第 index 个群, 如省略 index, 则显示当前的群
-- `文字消息`: 发送文字消息到当前的群
+- `文字消息 \178`: 发送文字消息到当前的群. `\178` 代表滑稽的 qq 表情.
+  [更多表情码在这里](https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8)
 
 ## mirai-api-http 使用
 
