@@ -94,9 +94,10 @@ module.exports = function tex2svg (formula) {
     return svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
       .replace('data-background="true"', 'fill="#fff"') // 背景色
-      .replaceAll(/&(?![#a-z0-9])/g, '&amp;') // & 转义
+      .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
   })
-  .catch(() => {
-    throw new Error('公式格式有误')
+  .catch(e => {
+    console.error(e.stack)
+    throw new Error('无法识别此公式, 格式有误?')
   })
 }

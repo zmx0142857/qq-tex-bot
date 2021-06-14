@@ -12,7 +12,7 @@ AM.define.push([/\*\*/g, '^'])
 
 function onError (err) {
   console.error(err)
-  if (err.message === '公式格式有误')
+  if (err.message === '无法识别此公式, 格式有误?')
     return Promise.resolve(textMsg(' [error] ' + err.message))
 }
 

@@ -19,6 +19,7 @@
 
 mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写.  [官方用户手册](https://github.com/mamoe/mirai/blob/dev/docs/UserManual.md)
 
+- 确保 java 版本至少是 11
 - 新建目录 `mirai`, 下载 mcl-installer: https://github.com/iTXTech/mcl-installer/releases
 - 运行 `./mcl-installer`, 再运行 `./mcl`, 一切正常的话, mirai-console
   就会启动起来.
@@ -27,13 +28,17 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
   ```shell
   ./mcl --update-package net.mamoe:mirai-api-http --type plugin --channel stable
   ```
+- 最后, 参考官方说明, 可以配置一下 qq 的自动登录.
+  ```shell
+  /autoLogin add <account> <password> [passwordKind]    # 添加自动登录
+  ```
 
 > 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
 > 手机登录同一个账号, 否则 mirai 会被强制下线.
 
 ### 2. 安装 node js 依赖
 
-假定已经安装最新版本的 node.js, 在项目根目录 (`package.json` 所在的目录) 下运行
+假定已经安装最新版本的 node js. 在 qq-tex-bot 项目根目录 (`package.json` 所在的目录) 下运行
 
 ```shell
 npm install
@@ -49,11 +54,12 @@ module.exports = {
     qq: 123456, // 机器人的 qq 号
   },
   groups: {
-    112233: '群名称'
+    112233: '群名称' // 群号和群名称
   },
   image: {
-    engine: 'magick', // 或 phantom
-    path: '', // 'mirai/data/net.mamoe.mirai-api-http/images' 的绝对路径
+    engine: 'phantom', // 或 magick
+    // 图片目录绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows
+    path: '??/mirai/data/net.mamoe.mirai-api-http/images',
     name: 'tmp.png',
   }
 }
