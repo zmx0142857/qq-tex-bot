@@ -77,6 +77,14 @@ module.exports = function tex2svg (formula) {
     const h = /height="[^e]*ex"/
     const width = parseFloat(svg.match(w)[0].slice(7)) * config.ex * 2
     const height = parseFloat(svg.match(h)[0].slice(8)) * config.ex * 2
+
+    // 增加背景色
+    const backgroundColor = 'white'
+    const style = /style="[^"]*"/
+    const originalStyle = svg.match(style)[0]
+    const styleWithBackgroundColor = originalStyle.slice(0, -1) + `; background-color: ${backgroundColor}` + '"'
+    
+    // console.log(svg.match(style))
     //console.log(width, height)
 
     // 加白边
@@ -93,7 +101,7 @@ module.exports = function tex2svg (formula) {
 
     return svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
-      .replace('data-background="true"', 'fill="#fff"') // 背景色
+      .replace(style, styleWithBackgroundColor) // 设置背景
       .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
   })
   .catch(e => {
