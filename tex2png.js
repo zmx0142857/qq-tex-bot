@@ -33,7 +33,6 @@ function magick (promise) {
 }
 
 // 用 svg2png 和 phantom js
-// TODO: 图片背景是透明的, 如何改成白色?
 function phantom (promise) {
   return promise.then(svg2png)
     .then(buf => fs.writeFile(
