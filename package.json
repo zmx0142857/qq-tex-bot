@@ -5,7 +5,7 @@
     "svg2png": "^4.1.1"
   },
   "name": "qq-tex-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "render tex formula on qq",
   "main": "index.js",
   "repository": "https://gitee.com/zmx0142857/qq-tex-bot",

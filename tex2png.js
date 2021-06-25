@@ -12,13 +12,12 @@ AM.define.push([/\*\*/g, '^'])
 
 function onError (err) {
   console.error(err)
-  if (err.message === '无法识别此公式, 格式有误?')
-    return Promise.resolve(textMsg(' [error] ' + err.message))
+  if (err.message === 'mathjax_error')
+    return Promise.resolve({ type: 'Plain', text: ' [error] 无法识别此公式, 格式有误?' })
 }
 
 // 用 image magick 命令行
 function magick (promise) {
-  //return Promise.resolve(textMsg('test'))
   return promise
     .then(buf => fs.writeFile('tmp.svg', buf))
     .then(() => new Promise((resolve, reject) => {

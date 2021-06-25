@@ -36,6 +36,11 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 > 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
 > 手机登录同一个账号, 否则 mirai 会被强制下线.
 
+> 可选: 编辑 `config.json` 把 mirai 的 channel 改成 stable
+
+> 禁用自动更新: `./mcl -d updater`;
+> 启动自动更新: `./mcl -e updater`
+
 ### 2. 安装 node js 依赖
 
 假定已经安装最新版本的 node js. 在 qq-tex-bot 项目根目录 (`package.json` 所在的目录) 下运行

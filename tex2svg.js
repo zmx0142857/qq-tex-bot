@@ -98,6 +98,6 @@ module.exports = function tex2svg (formula) {
   })
   .catch(e => {
     console.error(e.stack)
-    throw new Error('无法识别此公式, 格式有误?')
+    throw new Error('mathjax_error')
   })
 }
