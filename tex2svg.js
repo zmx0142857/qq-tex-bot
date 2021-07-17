@@ -83,7 +83,7 @@ module.exports = function tex2svg (formula) {
     const style = /style="[^"]*"/
     const originalStyle = svg.match(style)[0]
     const styleWithBackgroundColor = originalStyle.slice(0, -1) + `; background-color: ${backgroundColor}` + '"'
-    
+
     // console.log(svg.match(style))
     //console.log(width, height)
 
@@ -101,7 +101,8 @@ module.exports = function tex2svg (formula) {
 
     return svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
-      .replace(style, styleWithBackgroundColor) // 设置背景
+      .replace('data-background="true"', 'fill="#fff"') // 为报错文字设置背景色
+      .replace(style, styleWithBackgroundColor) // 为 phantomjs 的 svg 设置背景
       .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
   })
   .catch(e => {
