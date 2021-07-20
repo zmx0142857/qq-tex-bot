@@ -1,11 +1,11 @@
 const tex2svg = require('./tex2svg')
-const svg2png = require('svg2png')
 const AM = require('./asciimath')
 const { am2tex } = AM
 const fs = require('pn/fs')
 const path = require('path')
 const child = require('child_process')
 const config = require('./config')
+const svg2png = config.image.engine === 'magick' ? null : require('svg2png')
 
 // customize asciimath
 AM.define.push([/\*\*/g, '^'])
