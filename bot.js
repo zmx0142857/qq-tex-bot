@@ -15,7 +15,7 @@ function autoreply (process) {
   bot.on('FriendMessage', async ({ messageChain, sender }) => {
     const { text } = messageChain[1]
     console.log(sender.id, text)
-    const message = await process(text)
+    const message = await process(text, sender)
     if (message) {
       bot.sendMessage({
         friend: sender.id,

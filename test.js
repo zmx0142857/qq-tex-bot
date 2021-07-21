@@ -1,7 +1,8 @@
-//const { am2tex } = require('../../note/js/asciimath')
+const { am2tex } = require('./asciimath')
 const tex2svg = require('./tex2svg')
+
 setTimeout(() => {
-  tex2svg('1+1=2').then(console.log)
+  tex2svg(am2tex('&#10197;')).then(console.log)
 }, 300)
 
 //console.log(am2tex('{ x + y = a; x - y = b :}'))
