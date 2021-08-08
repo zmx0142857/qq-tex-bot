@@ -53,7 +53,12 @@ module.exports = function tex2png (text, sender) {
     [/^\/tex/i, () => imageEngine(tex2svg(text))],
     [/^\/am/i, () => imageEngine(tex2svg(displaylines(
       text.split('\n').map(am2tex).join(' \\\\ ')
-    )))],
+    ))).then(msg => {
+      if (/\\[a-zA-Z]/.test(text)) {
+        msg.push({ type: 'Plain', text: '您是不是想要使用 /tex 而不是 /am ?' })
+      }
+      return msg
+    })],
   ]
 
   // 寻找第一个匹配的命令, 并执行

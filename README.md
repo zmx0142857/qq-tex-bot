@@ -9,9 +9,10 @@
 - `/tex`: tex 公式, 较复杂, 但功能更全;
 - `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言.
 
-![图1](img/S10509-115328.jpg)
-
-![图2](img/S10509-115344.jpg)
+<div style="height:300px;display:flex;justify-content:space-around">
+<img src="img/S10509-115328.jpg" alt="图1">
+<img src="img/S10509-115344.jpg" alt="图2">
+</div>
 
 ## 快速上手
 
@@ -74,7 +75,7 @@ module.exports = {
 }
 ```
 
-> 如果选择 magick 引擎, 还需要安装 [image magick](https://magick.org), 并保证 path 环境变量中有 `magick` 命令.
+> 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令.
 
 启动机器人:
 
@@ -91,19 +92,44 @@ node index.js
 - `文字消息 \178`: 发送文字消息到当前的群. `\178` 代表滑稽的 qq 表情.
   [更多表情码在这里](https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8)
 
-## mirai-api-http 使用
+## mirai-api-http 的使用
 
 登录
 ```
-http post /auth '{"authKey":"***"}'
+POST /auth
+{
+  "authKey": "***"
+}
 ```
 认证
 ```
-http post /verify '{"sessionKey":"***","qq":2071245907}'
+POST /verify
+{
+  "sessionKey": "***",
+  "qq": ???
+}
 ```
 发消息
 ```
-http post /sendGroupMessage '{"sessionKey":"***","target":726542042,"messageChain":[{"type":"Plain","text":"本机器人不支持QQ表情喔~"}]}'
+POST /sendGroupMessage
+{
+  "sessionKey": "***",
+  "target": ???,
+  "messageChain": [{
+    "type": "Plain",
+    "text": "本机器人不支持回复QQ表情喔~"
+  }]
+}
+```
+改名片
+```
+POST /memberInfo
+{
+  "sessionKey": "***",
+  "target": ???,
+  "memberId": ???,
+  "info": {"name": "AsciiMath小助手"}
+}
 ```
 
 ## FAQs
