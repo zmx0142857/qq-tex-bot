@@ -57,9 +57,10 @@ require('mathjax-full/' + (argv.dist ? 'es5' : 'components/src/tex-svg') + '/tex
 
 const config = {
   display: true, // false 为行间公式
-  em: 16,
-  ex: 8,
+  em: 32,
+  ex: 16,
   containerWidth: 80 * 16,
+  ...require('./config').tex
 }
 
 // Wait for MathJax to start up
@@ -75,8 +76,8 @@ module.exports = function tex2svg (formula) {
     // 宽高单位从 ex 改为 px
     const w = /width="[^e]*ex"/
     const h = /height="[^e]*ex"/
-    const width = parseFloat(svg.match(w)[0].slice(7)) * config.ex * 2
-    const height = parseFloat(svg.match(h)[0].slice(8)) * config.ex * 2
+    const width = parseFloat(svg.match(w)[0].slice(7)) * config.ex
+    const height = parseFloat(svg.match(h)[0].slice(8)) * config.ex
 
     // 增加背景色
     const backgroundColor = 'white'

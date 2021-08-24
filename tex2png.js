@@ -4,8 +4,12 @@ const { am2tex } = AM
 const fs = require('pn/fs')
 const path = require('path')
 const child = require('child_process')
-const config = require('./config')
-const svg2png = config.image.engine === 'magick' ? null : require('svg2png')
+const config = {
+  engine: 'phantom',
+  name: 'tmp.png',
+  ...require('./config').image
+}
+const svg2png = config.engine === 'phantom' ? require('svg2png') : null
 
 // customize asciimath
 AM.define.push([/\*\*/g, '^'])
@@ -21,11 +25,11 @@ function magick (promise) {
   return promise
     .then(buf => fs.writeFile('tmp.svg', buf))
     .then(() => new Promise((resolve, reject) => {
-      child.exec(`magick tmp.svg ${path.join(config.image.path, config.image.name)}`, err => {
+      child.exec(`magick tmp.svg ${path.join(config.path, config.name)}`, err => {
         if (err) reject(err)
         else {
           //console.log('formula done')
-          resolve([{ type: 'Image', path: config.image.name }])
+          resolve([{ type: 'Image', path: config.name }])
         }
       })
     }))
@@ -36,16 +40,16 @@ function magick (promise) {
 function phantom (promise) {
   return promise.then(svg2png)
     .then(buf => fs.writeFile(
-      path.join(config.image.path, config.image.name), buf)
+      path.join(config.path, config.name), buf)
     )
     .then(() => {
       //console.log('formula done')
-      return [{ type: 'Image', path: config.image.name }]
+      return [{ type: 'Image', path: config.name }]
     })
     .catch(console.error)
 }
 
-const imageEngine = config.image.engine === 'magick' ? magick : phantom
+const imageEngine = config.engine === 'magick' ? magick : phantom
 
 module.exports = function tex2png (text, sender) {
   const displaylines = text => '\\displaylines{' + text + '}'

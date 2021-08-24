@@ -54,34 +54,47 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 npm install
 ```
 
+> 安装过程如遇到 phantomjs 下载失败, 可以手动下载到指定的目录中:
+> ```text
+> Downloading https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip
+> Saving to C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip
+> Receiving...
+> Error making request.
+> Error: connect ETIMEDOUT *.*.*.*:443
+>     at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1148:16)
+> ```
+> 比如上面这种情况, 只需到 https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip 下载文件, 保存到 C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip, 然后重新运行 `npm install` 即可.
+
 在项目根目录下新建 `config.js`, 填写必要信息:
 
 ```js
 module.exports = {
   server: {
-    baseUrl: 'http://localhost:8080',
     authKey: '', // mirai-api-http 提供的 authKey
     qq: 123456, // 机器人的 qq 号
   },
   groups: {
-    112233: '群名称' // 群号和群名称
+    112233: '群名称', // 群号和群名称
   },
   image: {
-    engine: 'phantom', // 或 magick
     // 图片目录绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows
     path: '??/mirai/data/net.mamoe.mirai-api-http/images',
-    name: 'tmp.png',
   }
 }
 ```
 
-> 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令.
+|参数|解释|类型|必填|
+|----|----|----|----|
+| server.authKey | mirai-api-http 提供的 authKey, 请妥善保存, 不要泄露 | String | 必填 |
+| server.qq | 机器人的 qq 号 | Number | 必填 |
+| groups | 机器人加入的群, 以 `群号: 群名` 的格式填写, 可填多个 | Object | 必填 |
+| image.path | mirai 图片目录的绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows | String | 必填 |
+| server.baseUrl | mirai 服务的地址 | String | 默认值 http://localhost:8080 |
+| tex.ex | 公式的字体大小 | Number | 默认值 16 |
+| image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
+| image.name | 临时图片的文件名 | String | 默认值 tmp.png |
 
-启动机器人:
-
-```shell
-node index.js
-```
+最后, 运行 `npm start` 或 `node index.js` 启动机器人.
 
 ## cli
 

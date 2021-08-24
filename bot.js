@@ -15,7 +15,10 @@ function saveReply(messageId, replyId) {
 
 // 连接到 mirai-api-http 服务
 async function connect () {
-  const { server } = config
+  const server = {
+    baseUrl: 'http://localhost:8080',
+    ...config.server
+  }
   await bot.open(server)
   console.log(`connected to mirai-api-http at ${server.baseUrl}`)
 }
