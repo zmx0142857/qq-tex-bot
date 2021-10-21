@@ -843,6 +843,20 @@ function parseI() {
   var underover = (sym1.ttype == UNDEROVER || sym1.ttype == UNARYUNDEROVER);
   var node = parseS();
   var sym = getSymbol();
+
+  // 类似于 sin, log 相对分式优先
+  // 阶乘, 或任意后缀函数也相对分式优先
+  if (sym.input === '!') {
+    skip(sym.input.length);
+    if (AM.katex) {
+      return b(node + '!');
+    } else {
+      node = $math('mrow', node);
+      node.appendChild($math('mo', $text('!')));
+      return node
+    }
+  }
+
   // either _ or ^
   if (sym.ttype != INFIX || sym.input == '/')
     return node;
