@@ -292,6 +292,8 @@ AM.symbols = AM.symbols.concat([
 {input:"'''",tag:'mo',output:'\u2034',tex:null,ttype:CONST,val:true},
 
 // functions
+{input:'!!',tag:'mo',output:'!!',tex:null,ttype:UNARY,rfunc:true,val:true},
+{input:'!',tag:'mo',output:'!',tex:null,ttype:UNARY,rfunc:true,val:true},
 {input:'f',tag:'mi',output:'f',tex:null,ttype:UNARY,func:true,val:true},
 {input:'g',tag:'mi',output:'g',tex:null,ttype:UNARY,func:true,val:true},
 {input:'lim',tag:'mo',output:'lim',tex:null,ttype:UNDEROVER},
@@ -846,13 +848,13 @@ function parseI() {
 
   // 类似于 sin, log 相对分式优先
   // 阶乘, 或任意后缀函数也相对分式优先
-  if (sym.input === '!') {
+  if (sym.rfunc) {
     skip(sym.input.length);
     if (AM.katex) {
-      return b(node + '!');
+      return b(node + sym.output);
     } else {
       node = $math('mrow', node);
-      node.appendChild($math('mo', $text('!')));
+      node.appendChild($math('mo', $text(sym.output)));
       return node
     }
   }
