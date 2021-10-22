@@ -1003,10 +1003,7 @@ function parseMatrixTex(sym, frag) {
     row.push(frag.slice(begin,i));
   if (row.length > 0)
     matrix += row.join('&') + '\\\\';
-  if (sym.invisible)
-    return '\\begin{aligned}' + matrix + '\\end{aligned}';
-  else
-    return '\\begin{matrix}' + matrix + '\\end{matrix}';
+  return '\\begin{matrix}' + matrix + '\\end{matrix}';
 }
 
 // -> node
@@ -1089,7 +1086,8 @@ function parseMath(str) {
   return node;
 }
 
-function am2tex(str) {
+function am2tex(str, displayStyle) {
+  if (displayStyle === undefined) displayStyle = AM.displaystyle
   AMnestingDepth = 0;
   for (d of AM.define)
     str = str.replace(d[0], d[1]);
@@ -1107,7 +1105,7 @@ function am2tex(str) {
   var args = [];
   if (AM.color)
     args.push('\\' + AM.color);
-  if (AM.displaystyle)
+  if (displayStyle)
     args.push('\\displaystyle');
   else
     args.push('\\textstyle');
@@ -1122,8 +1120,8 @@ function parseMathTex(str) {
     katex.render(str, node);
   } catch (e) {
     node.className = 'katex-error';
-    console.error(e);
     console.log(str);
+    throw e
   }
   return node;
 }
@@ -1223,19 +1221,25 @@ function init() {
   parseMatrix = parseMatrixTex;
   parseMath = parseMathTex;
 
-  if (typeof document !== 'undefined') {
+  if (AM.env === 'browser') {
     // local fonts cause CORS error
     loadCss('https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css');
     loadScript(AM.katexpath, AM.onload);
   }
 }
 
-if (typeof document === 'undefined') { // nodejs
+if (typeof document === 'undefined') {
   AM.env = 'nodejs'
   AM.katex = true
   AM.displaystyle = true
   init()
-} else { // browser
+} else if (typeof chrome !== 'undefined' && chrome.extension) {
+  AM.env = 'extension'
+  AM.katex = true
+  AM.displaystyle = true
+  init()
+} else {
+  AM.env = 'browser'
   var doc = document;
   var body = doc.body;
   var MATHML = 'http://www.w3.org/1998/Math/MathML';
