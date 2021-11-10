@@ -9,10 +9,8 @@
 - `/tex`: tex 公式, 较复杂, 但功能更全;
 - `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言.
 
-<div style="height:300px;display:flex;justify-content:space-around">
-<img src="img/S10509-115328.jpg" alt="图1">
-<img src="img/S10509-115344.jpg" alt="图2">
-</div>
+<img src="img/S10509-115328.jpg" alt="图1" width="45%">
+<img src="img/S10509-115344.jpg" alt="图2" width="45%">
 
 ## 快速上手
 
