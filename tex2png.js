@@ -56,7 +56,7 @@ module.exports = function tex2png (text, sender) {
   const commands = [
     [/^\/tex/i, () => imageEngine(tex2svg(text))],
     [/^\/am/i, () => imageEngine(tex2svg(displaylines(
-      text.split('\n').map(am2tex).join(' \\\\ ')
+      text.split('\n').map(s => am2tex(s)).join(' \\\\ ')
     ))).then(msg => {
       if (/\\[a-zA-Z]/.test(text)) {
         msg.push({ type: 'Plain', text: '您是不是想要使用 /tex 而不是 /am ?' })

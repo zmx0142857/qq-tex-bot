@@ -1,9 +1,20 @@
-const { am2tex } = require('./asciimath')
-const tex2svg = require('./tex2svg')
+//const { am2tex } = require('./asciimath')
+//const tex2svg = require('./tex2svg')
 
-setTimeout(() => {
-  tex2svg(am2tex('&#10197;')).then(console.log)
-}, 300)
+//setTimeout(() => {
+  //tex2svg(am2tex('&#10197;')).then(console.log)
+//}, 300)
+
+function testPhantom () {
+  const svg2png = require('svg2png')
+  const fs = require('fs')
+
+  svg2png(fs.readFileSync('./tmp.svg', 'utf-8'))
+    .then(buf => fs.writeFile('./tmp.png', buf, console.error))
+    .catch(console.error)
+}
+
+testPhantom()
 
 //console.log(am2tex('{ x + y = a; x - y = b :}'))
 //console.log(am2tex('=|1,0;0,1|'))
