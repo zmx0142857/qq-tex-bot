@@ -21,7 +21,8 @@
 mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写.  [官方用户手册](https://github.com/mamoe/mirai/blob/dev/docs/UserManual.md)
 
 - 确保 java 版本至少是 11
-- 新建目录 `mirai`, 下载 [mcl-installer](https://github.com/iTXTech/mcl-installer/releases), 然后运行
+- 新建目录 `mirai`, 下载 [mcl-installer](https://github.com/iTXTech/mcl-installer/releases) 或 [miral-console-loader](https://github.com/iTXTech/mirai-console-loader/releases), 然后运行
+
 - 安装 mirai-api-http 插件, 用于提供 http 接口:
   ```shell
   ./mcl --update-package net.mamoe:mirai-api-http --type plugin --channel stable

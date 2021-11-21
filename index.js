@@ -9,7 +9,7 @@ try {
 const {
   //bot,
   connect,
-  //autoreply,
+  autoreply,
   groupAutoreply,
   autoRecall
 } = require('./bot')
@@ -18,7 +18,7 @@ const tex2png = require('./tex2png')
 
 ;(async () => {
   await connect()
-  //autoreply(tex2png)
+  autoreply(tex2png)
   groupAutoreply(tex2png)
   autoRecall()
   cli()
