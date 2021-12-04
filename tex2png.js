@@ -69,7 +69,7 @@ module.exports = function tex2png (text, sender) {
         type: 'Plain',
         text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note'
       }]
-    ]
+    }]
   ]
 
   // 寻找第一个匹配的命令, 并执行

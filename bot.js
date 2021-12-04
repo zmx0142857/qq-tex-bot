@@ -78,7 +78,9 @@ function sendHelp (groupId) {
 // 一旦消息被撤回, 机器人的回复也相应撤回
 function autoRecall (process) {
   bot.on(['GroupRecallEvent', 'FriendRecallEvent'],
-    async ({ messageId, sender }) => {
+    async (res) => {
+      console.log(res)
+      const { messageId } = res
       console.log(sender.id + ' ' + messageId + ' recalled')
       const id = replyDict[messageId]
       if (new Date() - replyDate[sender.id].date < 2 * 60 * 1000) {
