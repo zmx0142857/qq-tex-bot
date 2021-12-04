@@ -3,13 +3,15 @@ const config = require('./config')
 
 const bot = new Bot()
 
-const reply = {} // { messageId: replyId }
+const replyDict = {} // { [messageId]: replyId }
+const replyDate = {} // { [senderId]: date }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
-function saveReply(messageId, replyId) {
-  reply[messageId] = replyId
+function saveReply(messageId, replyId, senderId) {
+  replyDict[messageId] = replyId
+  replyDate[senderId] = new Date()
   setTimeout(() => {
-    delete reply[messageId]
+    delete replyDict[messageId]
   }, 1000 * 60 * 2) // 2 分钟后释放空间
 }
 
@@ -36,7 +38,7 @@ function autoreply (process) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
-        saveReply(id, replyId)
+        saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
   })
@@ -58,20 +60,30 @@ function groupAutoreply (process) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
-        saveReply(id, replyId)
+        saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
   })
   console.log('group autoreply is listening...')
 }
 
+function sendHelp (groupId) {
+  bot.sendMessage({
+    group: groupId,
+    message: { type: 'Plain', text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note' }
+  })
+}
+
 // 监听消息撤回
 // 一旦消息被撤回, 机器人的回复也相应撤回
 function autoRecall (process) {
   bot.on(['GroupRecallEvent', 'FriendRecallEvent'],
-    async ({ messageId }) => {
-      console.log(messageId + ' recalled')
-      const id = reply[messageId]
+    async ({ messageId, sender }) => {
+      console.log(sender.id + ' ' + messageId + ' recalled')
+      const id = replyDict[messageId]
+      if (new Date() - replyDate[sender.id].date < 2 * 60 * 1000) {
+        sendHelp(sender.group.id)
+      }
       if (id) {
         bot.recall({ messageId: id })
       }

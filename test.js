@@ -1,10 +1,11 @@
-//const { am2tex } = require('./asciimath')
+const { am2tex } = require('./asciimath')
 //const tex2svg = require('./tex2svg')
 
 //setTimeout(() => {
   //tex2svg(am2tex('&#10197;')).then(console.log)
 //}, 300)
 
+/*
 function testPhantom () {
   const svg2png = require('svg2png')
   const fs = require('fs')
@@ -15,10 +16,12 @@ function testPhantom () {
 }
 
 testPhantom()
+*/
 
 //console.log(am2tex('{ x + y = a; x - y = b :}'))
 //console.log(am2tex('=|1,0;0,1|'))
 //console.log(am2tex('{🦉0;0🦉}'))
+console.log(am2tex('(🍎️)/(🍌️+🍍️) + (🍌️)/(🍍️+🍎️) + (🍍️)/(🍎️+🍌️) = 4'))
 /*Error: Command failed: magick tmp.svg /home/zmx/app/mirai/data/net.mamoe.mirai-api-http/images/tmp.png
 magick: memory allocation failed `tmp.svg' @ error/svg.c/ReadSVGImage/3447.
 magick: no images for write '-write' '/home/zmx/app/mirai/data/net.mamoe.mirai-api-http/images/tmp.png' at CLI arg 2 @ error/operation.c/CLINoImageOperator/4893.
