@@ -63,21 +63,20 @@ module.exports = function tex2png (text, sender) {
       }
       return msg
     })],
-    [/^\/help am/i, () => {
-      console.log('help activated')
-      return [{
+    [/^\/help am/i, async () => [{
         type: 'Plain',
         text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note'
       }]
-    }]
+    ]
   ]
 
   // 寻找第一个匹配的命令, 并执行
-  for ([key, method] of commands) {
+  for (let i = 0; i < commands.length; ++i) {
+    const [key, method] = commands[i]
     if (!key.test(text)) continue
     text = text.replace(key, '').trim()
-    if (!text) return
+    if (i < 2 && !text) return // 使用 tex 和 am 不带参数时, 不作响应
     console.log(sender.id, key, text)
-    return method()
+    return { isFormula: i < 2, message: method() }
   }
 }

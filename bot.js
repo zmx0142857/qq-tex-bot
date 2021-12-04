@@ -9,7 +9,6 @@ const replyDate = {} // { [senderId]: date }
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
 function saveReply(messageId, replyId, senderId) {
   replyDict[messageId] = replyId
-  replyDate[senderId] = new Date()
   setTimeout(() => {
     delete replyDict[messageId]
   }, 1000 * 60 * 2) // 2 分钟后释放空间
@@ -30,7 +29,9 @@ function autoreply (process) {
   bot.on('FriendMessage', async ({ messageChain, sender }) => {
     const { text } = messageChain[1]
     console.log(sender.id, text)
-    const message = await process(text, sender)
+    const res = process(text, sender)
+    if (!res) return
+    const message = await res.message
     if (message) {
       const { id } = messageChain[0]
       bot.sendMessage({
@@ -38,7 +39,7 @@ function autoreply (process) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
-        saveReply(id, replyId, sender.id)
+        if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
   })
@@ -52,7 +53,9 @@ function groupAutoreply (process) {
     if (!config.groups[sender.group.id]) return
     const msg = messageChain[messageChain.length-1]
     if (!msg || msg.type !== 'Plain') return
-    const message = await process(msg.text, sender)
+    const res = process(msg.text, sender)
+    if (!res) return
+    const message = await res.message
     if (message) {
       const { id } = messageChain[0]
       bot.sendMessage({
@@ -60,35 +63,43 @@ function groupAutoreply (process) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
-        saveReply(id, replyId, sender.id)
+        if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
   })
   console.log('group autoreply is listening...')
 }
 
-function sendHelp (groupId) {
-  bot.sendMessage({
-    group: groupId,
-    message: { type: 'Plain', text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note' }
-  })
+function helpMessage () {
+  return [{ type: 'Plain', text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note' }]
 }
 
 // 监听消息撤回
 // 一旦消息被撤回, 机器人的回复也相应撤回
 function autoRecall (process) {
   bot.on(['GroupRecallEvent', 'FriendRecallEvent'],
-    async (res) => {
-      console.log(res)
-      const { messageId } = res
-      console.log(sender.id + ' ' + messageId + ' recalled')
+    async res => {
+      const { messageId, authorId, group } = res
       const id = replyDict[messageId]
-      if (new Date() - replyDate[sender.id].date < 2 * 60 * 1000) {
-        sendHelp(sender.group.id)
+      if (!id) return
+      console.log(authorId + ' recalled ' + messageId)
+      const now = Number(new Date())
+      const timedelta = now - replyDate[authorId]
+      replyDate[authorId] = now
+      if (timedelta < 2 * 60 * 1000) {
+        if (group && group.id) {
+          bot.sendMessage({
+            group: group.id,
+            message: helpMessage()
+          })
+        } else {
+          bot.sendMessage({
+            friend: authorId,
+            message: helpMessage()
+          })
+        }
       }
-      if (id) {
-        bot.recall({ messageId: id })
-      }
+      bot.recall({ messageId: id })
     }
   )
 }
