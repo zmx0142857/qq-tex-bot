@@ -1,10 +1,11 @@
 const { Bot, Message } = require('mirai-js')
 const config = require('./config')
+const message = require('./message')
 
 const bot = new Bot()
 
 const replyDict = {} // { [messageId]: replyId }
-const replyDate = {} // { [senderId]: date }
+const recallDate = {} // { [senderId]: date }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
 function saveReply(messageId, replyId, senderId) {
@@ -70,10 +71,6 @@ function groupAutoreply (process) {
   console.log('group autoreply is listening...')
 }
 
-function helpMessage () {
-  return [{ type: 'Plain', text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note' }]
-}
-
 // 监听消息撤回
 // 一旦消息被撤回, 机器人的回复也相应撤回
 function autoRecall (process) {
@@ -83,23 +80,32 @@ function autoRecall (process) {
       const id = replyDict[messageId]
       if (!id) return
       console.log(authorId + ' recalled ' + messageId)
+      bot.recall({ messageId: id })
+
+      // timeDelta (两分钟) 内同一个人连续撤回两次, 则触发提示
       const now = Number(new Date())
-      const timedelta = now - replyDate[authorId]
-      replyDate[authorId] = now
-      if (timedelta < 2 * 60 * 1000) {
+      const last = recallDate[authorId]
+      const timeDelta = 2 * 60 * 1000
+      if (last === last) recallDate[authorId] = now
+      if (now - last < timeDelta) {
+        // 节流, timeDelta 内只提示一次
+        recallDate[authorId] = NaN // 表示冷却中
+        setTimeout(() => {
+          recallDate[authorId] = undefined
+        }, timeDelta)
+
         if (group && group.id) {
           bot.sendMessage({
             group: group.id,
-            message: helpMessage()
+            message: [message.help]
           })
         } else {
           bot.sendMessage({
             friend: authorId,
-            message: helpMessage()
+            message: [message.help]
           })
         }
       }
-      bot.recall({ messageId: id })
     }
   )
 }

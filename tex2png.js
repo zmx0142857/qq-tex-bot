@@ -10,6 +10,7 @@ const config = {
   ...require('./config').image
 }
 const svg2png = config.engine === 'phantom' ? require('svg2png') : null
+const message = require('./message')
 
 // customize asciimath
 AM.define.push([/\*\*/g, '^'])
@@ -17,7 +18,7 @@ AM.define.push([/\*\*/g, '^'])
 function onError (err) {
   console.error(err)
   if (err.message === 'mathjax_error')
-    return Promise.resolve({ type: 'Plain', text: ' [error] 无法识别此公式, 格式有误?' })
+    return Promise.resolve(message.parseError)
 }
 
 // 用 image magick 命令行
@@ -59,15 +60,11 @@ module.exports = function tex2png (text, sender) {
       text.split('\n').map(s => am2tex(s)).join(' \\\\ ')
     ))).then(msg => {
       if (/\\[a-zA-Z]/.test(text)) {
-        msg.push({ type: 'Plain', text: '您是不是想要使用 /tex 而不是 /am ?' })
+        msg.push(message.useTex)
       }
       return msg
     })],
-    [/^\/help am/i, async () => [{
-        type: 'Plain',
-        text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note'
-      }]
-    ]
+    [/^\/help am/i, async () => [message.help] ]
   ]
 
   // 寻找第一个匹配的命令, 并执行
