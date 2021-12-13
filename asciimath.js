@@ -400,7 +400,7 @@ AM.symbols = AM.symbols.concat([
 {input:'iiint',tag:'mo',output:'\u222D',tex:null,ttype:CONST,val:true},
 {input:'oiint',tag:'mo',output:'\u222F',tex:null,ttype:CONST,val:true},
 {input:'oiiint',tag:'mo',output:'\u2230',tex:null,ttype:CONST,val:true},
-{input:'laplace',tag:'mtext',output:'\u0394',ttype:CONST},
+{input:'laplace',tag:'mtext',output:'\u0394',tex:'Delta',ttype:CONST,notexcopy:true},
 {input:'==',tag:'mo',output:'\u2550'.repeat(2),tex:null,ttype:CONST,val:true},
 {input:'====',tag:'mo',output:'\u2550'.repeat(4),tex:null,ttype:CONST,val:true},
 {input:'||',tag:'mo',output:'\u2225',tex:null,ttype:CONST,val:true},
@@ -1091,6 +1091,14 @@ function am2tex(str, displayStyle) {
   AMnestingDepth = 0;
   for (d of AM.define)
     str = str.replace(d[0], d[1]);
+  // partial short hand
+  // part f x => (del f)/(del x)
+  // part^3 f (x y^2) => (del^3 f)/(del x del y^2)
+  str = str.replace(/part(\S*)\s+(\S+)\s+(\([^)]*\)|\S+)/g, (substr, $1, $2, $3) => {
+    if ($3[0] === '(')
+      $3 = $3.slice(1,-1).split(/\s+/).join(' del ');
+    return `(del${$1} ${$2})/(del ${$3})`
+  })
 
   // html entity
   if (AM.env === 'nodejs') {
@@ -1113,15 +1121,15 @@ function am2tex(str, displayStyle) {
   return AM.texstr;
 }
 
-function parseMathTex(str) {
-  str = am2tex(str);
+function parseMathTex(amstr) {
+  str = am2tex(amstr);
   var node = $('<span>', str);
   try {
     katex.render(str, node);
   } catch (e) {
     node.className = 'katex-error';
-    console.log(str);
-    throw e
+    node.innerText = e.message;
+    console.error('parse error:', amstr);
   }
   return node;
 }
