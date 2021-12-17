@@ -53,7 +53,8 @@ function phantom (promise) {
 const imageEngine = config.engine === 'magick' ? magick : phantom
 
 module.exports = function tex2png (text, sender) {
-  const displaylines = text => '\\displaylines{' + text + '}'
+  //const displaylines = text => '\\displaylines{' + text + '}'
+  const displaylines = text => '\\begin{aligned}' + text + '\\end{aligned}'
   const commands = [
     [/^\/tex/i, () => imageEngine(tex2svg(text))],
     [/^\/am/i, () => imageEngine(tex2svg(displaylines(
