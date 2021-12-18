@@ -58,7 +58,7 @@ module.exports = function tex2png (text, sender) {
   const commands = [
     [/^\/tex/i, () => imageEngine(tex2svg(text))],
     [/^\/am/i, () => imageEngine(tex2svg(displaylines(
-      text.split('\n').map(s => am2tex(s)).join(' \\\\ ')
+      text.split('\n').map(s => '& ' + am2tex(s)).join(' \\\\ ')
     ))).then(msg => {
       if (/\\[a-zA-Z]/.test(text)) {
         msg.push(message.useTex)
