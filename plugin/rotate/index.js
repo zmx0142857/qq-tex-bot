@@ -22,11 +22,11 @@ module.exports = function rotateImage (text, sender, chain) {
 
     const quote = chain.find(item => item.type === 'Quote')
     if (!quote || availbleCommands.indexOf(text) === -1) {
-      return message.invalidRotate
+      return resolve([message.invalidRotate])
     }
     const url = picDict[quote.id]
     if (!url) {
-      return message.picNotFound
+      return resolve([message.picNotFound])
     }
     const filename = path.join(config.path, config.name)
     const pipe = request(url).pipe(fs.createWriteStream(filename))
@@ -40,6 +40,6 @@ module.exports = function rotateImage (text, sender, chain) {
     })
   }).catch(err => {
     console.error(err)
-    return Promise.resolve(message.error)
+    return Promise.resolve([message.error])
   })
 }

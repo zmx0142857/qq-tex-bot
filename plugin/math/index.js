@@ -18,7 +18,7 @@ AM.define.push([/\*\*/g, '^'])
 function onError (err) {
   console.error(err)
   if (err.message === 'mathjax_error')
-    return Promise.resolve(message.parseError)
+    return Promise.resolve([message.parseError])
 }
 
 // 用 image magick 命令行
