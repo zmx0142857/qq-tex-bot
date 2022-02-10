@@ -75,7 +75,7 @@ function savePicUrl (chain) {
       console.log('savePic:', id, m.url)
       picDict[id] = m.url
       setTimeout(() => {
-        delete replyDict[messageId]
+        delete picDict[id]
       }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
     }
   })
@@ -97,6 +97,7 @@ function autoreply (command) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
+        // savePicUrl(message, replyId)
         if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
@@ -122,6 +123,7 @@ function groupAutoreply (command) {
         //quote: messageChain[0].id,
         message
       }).then(replyId => {
+        // savePicUrl(message, replyId) TODO: 保存自己的图片?  不能用本地路径
         if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
