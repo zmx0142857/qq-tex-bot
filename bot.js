@@ -4,6 +4,16 @@ const message = require('./message')
 
 const bot = new Bot()
 
+// 连接到 mirai-api-http 服务
+async function connect () {
+  const server = {
+    baseUrl: 'http://localhost:8080',
+    ...config.server
+  }
+  await bot.open(server)
+  console.log(`connected to mirai-api-http at ${server.baseUrl}`)
+}
+
 const replyDict = {} // { [messageId]: replyId }
 const recallDate = {} // { [senderId]: date }
 
@@ -15,65 +25,9 @@ function saveReply(messageId, replyId, senderId) {
   }, 1000 * 60 * 2) // 2 分钟后释放空间
 }
 
-// 连接到 mirai-api-http 服务
-async function connect () {
-  const server = {
-    baseUrl: 'http://localhost:8080',
-    ...config.server
-  }
-  await bot.open(server)
-  console.log(`connected to mirai-api-http at ${server.baseUrl}`)
-}
-
-// 好友自动回复
-function autoreply (process) {
-  bot.on('FriendMessage', async ({ messageChain, sender }) => {
-    const { text } = messageChain[1]
-    console.log(sender.id, text)
-    const res = process(text, sender)
-    if (!res) return
-    const message = await res.message
-    if (message) {
-      const { id } = messageChain[0]
-      bot.sendMessage({
-        friend: sender.id,
-        //quote: messageChain[0].id,
-        message
-      }).then(replyId => {
-        if (res.isFormula) saveReply(id, replyId, sender.id)
-      }).catch(console.error)
-    }
-  })
-  console.log('autoreply is listening...')
-}
-
-// 监听群消息
-function groupAutoreply (process) {
-  bot.on('GroupMessage', async ({ messageChain, sender }) => {
-    //console.log(sender.group.id)
-    if (!config.groups[sender.group.id]) return
-    const msg = messageChain[messageChain.length-1]
-    if (!msg || msg.type !== 'Plain') return
-    const res = process(msg.text, sender)
-    if (!res) return
-    const message = await res.message
-    if (message) {
-      const { id } = messageChain[0]
-      bot.sendMessage({
-        group: sender.group.id,
-        //quote: messageChain[0].id,
-        message
-      }).then(replyId => {
-        if (res.isFormula) saveReply(id, replyId, sender.id)
-      }).catch(console.error)
-    }
-  })
-  console.log('group autoreply is listening...')
-}
-
 // 监听消息撤回
 // 一旦消息被撤回, 机器人的回复也相应撤回
-function autoRecall (process) {
+function autoRecall () {
   bot.on(['GroupRecallEvent', 'FriendRecallEvent'],
     async res => {
       const { messageId, authorId, group } = res
@@ -110,10 +64,75 @@ function autoRecall (process) {
   )
 }
 
+const picDict = {} // messageId: url
+
+// 保存图片 url
+function savePicUrl (chain) {
+  const id = chain[0].id
+  chain.forEach(m => {
+    if (m.type === 'Image' && m.url) {
+      console.log('savePic:', id, m.url)
+      picDict[id] = m.url
+      setTimeout(() => {
+        delete replyDict[messageId]
+      }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
+    }
+  })
+}
+
+// 好友自动回复
+function autoreply (command) {
+  bot.on('FriendMessage', async ({ messageChain, sender }) => {
+    savePicUrl(messageChain)
+    const { text } = messageChain[1]
+    console.log(sender.id, text)
+    const res = command(text, sender, messageChain)
+    if (!res) return
+    const message = await res.message
+    if (message) {
+      const { id } = messageChain[0]
+      bot.sendMessage({
+        friend: sender.id,
+        //quote: messageChain[0].id,
+        message
+      }).then(replyId => {
+        if (res.isFormula) saveReply(id, replyId, sender.id)
+      }).catch(console.error)
+    }
+  })
+  console.log('autoreply is listening...')
+}
+
+// 监听群消息
+function groupAutoreply (command) {
+  bot.on('GroupMessage', async ({ messageChain, sender }) => {
+    //console.log(sender.group.id)
+    if (!config.groups[sender.group.id]) return
+    savePicUrl(messageChain)
+    const msg = messageChain[messageChain.length-1]
+    if (!msg || msg.type !== 'Plain') return
+    const res = command(msg.text, sender, messageChain)
+    if (!res) return
+    const message = await res.message
+    if (message) {
+      const { id } = messageChain[0]
+      bot.sendMessage({
+        group: sender.group.id,
+        //quote: messageChain[0].id,
+        message
+      }).then(replyId => {
+        if (res.isFormula) saveReply(id, replyId, sender.id)
+      }).catch(console.error)
+    }
+  })
+  console.log('group autoreply is listening...')
+}
+
 module.exports = {
   bot,
   connect,
   autoreply,
   groupAutoreply,
-  autoRecall
+  autoRecall,
+  picDict
 }

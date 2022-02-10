@@ -60,7 +60,7 @@ const config = {
   em: 32,
   ex: 16,
   containerWidth: 80 * 16,
-  ...require('./config').tex
+  ...require('../../config').tex
 }
 
 // Wait for MathJax to start up

@@ -1,4 +1,4 @@
-const { am2tex } = require('./asciimath')
+const { am2tex } = require('./plugin/math/asciimath')
 //const tex2svg = require('./tex2svg')
 
 //setTimeout(() => {

@@ -92,6 +92,7 @@ module.exports = {
 | tex.ex | 公式的字体大小 | Number | 默认值 16 |
 | image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
 | image.name | 临时图片的文件名 | String | 默认值 tmp.png |
+| replyFriend | 是否回复好友消息 | Boolean | 默认值 false |
 
 最后, 运行 `npm start` 或 `node index.js` 启动机器人.
 

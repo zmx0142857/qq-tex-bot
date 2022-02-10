@@ -20,12 +20,12 @@ const {
   autoRecall
 } = require('./bot')
 const cli = require('./cli')
-const tex2png = require('./tex2png')
+const command = require('./plugin')
 
 ;(async () => {
   await connect()
-  autoreply(tex2png)
-  groupAutoreply(tex2png)
+  if (config.replyFriend) autoreply(command) // 好友自动回复
+  groupAutoreply(command)
   autoRecall()
   cli()
 })()

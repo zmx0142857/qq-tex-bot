@@ -11,4 +11,16 @@ module.exports = {
     type: 'Plain',
     text: ' [error] 无法识别此公式, 格式有误?'
   },
+  invalidRotate: {
+    type: 'Plain',
+    text: '用法: /rotate [90/180/270]'
+  },
+  error: {
+    type: 'Plain',
+    text: '出错啦 qwq'
+  },
+  picNotFound: {
+    type: 'Plain',
+    text: '出错啦 qwq, 没有找到图片'
+  },
 }
