@@ -67,6 +67,7 @@ function autoRecall () {
 const picDict = {} // messageId: url
 
 // 保存图片 url
+// 但不会保存自己发的图片
 function savePicUrl (chain) {
   const id = chain[0].id
   chain.forEach(m => {

@@ -5,10 +5,12 @@ const child = require('child_process')
 const message = require('../../message')
 const { picDict } = require('../../bot')
 const config = {
-  name: 'tmp.jpg',
-  ...require('../../config').image
+  ...require('../../config').image,
+  name: 'tmp.gif', // 覆盖默认值, 确保正确处理 gif
 }
 
+// 处理旋转图片的请求
+// 但自己发的图片除外
 module.exports = function rotateImage (text, sender, chain) {
   return new Promise((resolve, reject) => {
     const availbleCommands = [
