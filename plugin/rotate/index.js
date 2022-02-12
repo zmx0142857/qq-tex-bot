@@ -6,7 +6,6 @@ const message = require('../../message')
 const { picDict } = require('../../bot')
 const config = {
   ...require('../../config').image,
-  name: 'tmp.gif', // 覆盖默认值, 确保正确处理 gif
 }
 
 // 处理旋转图片的请求
@@ -28,13 +27,14 @@ module.exports = function rotateImage (text, sender, chain) {
     if (!url) {
       return resolve([message.picNotFound])
     }
-    const filename = path.join(config.path, config.name)
+    const name = quote.origin[0] && quote.origin[0].text === '[动画表情]' ? 'tmp.gif' : 'tmp.jpg'
+    const filename = path.join(config.path, name)
     const pipe = request(url).pipe(fs.createWriteStream(filename))
     pipe.on('finish', () => {
       child.exec(`magick ${filename} -rotate ${text} ${filename}`, err => {
         if (err) reject(err)
         else {
-          resolve([{ type: 'Image', path: config.name }])
+          resolve([{ type: 'Image', path: name }])
         }
       })
     })
