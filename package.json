@@ -3,6 +3,7 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "asciimath-js": "^1.0.1",
     "mathjax-full": "^3.1.4",
     "mirai-js": "^1.7.2",
     "svg2png": "^4.1.1"

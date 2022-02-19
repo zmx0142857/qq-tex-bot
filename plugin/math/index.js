@@ -1,5 +1,5 @@
 const tex2svg = require('./tex2svg')
-const AM = require('./asciimath')
+const AM = require('asciimath-js')
 const { am2tex } = AM
 const fs = require('pn/fs')
 const path = require('path')
