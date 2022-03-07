@@ -74,7 +74,7 @@ function judge(current, guess) {
 
 module.exports = async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
-  console.log(sender, chain)
+  // console.log(sender, chain)
   console.log('groupId', groupId)
   if (text === '') {
     return [{
