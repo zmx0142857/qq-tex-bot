@@ -13,14 +13,15 @@ function readFileData (groupId) {
         data = JSON.parse(data)
       }
       resolve(data)
-    }) 
+    })
   })
 }
 
 async function loadRank (groupId) {
   const data = await readFileData(groupId)
   if (!data.length) return '本群暂无成绩'
-  return data.map(d => `${d.name} ${d.score}`).join('\n')
+  return data.sort((a, b) => b.score - a.score)
+    .map(d => `${d.name} ${d.score}`).join('\n')
 }
 
 async function saveRank (groupId, sender) {
