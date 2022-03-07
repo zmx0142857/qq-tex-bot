@@ -30,7 +30,7 @@ async function saveRank (groupId, sender) {
   if (record) {
     record.score += 1
   } else {
-    data.push({id: sender.id, name: sender.memberName || sender.name, score: 0})
+    data.push({ id: sender.id, name: sender.memberName || sender.name, score: 1 })
   }
   fs.writeFileSync(filename, JSON.stringify(data))
 }
