@@ -1,7 +1,16 @@
 module.exports = {
-  help: {
+  plain (text) {
+    return [{
+      type: 'Plain',
+      text,
+    }]
+  },
+  mathHelp: {
     type: 'Plain',
-    text: '需要帮助吗？在这里喔 https://zmx0142857.gitee.io/note/#math'
+    text: `用法:
+/am <asciimath公式>
+/tex <tex公式>
+帮助文档在这里喔 https://zmx0142857.gitee.io/note/#math`
   },
   useTex: {
     type: 'Plain',

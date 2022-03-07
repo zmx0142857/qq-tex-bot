@@ -53,8 +53,12 @@ function phantom (promise) {
 const imageEngine = config.engine === 'magick' ? magick : phantom
 
 module.exports = {
-  tex: (text) => imageEngine(tex2svg(text)),
-  am: async (text) => {
+  async tex (text) {
+    if (!text) return [message.mathHelp]
+    return imageEngine(tex2svg(text))
+  },
+  async am (text) {
+    if (!text) return [message.mathHelp]
     //const displaylines = text => '\\displaylines{' + text + '}'
     const tex = '\\begin{aligned}'
       + text.split('\n').map(s => '& ' + am2tex(s)).join(' \\\\ ')

@@ -51,12 +51,12 @@ function autoRecall () {
         if (group && group.id) {
           bot.sendMessage({
             group: group.id,
-            message: [message.help]
+            message: [message.mathHelp]
           })
         } else {
           bot.sendMessage({
             friend: authorId,
-            message: [message.help]
+            message: [message.mathHelp]
           })
         }
       }
