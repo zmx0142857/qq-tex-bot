@@ -7,8 +7,8 @@ const defaultLimit = 10
 
 /**
  * 新建 Game 对象, 存入 store
- * @param {number} groupId 
- * @param {object} options 
+ * @param {number} groupId
+ * @param {object} options
  */
 function newGame (groupId, options = {}) {
   store[groupId] = {
@@ -36,8 +36,8 @@ function newDigits(len = defaultLen) {
 
 /**
  * 检查输入有效性: len 位不同的数字
- * @param {object} current 
- * @param {string} guess 
+ * @param {object} current
+ * @param {string} guess
  */
 function isValid(current, guess) {
   if (guess.length !== current.len || guess.match(/\D/)) {
@@ -54,15 +54,15 @@ function isValid(current, guess) {
 
 /**
  * 判断猜测是否正确，并给出 1A2B
- * @param {object} current 
- * @param {string} guess 
+ * @param {object} current
+ * @param {string} guess
  */
 function judge(current, guess) {
   let a = 0
   for (let i = 0; i < current.len; ++i) {
     if (current.answer[i] === guess[i]) ++a
   }
-  
+
   let b = 0
   const s = new Set(current.answer)
   guess.split('').forEach(d => {

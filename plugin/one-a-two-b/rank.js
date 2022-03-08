@@ -30,10 +30,11 @@ async function saveRank (groupId, sender) {
   const record = data.find(d => d.id === sender.id)
   if (record) {
     record.score += 1
+    record.name = sender.memberName || sender.name // 更新名片
   } else {
     data.push({ id: sender.id, name: sender.memberName || sender.name, score: 1 })
   }
-  fs.writeFileSync(filename, JSON.stringify(data))
+  fs.writeFile(filename, JSON.stringify(data), () => {})
 }
 
 module.exports = {
