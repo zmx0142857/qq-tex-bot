@@ -72,21 +72,35 @@ function judge(current, guess) {
   return a === current.len
 }
 
+function comb (n, k) {
+  let ret = 1
+  for (let i = 0; i < k; ++i) {
+    ret *= n
+    --n
+    ret /= i+1
+  }
+  return ret
+}
+
 module.exports = async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
   // console.log(sender, chain)
-  console.log('groupId', groupId)
   if (text === '') {
     return [{
       type: 'Plain',
       text: `用法:
-/1a2b new   新的游戏
-/1a2b rank  查看排行
-/1a2b <${defaultLen} 位不同数字>   参与游戏
+/1a2b new 新的游戏
+/1a2b rank 查看排行
+/1a2b <数字> 参与游戏
 `
     }]
-  } else if (text === 'new') {
-    newGame(groupId)
+  } else if (/new( \d+)?( \d+)?/.test(text)) {
+    let [_, len, limit] = text.split(/\s+/)
+    if (len) {
+      len = Number(len)
+      limit = limit ? Number(limit) : comb(10, len)/21 | 0
+    }
+    newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
   } else if (text === 'rank') {
     const rank = await loadRank(groupId)
