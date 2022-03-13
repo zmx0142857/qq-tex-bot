@@ -72,15 +72,7 @@ function judge(current, guess) {
   return a === current.len
 }
 
-function comb (n, k) {
-  let ret = 1
-  for (let i = 0; i < k; ++i) {
-    ret *= n
-    --n
-    ret /= i+1
-  }
-  return ret
-}
+const limitMap = [0, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12]
 
 module.exports = async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
@@ -89,17 +81,19 @@ module.exports = async function oneATwoB (text, sender, chain) {
     return [{
       type: 'Plain',
       text: `用法:
-/1a2b new 新的游戏
+/1a2b new [长度] [次数] 新的游戏
 /1a2b rank 查看排行
 /1a2b <数字> 参与游戏
 `
     }]
   } else if (/new( \d+)?( \d+)?/.test(text)) {
     let [_, len, limit] = text.split(/\s+/)
-    if (len) {
-      len = Number(len)
-      limit = limit ? Number(limit) : comb(10, len)/21 | 0
-    }
+    len = Number(len) || defaultLen
+    if (!(len >= 1 && len <= 10))
+      return message.plain('长度在 1-10 之间')
+    limit = limit ? Number(limit) : limitMap[len]
+    if (!(limit > 1))
+      return message.plain('多给点机会嘛~')
     newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
   } else if (text === 'rank') {
@@ -122,7 +116,7 @@ module.exports = async function oneATwoB (text, sender, chain) {
 
     const prompt = isWin ? `恭喜你猜对了！ ${current.guessCount}/${current.limit}`
       : isLose ? `已猜 ${current.limit} 次，游戏结束。\n答案：${current.answer}`
-      : `输入 /1a2b <${current.len} 位不同数字> 参与游戏`
+      : `输入 /1a2b <${current.len} 位不同数字> 参与游戏 ${current.guessCount}/${current.limit}`
 
     // 记录成绩
     if (isWin) {
