@@ -1,4 +1,5 @@
 const message = require('../message')
+const config = require('../config')
 const { am, tex } = require('./math')
 const rotateImage = require('./rotate')
 const oneATwoB = require('./one-a-two-b')
@@ -18,7 +19,10 @@ module.exports = function command (text, sender, chain) {
 
     // 白名单过滤
     // 若不存在白名单, 则直接放行
-    if (whiteList && sender.group && !whiteList.contains(sender.group.id)) break
+    if (whiteList && sender.group && !whiteList.includes(sender.group.id)) break
+
+    // 黑名单过滤
+    if (config.blackList && config.blackList.includes(sender.id)) break
 
     text = text.replace(reg, '').trim()
     console.log(sender.id, reg, text)
