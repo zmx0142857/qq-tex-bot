@@ -111,9 +111,8 @@ function groupAutoreply (command) {
     //console.log(sender.group.id)
     if (!config.groups[sender.group.id]) return
     savePicUrl(messageChain)
-    const msg = messageChain[messageChain.length-1]
-    if (!msg || msg.type !== 'Plain') return
-    const res = command(msg.text, sender, messageChain)
+    const textMsg = messageChain.find(m => m.type === 'Plain')
+    const res = command(textMsg?.text || '', sender, messageChain)
     if (!res) return
     const message = await res.message
     if (message) {

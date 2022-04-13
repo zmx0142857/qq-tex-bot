@@ -5,6 +5,19 @@ module.exports = {
       text,
     }]
   },
+  image (path) {
+    if (/^http:|^https:/.test(path)) {
+      return [{
+        type: 'Image',
+        url: path,
+      }]
+    } else {
+      return [{
+        type: 'Image',
+        path,
+      }]
+    }
+  },
   mathHelp: {
     type: 'Plain',
     text: `用法:
