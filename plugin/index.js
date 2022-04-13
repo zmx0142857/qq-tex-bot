@@ -22,16 +22,16 @@ const commands = [
     reg: /^\/1a2b/i,
     method: oneATwoB,
   },
-  { 
+  {
     reg: /^\/savepic/i,
     method: savePic.savePic,
-    // whiteList: [config.server.admin],
+    whiteList: [config.auth.admin],
   },
   {
     reg: savePic.extReg,
     method: savePic.sendPic,
     trim: false,
-    whiteList: [config.auth.admin],
+    // whiteList: [config.server.admin],
   }
 ]
 

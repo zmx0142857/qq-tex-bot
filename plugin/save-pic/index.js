@@ -20,7 +20,6 @@ function mkdir () {
 }
 
 async function savePic (text, sender, chain) {
-  console.log('### save-pic')
   if (text === '') {
       return help()
   } else {
@@ -42,7 +41,7 @@ async function savePic (text, sender, chain) {
     if (msg) {
       try {
         mkdir()
-        console.log('###', msg.url)
+        console.log('save-pic', msg.url)
         request(msg.url).pipe(fs.createWriteStream(filePath))
       } catch (e) {
         console.log(e)
