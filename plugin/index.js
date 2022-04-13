@@ -31,20 +31,22 @@ const commands = [
     reg: savePic.extReg,
     method: savePic.sendPic,
     trim: false,
-    // whiteList: [config.server.admin],
+    whiteList: [config.auth.admin],
   }
 ]
 
 module.exports = function command (text, sender, chain) {
+  // 名单过滤
+  if (config.whiteList && !config.whiteList.includes(sender.id)) return
+  if (config.blackList && config.blackList.includes(sender.id)) return
+
   // 寻找第一个匹配的命令, 并执行
   for (let i = 0; i < commands.length; ++i) {
     const { reg, method, whiteList, blackList, trim = true } = commands[i]
     if (!reg.test(text)) continue
 
-    // 白名单过滤
+    // 名单过滤 (按命令)
     if (whiteList && !whiteList.includes(sender.id)) return
-
-    // 黑名单过滤
     if (blackList && blackList.includes(sender.id)) return
 
     if (trim) {
