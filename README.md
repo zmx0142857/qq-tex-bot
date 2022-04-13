@@ -80,6 +80,10 @@ module.exports = {
   image: {
     // 图片目录绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows
     path: '??/mirai/data/net.mamoe.mirai-api-http/images',
+  },
+  auth: {
+    admin: [123124123], // 你的 qq 号
+    blackList: [], // 黑名单
   }
 }
 ```

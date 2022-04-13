@@ -56,7 +56,7 @@ async function savePic (text, sender, chain) {
 
 async function sendPic (text, sender, chain) {
   if (!fs.existsSync(picDir + '/' + text)) {
-    return message.picNotFound;
+    return // 安静地失败
   }
   return message.image('save-pic/' + text)
 }

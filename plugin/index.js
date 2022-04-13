@@ -36,8 +36,8 @@ const commands = [
 
 module.exports = function command (text, sender, chain) {
   // 名单过滤
-  if (config.whiteList && !config.whiteList.includes(sender.id)) return
-  if (config.blackList && config.blackList.includes(sender.id)) return
+  if (config.auth.whiteList && !config.auth.whiteList.includes(sender.id)) return
+  if (config.auth.blackList && config.auth.blackList.includes(sender.id)) return
 
   // 寻找第一个匹配的命令, 并执行
   for (let i = 0; i < commands.length; ++i) {
