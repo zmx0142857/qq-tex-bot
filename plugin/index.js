@@ -25,13 +25,12 @@ const commands = [
   {
     reg: /^\/savepic/i,
     method: savePic.savePic,
-    whiteList: [config.auth.admin],
+    whiteList: [...config.auth.admin],
   },
   {
     reg: savePic.extReg,
     method: savePic.sendPic,
     trim: false,
-    // whiteList: [config.server.admin],
   }
 ]
 
