@@ -26,6 +26,7 @@ const commands = [
     reg: /^\/savepic/i,
     method: savePic.savePic,
     whiteList: [...config.auth.admin],
+    whiteGroup: [...config.auth.saveGroup],
   },
   {
     reg: savePic.extReg,
@@ -34,19 +35,33 @@ const commands = [
   }
 ]
 
+function checkWhite(list, group, sender) {
+  if (!list && !group) return true
+  if (list && list.includes(sender.id)) return true
+  if (group && sender.group && group.includes(sender.group.id)) return true
+  return false
+}
+
+function checkBlack(list, group, sender) {
+  if (!list && !group) return true
+  if (list && list.includes(sender.id)) return false
+  if (group && sender.group && group.includes(sender.group.id)) return false
+  return true
+}
+
 module.exports = function command (text, sender, chain) {
   // 名单过滤
-  if (config.auth.whiteList && !config.auth.whiteList.includes(sender.id)) return
-  if (config.auth.blackList && config.auth.blackList.includes(sender.id)) return
+  if (!checkWhite(config.auth.whiteList, config.auth.whiteGroup, sender)) return
+  if (!checkBlack(config.auth.blackList, config.auth.blackGroup, sender)) return
 
   // 寻找第一个匹配的命令, 并执行
   for (let i = 0; i < commands.length; ++i) {
-    const { reg, method, whiteList, blackList, trim = true } = commands[i]
+    const { reg, method, whiteList, whiteGroup, blackList, blackGroup, trim = true } = commands[i]
     if (!reg.test(text)) continue
 
     // 名单过滤 (按命令)
-    if (whiteList && !whiteList.includes(sender.id)) return
-    if (blackList && blackList.includes(sender.id)) return
+    if (!checkWhite(whiteList, whiteGroup, sender)) return
+    if (!checkBlack(blackList, blackGroup, sender)) return
 
     if (trim) {
       text = text.replace(reg, '').trim()

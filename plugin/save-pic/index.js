@@ -8,8 +8,7 @@ const picDir = `${config.image.path}/save-pic`
 
 function help() {
   return message.plain(`用法:
-/savepic <文件名>
-<关键字>.jpg | <关键字>.png | <关键字>.gif
+/savepic <文件名> <图片>
 `)
 }
 
