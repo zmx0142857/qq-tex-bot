@@ -4,6 +4,7 @@ const request = require('request')
 const fs = require('fs')
 
 const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
+const invalidChars = /[/\\*:?"<>|]/g
 const picDir = `${config.image.path}/save-pic`
 
 function help() {
@@ -12,25 +13,36 @@ function help() {
 `)
 }
 
-function mkdir () {
-  if (!fs.existsSync(picDir)) {
-    fs.mkdirSync(picDir)
+function mkdir (dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
   }
+}
+
+// 提取文件 path
+function getFilePath (text, sender) {
+  const args = text.split(/\s+/)
+  let fileName = args.find(s => s[0] !== '-')
+  if (!fileName) return
+  fileName = fileName.replace(invalidChars, '-')
+  if (!extReg.test(fileName)) {
+    fileName += '.jpg'
+  }
+  // global function is admin-only
+  const isGlobal = args.indexOf('-g') > -1 && config.auth.admin.includes(sender.id)
+  const groupId = sender.group && sender.group.id
+  const dir = (!isGlobal && groupId) ? picDir + '/' + groupId : picDir
+  mkdir(dir)
+  return [dir, fileName]
 }
 
 async function savePic (text, sender, chain) {
   if (text === '') {
       return help()
   } else {
-    // 提取文件名
-    let [fileName, keyword] = text.split(/\s+/)
-    if (!fileName) {
-      return help()
-    }
-    if (!extReg.test(fileName)) {
-      fileName += '.jpg'
-    }
-    const filePath = picDir + '/' + fileName
+    const res = getFilePath(text, sender)
+    if (!res) return help()
+    const fileName = res[1], filePath = res[0] + '/' + res[1]
     if (fs.existsSync(filePath)) {
       return message.plain('图片已存在，请重新命名')
     }
@@ -39,7 +51,6 @@ async function savePic (text, sender, chain) {
     const msg = chain.find(m => m.type === 'Image' && m.url)
     if (msg) {
       try {
-        mkdir()
         console.log('save-pic', msg.url)
         request(msg.url).pipe(fs.createWriteStream(filePath))
       } catch (e) {
@@ -49,15 +60,25 @@ async function savePic (text, sender, chain) {
       console.log('找不到图:', chain)
       return message.plain('图呢')
     }
-    return message.plain('已保存')
+    return message.plain('已保存 ' + fileName)
   }
 }
 
 async function sendPic (text, sender, chain) {
-  if (!fs.existsSync(picDir + '/' + text)) {
-    return // 安静地失败
+  if (!text) return
+  text = text.trim().replace(invalidChars, '-')
+  if (!text) return
+  const groupId = sender.group && sender.group.id
+  if (groupId) {
+    const filePath = picDir + '/' + groupId + '/' + text
+    if (fs.existsSync(filePath)) {
+      return message.image('save-pic/' + groupId + '/' + text)
+    }
   }
-  return message.image('save-pic/' + text)
+  const globalFilePath = picDir + '/' + text
+  if (fs.existsSync(globalFilePath)) {
+    return message.image('save-pic/' + text)
+  }
 }
 
 module.exports = {
