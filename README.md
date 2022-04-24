@@ -84,6 +84,9 @@ module.exports = {
   auth: {
     admin: [123124123], // 你的 qq 号
     blackList: [], // 黑名单
+    // whiteList: [], // 白名单
+    // blackGroup: [], // 群聊黑名单
+    // whiteGroup: [], // 群聊白名单
   }
 }
 ```

@@ -50,9 +50,10 @@ function checkBlack(list, group, sender) {
 }
 
 module.exports = function command (text, sender, chain) {
+  const { whiteList, whiteGroup, blackList, blackGroup } = config.auth
   // 名单过滤
-  if (!checkWhite(config.auth.whiteList, config.auth.whiteGroup, sender)) return
-  if (!checkBlack(config.auth.blackList, config.auth.blackGroup, sender)) return
+  if (!checkWhite(whiteList, whiteGroup, sender)) return
+  if (!checkBlack(blackList, blackGroup, sender)) return
 
   // 寻找第一个匹配的命令, 并执行
   for (let i = 0; i < commands.length; ++i) {

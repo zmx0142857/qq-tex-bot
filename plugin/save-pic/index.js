@@ -38,41 +38,41 @@ function getFilePath (text, sender) {
 }
 
 async function savePic (text, sender, chain) {
-  if (text === '') {
-      return help()
-  } else {
-    const groupId = sender.group && sender.group.id
-    if (!groupId) return message.plain('抱歉，不支持私聊存图')
+  if (!text) return help()
 
-    const res = getFilePath(text, sender)
-    if (!res) return help()
-
-    const fileName = res[1], filePath = res[0] + '/' + res[1]
-    if (fs.existsSync(filePath)) {
-      return message.plain('图片已存在，请重新命名')
-    }
-
-    // 在 chain 中找图
-    const msg = chain.find(m => m.type === 'Image' && m.url)
-    if (msg) {
-      try {
-        console.log('save-pic', msg.url)
-        request(msg.url).pipe(fs.createWriteStream(filePath))
-      } catch (e) {
-        console.log(e)
-      }
-    } else {
-      console.log('找不到图:', chain)
-      return message.plain('图呢')
-    }
-    return message.plain('已保存 ' + fileName)
+  const groupId = sender.group && sender.group.id
+  if (!groupId) {
+    return message.plain('抱歉，不支持私聊存图')
   }
+
+  const res = getFilePath(text, sender)
+  if (!res) return help()
+
+  const fileName = res[1], filePath = res[0] + '/' + res[1]
+  if (fs.existsSync(filePath)) {
+    return message.plain('图片已存在，请重新命名')
+  }
+
+  // 在 chain 中找图
+  const msg = chain.find(m => m.type === 'Image' && m.url)
+  if (msg) {
+    try {
+      console.log('save-pic', msg.url)
+      request(msg.url).pipe(fs.createWriteStream(filePath))
+    } catch (e) {
+      console.log(e)
+    }
+  } else {
+    console.log('找不到图:', chain)
+    return message.plain('图呢')
+  }
+  return message.plain('已保存 ' + fileName)
 }
 
 async function sendPic (text, sender, chain) {
+  text = text.replace(invalidChars, '-')
   if (!text) return
-  text = text.trim().replace(invalidChars, '-')
-  if (!text) return
+
   const groupId = sender.group && sender.group.id
   if (groupId) {
     const filePath = picDir + '/' + groupId + '/' + text
@@ -80,6 +80,7 @@ async function sendPic (text, sender, chain) {
       return message.image('save-pic/' + groupId + '/' + text)
     }
   }
+
   // fallback to global dir
   const globalFilePath = picDir + '/' + text
   if (fs.existsSync(globalFilePath)) {
