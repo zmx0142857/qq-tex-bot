@@ -28,10 +28,11 @@ function getFilePath (text, sender) {
   if (!extReg.test(fileName)) {
     fileName += '.jpg'
   }
+
   // global function is admin-only
-  const isGlobal = args.indexOf('-g') > -1 && config.auth.admin.includes(sender.id)
   const groupId = sender.group && sender.group.id
-  const dir = (!isGlobal && groupId) ? picDir + '/' + groupId : picDir
+  const isGlobal = args.indexOf('-g') > -1 && config.auth.admin.includes(sender.id)
+  const dir = isGlobal ? picDir : picDir + '/' + groupId
   mkdir(dir)
   return [dir, fileName]
 }
@@ -40,8 +41,12 @@ async function savePic (text, sender, chain) {
   if (text === '') {
       return help()
   } else {
+    const groupId = sender.group && sender.group.id
+    if (!groupId) return message.plain('抱歉，不支持私聊存图')
+
     const res = getFilePath(text, sender)
     if (!res) return help()
+
     const fileName = res[1], filePath = res[0] + '/' + res[1]
     if (fs.existsSync(filePath)) {
       return message.plain('图片已存在，请重新命名')
@@ -75,6 +80,7 @@ async function sendPic (text, sender, chain) {
       return message.image('save-pic/' + groupId + '/' + text)
     }
   }
+  // fallback to global dir
   const globalFilePath = picDir + '/' + text
   if (fs.existsSync(globalFilePath)) {
     return message.image('save-pic/' + text)
