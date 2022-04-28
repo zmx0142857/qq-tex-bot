@@ -52,19 +52,29 @@ function phantom (promise) {
 
 const imageEngine = config.engine === 'magick' ? magick : phantom
 
+const identical = x => x
+
+function lineHelper (src, fn = identical) {
+  return '\\begin{aligned}'
+    + src.split('\n').map(s => '& ' + fn(s)).join(' \\\\ ')
+    + '\\end{aligned}'
+}
+
 module.exports = {
-  async tex (text) {
-    if (!text) return [message.mathHelp]
-    return imageEngine(tex2svg(text))
+  async text (src) {
+    if (!src) return [message.mathHelp]
+    src = lineHelper(src)
+    return imageEngine(tex2svg(src))
   },
-  async am (text) {
-    if (!text) return [message.mathHelp]
-    //const displaylines = text => '\\displaylines{' + text + '}'
-    const tex = '\\begin{aligned}'
-      + text.split('\n').map(s => '& ' + am2tex(s)).join(' \\\\ ')
-      + '\\end{aligned}'
+  async tex (src) {
+    if (!src) return [message.mathHelp]
+    return imageEngine(tex2svg(src))
+  },
+  async am (src) {
+    if (!src) return [message.mathHelp]
+    const tex = lineHelper(src, am2tex)
     const msg = await imageEngine(tex2svg(tex))
-    if (/\\[a-zA-Z]/.test(text)) {
+    if (/\\[a-zA-Z]/.test(src)) {
       msg.push(message.useTex)
     }
     return msg

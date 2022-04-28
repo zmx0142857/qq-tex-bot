@@ -1,11 +1,15 @@
 const message = require('../message')
 const config = require('../config')
-const { am, tex } = require('./math')
+const { am, tex, text } = require('./math')
 const rotateImage = require('./rotate')
 const oneATwoB = require('./one-a-two-b')
 const savePic = require('./save-pic')
 
 const commands = [
+  {
+    reg: /^\/text/i,
+    method: text,
+  },
   {
     reg: /^\/tex/i,
     method: tex,
