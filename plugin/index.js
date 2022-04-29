@@ -9,14 +9,17 @@ const commands = [
   {
     reg: /^\/text/i,
     method: text,
+    isFormula: true,
   },
   {
     reg: /^\/tex/i,
     method: tex,
+    isFormula: true,
   },
   {
     reg: /^\/am/i,
     method: am,
+    isFormula: true,
   },
   // {
   //   reg: /^\/rotate/i,
@@ -61,7 +64,16 @@ module.exports = function command (text, sender, chain) {
 
   // 寻找第一个匹配的命令, 并执行
   for (let i = 0; i < commands.length; ++i) {
-    const { reg, method, whiteList, whiteGroup, blackList, blackGroup, trim = true } = commands[i]
+    const {
+      reg,
+      method,
+			whiteList,
+			whiteGroup,
+      blackList,
+			blackGroup,
+			trim = true,
+			isFormula,
+		} = commands[i]
     if (!reg.test(text)) continue
 
     // 名单过滤 (按命令)
@@ -74,7 +86,6 @@ module.exports = function command (text, sender, chain) {
     console.log(sender.id, reg, text)
 
     // 构造响应体
-    const isFormula = i < 2
     return {
       isFormula,
       message: method(text, sender, chain).catch(e => {
