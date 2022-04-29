@@ -87,7 +87,14 @@ module.exports = {
     // whiteList: [], // 白名单
     // blackGroup: [], // 群聊黑名单
     // whiteGroup: [], // 群聊白名单
-  }
+  },
+  // 开启的插件列表
+  plugins: [
+    'math',
+    // 'savepic',
+    // '1a2b',
+    // 'rotate',
+  ],
 }
 ```
 

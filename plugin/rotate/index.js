@@ -10,25 +10,25 @@ const config = {
 
 // 处理旋转图片的请求
 // 但自己发的图片除外
-module.exports = function rotateImage (text, sender, chain) {
-  return new Promise((resolve, reject) => {
-    const availbleCommands = [
-      '90',
-      '180',
-      '270'
-    ]
-    text = text || '270'
+async function rotateImage (text, sender, chain) {
+  const availbleCommands = [
+    '90',
+    '180',
+    '270'
+  ]
+  text = text || '270'
 
-    const quote = chain.find(item => item.type === 'Quote')
-    if (!quote || availbleCommands.indexOf(text) === -1) {
-      return resolve([message.invalidRotate])
-    }
-    const url = picDict[quote.id]
-    if (!url) {
-      return resolve([message.picNotFound])
-    }
-    const name = quote.origin[0] && quote.origin[0].text === '[动画表情]' ? 'tmp.gif' : 'tmp.jpg'
-    const filename = path.join(config.path, name)
+  const quote = chain.find(item => item.type === 'Quote')
+  if (!quote || availbleCommands.indexOf(text) === -1) {
+    return [message.invalidRotate]
+  }
+  const url = picDict[quote.id]
+  if (!url) {
+    return [message.picNotFound]
+  }
+  const name = quote.origin[0] && quote.origin[0].text === '[动画表情]' ? 'tmp.gif' : 'tmp.jpg'
+  const filename = path.join(config.path, name)
+  return new Promise((resolve, reject) => {
     const pipe = request(url).pipe(fs.createWriteStream(filename))
     pipe.on('finish', () => {
       child.exec(`magick ${filename} -rotate ${text} ${filename}`, err => {
@@ -42,4 +42,9 @@ module.exports = function rotateImage (text, sender, chain) {
     console.error(err)
     return Promise.resolve([message.error])
   })
+}
+
+module.exports = {
+  reg: /^\/rotate/i,
+  method: rotateImage,
 }

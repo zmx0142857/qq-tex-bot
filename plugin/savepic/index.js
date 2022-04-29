@@ -6,6 +6,8 @@ const fs = require('fs')
 const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const picDir = `${config.image.path}/save-pic`
+const adminList = config.auth.admin || []
+const saveGroup = config.auth.saveGroup || []
 
 function help() {
   return message.plain(`用法:
@@ -31,7 +33,7 @@ function getFilePath (text, sender) {
 
   // global function is admin-only
   const groupId = sender.group && sender.group.id
-  const isGlobal = args.indexOf('-g') > -1 && config.auth.admin.includes(sender.id)
+  const isGlobal = args.indexOf('-g') > -1 && adminList.includes(sender.id)
   const dir = isGlobal ? picDir : picDir + '/' + groupId
   mkdir(dir)
   return [dir, fileName]
@@ -88,8 +90,16 @@ async function sendPic (text, sender, chain) {
   }
 }
 
-module.exports = {
-  extReg,
-  savePic,
-  sendPic,
-}
+module.exports = [
+  {
+    reg: /^\/savepic/i,
+    method: savePic,
+    whiteList: adminList,
+    whiteGroup: saveGroup,
+  },
+  {
+    reg: extReg,
+    method: sendPic,
+    trim: false,
+  }
+]

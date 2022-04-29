@@ -74,7 +74,7 @@ function judge(current, guess) {
 
 const limitMap = [0, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12]
 
-module.exports = async function oneATwoB (text, sender, chain) {
+async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
   // console.log(sender, chain)
   if (text === '') {
@@ -125,4 +125,9 @@ module.exports = async function oneATwoB (text, sender, chain) {
 
     return message.plain(prompt + '\n' + current.history.join('\n'))
   }
+}
+
+module.exports = {
+  reg: /^\/1a2b/i,
+  method: oneATwoB,
 }

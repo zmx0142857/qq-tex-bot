@@ -60,23 +60,41 @@ function lineHelper (src, fn = identical) {
     + '\\end{aligned}'
 }
 
-module.exports = {
-  async text (src) {
-    if (!src) return [message.mathHelp]
-    src = lineHelper(src)
-    return imageEngine(tex2svg(src))
-  },
-  async tex (src) {
-    if (!src) return [message.mathHelp]
-    return imageEngine(tex2svg(src))
-  },
-  async am (src) {
-    if (!src) return [message.mathHelp]
-    const tex = lineHelper(src, am2tex)
-    const msg = await imageEngine(tex2svg(tex))
-    if (/\\[a-zA-Z]/.test(src)) {
-      msg.push(message.useTex)
-    }
-    return msg
-  },
+async function text (src) {
+  if (!src) return [message.mathHelp]
+  src = lineHelper(src)
+  return imageEngine(tex2svg(src))
 }
+
+async function tex (src) {
+  if (!src) return [message.mathHelp]
+  return imageEngine(tex2svg(src))
+}
+
+async function am (src) {
+  if (!src) return [message.mathHelp]
+  const tex = lineHelper(src, am2tex)
+  const msg = await imageEngine(tex2svg(tex))
+  if (/\\[a-zA-Z]/.test(src)) {
+    msg.push(message.useTex)
+  }
+  return msg
+}
+
+module.exports = [
+  {
+    reg: /^\/text/i,
+    method: text,
+    isFormula: true,
+  },
+  {
+    reg: /^\/tex/i,
+    method: tex,
+    isFormula: true,
+  },
+  {
+    reg: /^\/am/i,
+    method: am,
+    isFormula: true,
+  },
+]
