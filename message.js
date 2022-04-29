@@ -23,6 +23,7 @@ module.exports = {
     text: `用法:
 /am <asciimath公式>
 /tex <tex公式>
+/text <tex文本>
 帮助文档在这里喔 https://zmx0142857.gitee.io/note/#math`
   },
   useTex: {

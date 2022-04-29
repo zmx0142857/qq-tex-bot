@@ -11,8 +11,7 @@ const saveGroup = config.auth.saveGroup || []
 
 function help() {
   return message.plain(`用法:
-/savepic <文件名> <图片>
-`)
+/savepic <文件名> <图片>`)
 }
 
 function mkdir (dir) {
