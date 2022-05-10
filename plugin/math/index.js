@@ -53,26 +53,25 @@ function phantom (promise) {
 const imageEngine = config.engine === 'magick' ? magick : phantom
 
 function contextHelper (src) {
-  const buf = []
   let isDisplay = false
-  src.split('$$').forEach(s1 => {
-    let out
-    if (isDisplay) {
-      buf.push(' \\\\ & ' + s1 + ' \\\\ & ')
+  return src.split('$$').map(s1 => {
+    isDisplay = !isDisplay
+    if (!isDisplay) {
+      return '\n' + s1 + '\n'
     } else {
       let isFormula = false
-      s1.split('$').forEach(s2 => {
-        if (isFormula) {
-          buf.push(s2)
-        } else {
-          buf.push('\\text{' + s2 + '}')
-        }
+      return s1.split('$').map(s2 => {
         isFormula = !isFormula
-      })
+        if (!isFormula) {
+          return s2
+        } else {
+          return s2.split('\n').map(
+            s => '\\text{' + s + '}'
+          ).join('\n')
+        }
+      }).join('')
     }
-    isDisplay = !isDisplay
-  })
-  return buf.join('')
+  }).join('')
 }
 
 const identical = x => x
@@ -81,7 +80,8 @@ function lineHelper (src, fn = identical) {
   if (fn === identical) {
     const buf = []
     let depth = 0
-    // 去除环境内换行
+    // 只保留最外层换行
+    // 将 \\ 转为换行
     for (let i = 0; i < src.length; ++i) {
       let c = src[i]
       if (i >= 5 && src.slice(i-5, i+1) === '\\begin') {
@@ -89,7 +89,12 @@ function lineHelper (src, fn = identical) {
       } else if (i >= 3 && src.slice(i-3, i+1) === '\\end') {
         --depth
       }
-      if (depth !== 0 || c !== '\n') buf.push(c)
+      if (depth === 0 && c === '\\' && src[i+1] === '\\') {
+        buf.push('\n')
+        ++i
+      } else if (depth === 0 || c !== '\n') {
+        buf.push(c)
+      }
     }
     src = buf.join('')
   }
