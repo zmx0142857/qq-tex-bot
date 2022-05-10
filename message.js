@@ -30,6 +30,10 @@ module.exports = {
     type: 'Plain',
     text: '您是不是想要使用 /tex 而不是 /am ?'
   },
+  tooWide: {
+    type: 'Plain',
+    text: '文字太宽了！下次记得换行咯。'
+  },
   parseError: {
     type: 'Plain',
     text: ' [error] 无法识别此公式, 格式有误?'

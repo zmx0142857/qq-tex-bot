@@ -22,9 +22,8 @@ function onError (err) {
 }
 
 // 用 image magick 命令行
-function magick (promise) {
-  return promise
-    .then(buf => fs.writeFile('tmp.svg', buf))
+function magick (svg) {
+  return Promise.resolve(() => fs.writeFile('tmp.svg', svg))
     .then(() => new Promise((resolve, reject) => {
       child.exec(`magick tmp.svg ${path.join(config.path, config.name)}`, err => {
         if (err) reject(err)
@@ -38,8 +37,8 @@ function magick (promise) {
 }
 
 // 用 svg2png 和 phantom js
-function phantom (promise) {
-  return promise.then(svg2png)
+function phantom (svg) {
+  return svg2png(svg)
     .then(buf => fs.writeFile(
       path.join(config.path, config.name), buf)
     )
@@ -103,22 +102,31 @@ function lineHelper (src, fn = identical) {
     + '\\end{aligned}'
 }
 
+async function convert (tex) {
+  const svg = await tex2svg(tex)
+  const msg = await imageEngine(svg.svg)
+  if (svg.width > svg.height * 20) {
+    msg.push(message.tooWide)
+  }
+  return msg
+}
+
 async function text (src) {
   if (!src) return [message.mathHelp]
   src = contextHelper(src)
   src = lineHelper(src)
-  return imageEngine(tex2svg(src))
+  return convert(src)
 }
 
 async function tex (src) {
   if (!src) return [message.mathHelp]
-  return imageEngine(tex2svg(src))
+  return convert(src)
 }
 
 async function am (src) {
   if (!src) return [message.mathHelp]
   const tex = lineHelper(src, am2tex)
-  const msg = await imageEngine(tex2svg(tex))
+  const msg = await convert(tex)
   if (/\\[a-zA-Z]/.test(src)) {
     msg.push(message.useTex)
   }

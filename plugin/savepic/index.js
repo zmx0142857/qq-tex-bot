@@ -89,7 +89,7 @@ async function savePic (text, sender, chain) {
       console.log(moduleName, msg.url)
       request(msg.url).pipe(fs.createWriteStream(filePath))
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   } else {
     console.log('找不到图:', chain)
@@ -121,7 +121,7 @@ async function randPic (text, sender, chain) {
   let fileName, filePath
 
   const groupId = sender.group && sender.group.id
-  if (groupId) {
+  if (groupId && Math.random() > 0.5) {
     const dir = picDir + '/' + groupId
     fileName = await chooseFile(dir)
     if (fileName) {

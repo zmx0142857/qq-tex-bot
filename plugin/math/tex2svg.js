@@ -100,11 +100,17 @@ module.exports = function tex2svg (formula) {
       svg = svg.replace(v, `viewBox="${viewBox}"`)
     }
 
-    return svg.replace(w, `width="${width}"`) // 设置宽高
+    svg = svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
       .replace('data-background="true"', 'fill="#fff"') // 为报错文字设置背景色
       .replace(style, styleWithBackgroundColor) // 为 phantomjs 的 svg 设置背景
       .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
+
+    return {
+      width,
+      height,
+      svg,
+    }
   })
   .catch(e => {
     console.error(e.stack)
