@@ -41,13 +41,13 @@ module.exports = function command (text, sender, chain) {
     const {
       reg,
       method,
-			whiteList,
-			whiteGroup,
+      whiteList,
+      whiteGroup,
       blackList,
-			blackGroup,
-			trim = true,
-			isFormula,
-		} = cmd
+      blackGroup,
+      trim = true,
+      isFormula,
+    } = cmd
 
     if (!reg.test(text)) continue
 
