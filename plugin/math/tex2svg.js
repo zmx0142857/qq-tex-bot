@@ -100,6 +100,8 @@ module.exports = function tex2svg (formula) {
       svg = svg.replace(v, `viewBox="${viewBox}"`)
     }
 
+    const matchError = svg.match(/data-mjx-error="([^"]*)"/)
+
     svg = svg.replace(w, `width="${width}"`) // 设置宽高
       .replace(h, `height="${height}"`)
       .replace('data-background="true"', 'fill="#fff"') // 为报错文字设置背景色
@@ -110,6 +112,7 @@ module.exports = function tex2svg (formula) {
       width,
       height,
       svg,
+      error: matchError && matchError[1],
     }
   })
   .catch(e => {

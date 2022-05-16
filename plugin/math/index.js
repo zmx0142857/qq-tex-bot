@@ -103,9 +103,12 @@ function lineHelper (src, fn = identical) {
 }
 
 async function convert (tex) {
-  const svg = await tex2svg(tex)
-  const msg = await imageEngine(svg.svg)
-  if (svg.width > svg.height * 20) {
+  const res = await tex2svg(tex)
+  if (res.error) {
+    return message.plain(res.error)
+  }
+  const msg = await imageEngine(res.svg)
+  if (res.width > res.height * 20) {
     msg.push(message.tooWide)
   }
   return msg
