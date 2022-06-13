@@ -154,7 +154,7 @@ module.exports = [
     whiteGroup: saveGroup,
   },
   {
-    reg: /^\/randpic/i,
+    reg: /^\/randpic$/i,
     method: randPic,
   },
   {
