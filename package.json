@@ -12,7 +12,7 @@
   "version": "1.1.0",
   "description": "render tex formula on qq",
   "main": "index.js",
-  "repository": "https://gitee.com/zmx0142857/qq-tex-bot",
+  "repository": "https://github.com/zmx0142857/qq-tex-bot",
   "author": "zmx <892298182@qq.com>",
   "license": "AGPL-3.0"
 }

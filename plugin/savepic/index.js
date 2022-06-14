@@ -1,12 +1,9 @@
 const config = require('../../config')
 const message = require('../../message')
-const request = require('request')
-const fs = require('fs')
+const savepicService = require('./service')
 
 const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
-const moduleName = 'savepic'
-const picDir = `${config.image.path}/${moduleName}`
 const adminList = config.auth.admin || []
 const saveGroup = config.auth.saveGroup || []
 
@@ -17,23 +14,14 @@ function help() {
 <文件名>.jpg 发送指定图片`)
 }
 
-function mkdir (dir) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir)
-  }
-}
-
-function promise (fn, ...args) {
-  return new Promise((resolve, reject) => {
-    fn(...args, (err, res) => {
-      if (err) reject(err)
-      resolve(res)
-    })
-  })
+// 提取 groupId
+function getGroupId (sender) {
+  const res = sender.group && sender.group.id
+  return res && String(res)
 }
 
 // 提取文件 path
-function getFilePath (text, sender) {
+function parseFilePath (text, sender) {
   const args = text.split(/\s+/)
   let fileName = args.find(s => s[0] !== '-')
   if (!fileName) return
@@ -43,107 +31,68 @@ function getFilePath (text, sender) {
   }
 
   // global function is admin-only
-  const groupId = sender.group && sender.group.id
   const isGlobal = args.indexOf('-g') > -1 && adminList.includes(sender.id)
-  const dir = isGlobal ? picDir : picDir + '/' + groupId
-  mkdir(dir)
-  return [dir, fileName]
-}
-
-function choice (arr) {
-  return arr[Math.random() * arr.length | 0]
-}
-
-async function chooseFile (dir) {
-  if (!fs.existsSync(dir)) return
-  try {
-    const files = await promise(fs.readdir, dir)
-    if (files.length > 0) {
-      return choice(files)
-    }
-  } catch (e) {
-    console.error(e)
-  }
+  const groupId = isGlobal ? '' : getGroupId(sender)
+  return [groupId, fileName]
 }
 
 async function savePic (text, sender, chain) {
   if (!text) return help()
 
-  const groupId = sender.group && sender.group.id
-  if (!groupId) {
+  if (!getGroupId(sender)) {
     return message.plain('抱歉，不支持私聊存图')
   }
 
-  const res = getFilePath(text, sender)
+  const res = parseFilePath(text, sender)
   if (!res) return help()
-
-  const fileName = res[1], filePath = res[0] + '/' + res[1]
-  if (fs.existsSync(filePath)) {
-    return message.plain('图片已存在，请重新命名')
-  }
+  const [groupId, fileName] = res
 
   // 在 chain 中找图
   const msg = chain.find(m => m.type === 'Image' && m.url)
   if (msg) {
-    try {
-      console.log(moduleName, msg.url)
-      request(msg.url).pipe(fs.createWriteStream(filePath))
-    } catch (e) {
-      console.error(e)
-    }
+    console.log('savepic', msg.url)
+    const res = await savepicService.add(groupId, fileName, msg.url)
+    return message.plain(res.msg)
   } else {
     console.log('找不到图:', chain)
     return message.plain('图呢')
   }
-  return message.plain('已保存 ' + fileName)
 }
 
 async function sendPic (text, sender, chain) {
   text = text.replace(invalidChars, '-')
   if (!text) return
 
-  const groupId = sender.group && sender.group.id
+  let hasFile
+  let groupId = getGroupId(sender)
   if (groupId) {
-    const filePath = picDir + '/' + groupId + '/' + text
-    if (fs.existsSync(filePath)) {
-      return message.image(`${moduleName}/${groupId}/${text}`)
-    }
+    hasFile = await savepicService.has(groupId, text)
+  } else {
+    // fallback to global dir
+    groupId = ''
+    hasFile = await savepicService.has(groupId, text)
   }
-
-  // fallback to global dir
-  const globalFilePath = picDir + '/' + text
-  if (fs.existsSync(globalFilePath)) {
-    return message.image(`${moduleName}/${text}`)
-  }
+  return hasFile && [savepicService.image(groupId, text)]
 }
 
 async function randPic (text, sender, chain) {
-  let fileName, filePath
+  let fileName
+  let groupId = getGroupId(sender)
 
-  const groupId = sender.group && sender.group.id
   if (groupId && Math.random() > 0.5) {
-    const dir = picDir + '/' + groupId
-    fileName = await chooseFile(dir)
-    if (fileName) {
-      filePath = moduleName + '/' + groupId + '/' + fileName
-    }
+    fileName = await savepicService.choose(groupId)
   }
 
   // fallback to global dir
-  if (!filePath || Math.random() > 0.5) {
-    fileName = await chooseFile(picDir)
-    if (fileName) {
-      filePath = moduleName + '/' + fileName
-    }
+  groupId = ''
+  if (!fileName || Math.random() > 0.5) {
+    fileName = await savepicService.choose(groupId)
   }
 
-  return filePath && [{
-    type: 'Plain',
-    text: fileName
-  }, {
-    type: 'Image',
-    path: filePath
-  }]
+  return fileName && [
+    { type: 'Plain', text: fileName },
+    savepicService.image(groupId, fileName),
+  ]
 }
 
 module.exports = [

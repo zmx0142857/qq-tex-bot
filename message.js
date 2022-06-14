@@ -24,7 +24,7 @@ module.exports = {
 /am <asciimath公式>
 /tex <tex公式>
 /text <tex文本>
-帮助文档在这里喔 https://zmx0142857.gitee.io/note/#math`
+帮助文档在这里喔 https://icouldfran.icu/note/#math`
   },
   useTex: {
     type: 'Plain',

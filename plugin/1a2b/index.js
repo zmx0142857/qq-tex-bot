@@ -83,8 +83,7 @@ async function oneATwoB (text, sender, chain) {
       text: `用法:
 /1a2b new [长度] [次数] 新的游戏
 /1a2b rank 查看排行
-/1a2b <数字> 参与游戏
-`
+/1a2b <数字> 参与游戏`
     }]
   } else if (/new( \d+)?( \d+)?/.test(text)) {
     let [_, len, limit] = text.split(/\s+/)
