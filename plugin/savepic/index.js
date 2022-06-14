@@ -67,8 +67,9 @@ async function sendPic (text, sender, chain) {
   let groupId = getGroupId(sender)
   if (groupId) {
     hasFile = await savepicService.has(groupId, text)
-  } else {
-    // fallback to global dir
+  } 
+  // fallback to global dir
+  if (!hasFile) {
     groupId = ''
     hasFile = await savepicService.has(groupId, text)
   }
@@ -84,8 +85,8 @@ async function randPic (text, sender, chain) {
   }
 
   // fallback to global dir
-  groupId = ''
   if (!fileName || Math.random() > 0.5) {
+    groupId = ''
     fileName = await savepicService.choose(groupId)
   }
 
