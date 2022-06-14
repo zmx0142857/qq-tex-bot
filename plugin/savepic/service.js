@@ -2,6 +2,7 @@ const request = require('request')
 const fs = require('fs')
 const path = require('path')
 const config = require('../../config')
+const message = require('../../message')
 
 const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
 const moduleName = 'savepic'
@@ -26,6 +27,7 @@ module.exports = {
       return files
     } catch (e) {
       console.error(e)
+      return [message.error]
     }
   },
   // 随机选择一个文件
@@ -33,12 +35,11 @@ module.exports = {
     try {
       const files = this.cache[groupId] || await this.init(groupId)
       if (files.length > 0) {
-        const res = files[Math.random() * files.length | 0]
-        console.log(files)
-        return res
+        return files[Math.random() * files.length | 0]
       }
     } catch (e) {
       console.error(e)
+      return [message.error]
     }
   },
   // 判断文件存在性
@@ -48,6 +49,7 @@ module.exports = {
       return files.includes(fileName)
     } catch (e) {
       console.error(e)
+      return [message.error]
     }
   },
   // 新增文件
@@ -63,6 +65,7 @@ module.exports = {
       return { code: 0, msg: '已保存 ' + fileName }
     } catch (e) {
       console.error(e)
+      return [message.error]
     }
   },
   // 返回图片对象

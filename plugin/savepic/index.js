@@ -52,7 +52,7 @@ async function savePic (text, sender, chain) {
   if (msg) {
     console.log('savepic', msg.url)
     const res = await savepicService.add(groupId, fileName, msg.url)
-    return message.plain(res.msg)
+    return res && message.plain(res.msg)
   } else {
     console.log('找不到图:', chain)
     return message.plain('图呢')
