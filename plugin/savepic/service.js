@@ -16,8 +16,12 @@ function mkdir (dir) {
 
 module.exports = {
   cache: {},
+  reload () {
+    this.cache = {}
+  },
   // 初始化图片文件名缓存
   async init (groupId) {
+    if (this.cache[groupId]) return this.cache[groupId]
     try {
       const dir = path.join(picDir, groupId)
       mkdir(dir)
@@ -33,7 +37,7 @@ module.exports = {
   // 随机选择一个文件
   async choose (groupId) {
     try {
-      const files = this.cache[groupId] || await this.init(groupId)
+      const files = await this.init(groupId)
       if (files.length > 0) {
         return files[Math.random() * files.length | 0]
       }
@@ -45,7 +49,7 @@ module.exports = {
   // 判断文件存在性
   async has (groupId, fileName) {
     try {
-      const files = this.cache[groupId] || await this.init(groupId)
+      const files = await this.init(groupId)
       return files.includes(fileName)
     } catch (e) {
       console.error(e)
@@ -55,7 +59,7 @@ module.exports = {
   // 新增文件
   async add (groupId, fileName, url) {
     try {
-      const files = this.cache[groupId] || await this.init(groupId)
+      const files = await this.init(groupId)
       if (files.includes(fileName)) {
         return { code: -1, msg: '图片已存在，请重新命名' }
       }

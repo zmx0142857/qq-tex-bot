@@ -8,10 +8,10 @@ const adminList = config.auth.admin || []
 const saveGroup = config.auth.saveGroup || []
 
 function help() {
-  return message.plain(`用法:
+  return `用法:
 /savepic <文件名> <图片>
 /randpic 随机图片
-<文件名>.jpg 发送指定图片`)
+<文件名>.jpg 发送指定图片`
 }
 
 // 提取 groupId
@@ -23,28 +23,35 @@ function getGroupId (sender) {
 // 提取文件 path
 function parseFilePath (text, sender) {
   const args = text.split(/\s+/)
+
+  const isReloadCache = args.indexOf('-r') > -1
+  const isAdmin = adminList.includes(sender.id)
+  if (isReloadCache) {
+    if (isAdmin) return { code: 0, msg: '缓存已刷新' }
+    return { code: -1, msg: '未知的选项 -r' }
+  }
+
   let fileName = args.find(s => s[0] !== '-')
-  if (!fileName) return
+  if (!fileName) return { code: -2, msg: help() }
   fileName = fileName.replace(invalidChars, '-')
   if (!extReg.test(fileName)) {
     fileName += '.jpg'
   }
 
-  // global function is admin-only
-  const isGlobal = args.indexOf('-g') > -1 && adminList.includes(sender.id)
+  const isGlobal = args.indexOf('-g') > -1 && isAdmin
   const groupId = isGlobal ? '' : getGroupId(sender)
   return [groupId, fileName]
 }
 
 async function savePic (text, sender, chain) {
-  if (!text) return help()
+  if (!text) return message.plain(help())
 
   if (!getGroupId(sender)) {
     return message.plain('抱歉，不支持私聊存图')
   }
 
   const res = parseFilePath(text, sender)
-  if (!res) return help()
+  if (res.code !== undefined) return res.msg
   const [groupId, fileName] = res
 
   // 在 chain 中找图
