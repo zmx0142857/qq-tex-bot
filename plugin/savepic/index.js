@@ -10,6 +10,9 @@ const saveGroup = config.auth.saveGroup || []
 function help() {
   return `用法:
 /savepic <文件名> <图片>
+/savepic -g <文件名> <全局图片>
+/savepic -r 刷新缓存
+/savepic -d <文件名> 删除文件
 /randpic 随机图片
 <文件名>.jpg 发送指定图片`
 }
@@ -20,17 +23,19 @@ function getGroupId (sender) {
   return res && String(res)
 }
 
-// 提取文件 path
-function parseFilePath (text, sender) {
+// 处理命令参数
+async function parseArgs (text, sender) {
   const args = text.split(/\s+/)
 
+  // -r
   const isReloadCache = args.indexOf('-r') > -1
   const isAdmin = adminList.includes(sender.id)
   if (isReloadCache) {
     if (isAdmin) return { code: 0, msg: '缓存已刷新' }
-    return { code: -1, msg: '未知的选项 -r' }
+    return { code: -1, msg: '不支持选项 -r' }
   }
 
+  // fileName
   let fileName = args.find(s => s[0] !== '-')
   if (!fileName) return { code: -2, msg: help() }
   fileName = fileName.replace(invalidChars, '-')
@@ -38,8 +43,17 @@ function parseFilePath (text, sender) {
     fileName += '.jpg'
   }
 
+  // -g
   const isGlobal = args.indexOf('-g') > -1 && isAdmin
   const groupId = isGlobal ? '' : getGroupId(sender)
+
+  // -d
+  const isDelete = args.indexOf('-d') > -1
+  if (isDelete) {
+    if (isAdmin) return await savepicService.delete(groupId, fileName)
+    return { code: -1, msg: '不支持选项 -d' }
+  }
+
   return [groupId, fileName]
 }
 
@@ -50,7 +64,7 @@ async function savePic (text, sender, chain) {
     return message.plain('抱歉，不支持私聊存图')
   }
 
-  const res = parseFilePath(text, sender)
+  const res = await parseArgs(text, sender)
   if (res.code !== undefined) return res.msg
   const [groupId, fileName] = res
 

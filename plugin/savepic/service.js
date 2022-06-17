@@ -69,7 +69,24 @@ module.exports = {
       return { code: 0, msg: '已保存 ' + fileName }
     } catch (e) {
       console.error(e)
-      return [message.error]
+      return { code: -1, msg: '出错了 qwq' }
+    }
+  },
+  // 删除文件
+  async delete (groupId, fileName) {
+    try {
+      const files = await this.init(groupId)
+      const index = files.indexOf(fileName)
+      if (index === -1) {
+        return { code: -1, msg: '图片不存在' }
+      }
+      files.splice(index, 1)
+      const filePath = path.join(picDir, groupId, fileName)
+      await fs.promises.rename(filePath, filePath + '.del')
+      return { code: 0, msg: '已删除 ' + fileName }
+    } catch (e) {
+      console.error(e)
+      return { code: -1, msg: '出错了 qwq' }
     }
   },
   // 返回图片对象
