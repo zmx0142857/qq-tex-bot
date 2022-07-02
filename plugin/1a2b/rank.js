@@ -17,11 +17,17 @@ function readFileData (groupId) {
   })
 }
 
-async function loadRank (groupId) {
+async function loadRank (groupId, page = 1) {
+  const pageSize = 10
+  const begin = (page-1) * pageSize
   const data = await readFileData(groupId)
-  if (!data.length) return '本群暂无成绩'
-  return data.sort((a, b) => b.score - a.score)
-    .map(d => `${d.name} ${d.score}`).join('\n')
+  const total = data.length
+  const totalPages = (total / pageSize | 0) + 1
+  const res = data.sort((a, b) => b.score - a.score)
+    .slice(begin, begin + pageSize)
+    .map((d, i) => `${begin+i+1}. ${d.name} ${d.score}`)
+    .join('\n') || '没有了捏'
+  return res + `\n第 ${page}/${totalPages} 页`
 }
 
 async function saveRank (groupId, sender) {

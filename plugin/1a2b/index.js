@@ -82,7 +82,7 @@ async function oneATwoB (text, sender, chain) {
       type: 'Plain',
       text: `用法:
 /1a2b new [长度] [次数] 新的游戏
-/1a2b rank 查看排行
+/1a2b rank [页码] 查看排行
 /1a2b <数字> 参与游戏`
     }]
   } else if (/new( \d+)?( \d+)?/.test(text)) {
@@ -95,8 +95,9 @@ async function oneATwoB (text, sender, chain) {
       return message.plain('多给点机会嘛~')
     newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
-  } else if (text === 'rank') {
-    const rank = await loadRank(groupId)
+  } else if (/^rank( \d+)?/.test(text)) {
+    const page = parseInt(text.slice(5)) || 1
+    const rank = await loadRank(groupId, page)
     return message.plain(rank)
   } else if (/\d+/.test(text)) {
     const current = store[groupId]
