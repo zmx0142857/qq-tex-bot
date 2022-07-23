@@ -13,7 +13,25 @@ const svg2png = config.engine === 'phantom' ? require('svg2png') : null
 const message = require('../../message')
 
 // customize asciimath
-AM.define.push([/\*\*/g, '^'])
+AM.define.push(...[
+  [/\*\*/g, '^'],
+  [/([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, '^($1)'],
+  [/([₀₁₂₃₄₅₆₇₈₉]+)/g, '_($1)'],
+  [/[⁰₀]/g, '0'],
+  [/[¹₁]/g, '1'],
+  [/[²₂]/g, '2'],
+  [/[³₃]/g, '3'],
+  [/[⁴₄]/g, '4'],
+  [/[⁵₅]/g, '5'],
+  [/[⁶₆]/g, '6'],
+  [/[⁷₇]/g, '7'],
+  [/[⁸₈]/g, '8'],
+  [/[⁹₉]/g, '9'],
+  [/（/g, '('],
+  [/）/g, ')'],
+  [/＋/g, '+'],
+  [/－/g, '-'],
+])
 
 function onError (err) {
   console.error(err)

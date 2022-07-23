@@ -36,8 +36,10 @@ async function parseArgs (text, sender) {
   }
 
   // fileName
-  let fileName = args.find(s => s[0] !== '-')
-  if (!fileName) return { code: -2, msg: help() }
+  const fileNames = args.filter(s => s[0] !== '-')
+  if (fileNames.length > 1) return { code: -1, msg: '文件名不能含有空白字符' }
+  if (fileNames.length === 0) return { code: -2, msg: help() }
+  let fileName = fileNames[0]
   fileName = fileName.replace(invalidChars, '-')
   if (!extReg.test(fileName)) {
     fileName += '.jpg'
