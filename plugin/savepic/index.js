@@ -90,7 +90,7 @@ async function sendPic (text, sender, chain) {
   let groupId = getGroupId(sender)
   if (groupId) {
     hasFile = await savepicService.has(groupId, text)
-  } 
+  }
   // fallback to global dir
   if (!hasFile) {
     groupId = ''
