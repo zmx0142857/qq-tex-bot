@@ -69,6 +69,8 @@ npm install
 > ```
 > 比如上面这种情况, 只需到 https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip 下载文件, 保存到 C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip, 然后重新运行 `npm install` 即可.
 
+### 3. 配置你的 bot
+
 在项目根目录下新建 `config.js`, 填写必要信息:
 
 ```js
@@ -101,7 +103,7 @@ module.exports = {
 }
 ```
 
-|参数|解释|类型|必填|
+|参数|解释|类型|是否必填|
 |----|----|----|----|
 | server.authKey | mirai-api-http 提供的 authKey, 请妥善保存, 不要泄露 | String | 必填 |
 | server.qq | 机器人的 qq 号 | Number | 必填 |
@@ -112,6 +114,12 @@ module.exports = {
 | image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
 | image.name | 临时图片的文件名 | String | 默认值 tmp.png |
 | replyFriend | 是否回复好友消息 | Boolean | 默认值 false |
+| auth.admin | 管理员们的 qq 号 | Number[] | 默认为空 |
+| auth.blackList | 黑名单 | Number[] | 默认为空 |
+| auth.whiteList | 白名单 | Number[] | 默认为空 |
+| auth.blackGroup | 群聊黑名单 | Number[] | 默认为空 |
+| auth.whiteGroup | 群聊白名单 | Number[] | 默认为空 |
+| plugins | 开启的插件列表 | String[] | 默认为空 |
 
 最后, 运行 `npm start` 或 `node index.js` 启动机器人.
 
@@ -124,6 +132,7 @@ module.exports = {
 - `文字消息 \178`: 发送文字消息到当前的群. `\178` 代表滑稽的 qq 表情.
   [更多表情码在这里](https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8)
 
+<!--
 ## mirai-api-http 的使用
 
 登录
@@ -163,6 +172,7 @@ POST /memberInfo
   "info": {"name": "AsciiMath小助手"}
 }
 ```
+-->
 
 ## FAQs
 
