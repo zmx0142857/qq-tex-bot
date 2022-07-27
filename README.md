@@ -6,13 +6,16 @@
 
 目前支持的命令:
 
-- `/tex`: tex 公式, 较复杂, 但功能更全;
-- `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言.
-- `/help am`: asciimath 的帮助
+- `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言
+- `/tex`: tex 公式, 较复杂, 但功能更全
 - `/rotate`: 旋转图片 (但自己发的图片除外). 妈妈再也不怕我得颈椎病了
+- `/savepic`: 保存群聊图片, 化身弔图稽器人
+- `/1a2b`: 老少皆宜的猜数字小游戏
 
+<div>
 <img src="img/S10509-115328.jpg" alt="图1" width="45%">
 <img src="img/S10509-115344.jpg" alt="图2" width="45%">
+</div>
 
 ## 快速上手
 
