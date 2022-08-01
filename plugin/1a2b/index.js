@@ -1,5 +1,6 @@
 const message = require('../../message')
 const { loadRank, saveRank } = require('./rank')
+const { _1a2bGroup } = require('../../config').auth
 
 const store = {} // { groupId: Game }
 const defaultLen = 4
@@ -80,7 +81,8 @@ async function oneATwoB (text, sender, chain) {
   if (text === '') {
     return [{
       type: 'Plain',
-      text: `用法:
+      text: `根据提示猜数字。A 表示数字与位置均正确，B 表示数字正确但位置错误。
+用法:
 /1a2b new [长度] [次数] 新的游戏
 /1a2b rank [页码] 查看排行
 /1a2b <数字> 参与游戏`
@@ -130,4 +132,5 @@ async function oneATwoB (text, sender, chain) {
 module.exports = {
   reg: /^\/1a2b/i,
   method: oneATwoB,
+  whiteGroup: _1a2bGroup,
 }

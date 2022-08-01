@@ -119,6 +119,8 @@ module.exports = {
 | auth.whiteList | 白名单 | Number[] | 默认为空 |
 | auth.blackGroup | 群聊黑名单 | Number[] | 默认为空 |
 | auth.whiteGroup | 群聊白名单 | Number[] | 默认为空 |
+| auth.saveGroup | savepic 群聊白名单 | Number[] | 默认为空 |
+| auth._1a2bGroup | 1a2b 群聊白名单 | Number[] | 默认为空 |
 | plugins | 开启的插件列表 | String[] | 默认为空 |
 
 最后, 运行 `npm start` 或 `node index.js` 启动机器人.
