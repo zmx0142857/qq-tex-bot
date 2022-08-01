@@ -42,10 +42,36 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 
 #### Trouble Shooting
 
+- 目前 mirai-console 已经更新, 但 mirai-api-http 仍是旧版, 启动 mcl
+  时会报错 (kotlin no such method).  解决方法是编辑 mirai 的 `config.json`,
+  修改以下插件的 version:
+  ```
+  {
+    "id": "net.mamoe:mirai-console",
+    "channel": "stable",
+    "version": "2.6.7",
+    "type": "libs",
+    "versionLocked": false
+  },
+  {
+    "id": "net.mamoe:mirai-console-terminal",
+    "channel": "stable",
+    "version": "2.6.7",
+    "type": "libs",
+    "versionLocked": false
+  },
+  {
+    "id": "net.mamoe:mirai-core-all",
+    "channel": "beta",
+    "version": "2.8.0-M1",
+    "type": "libs",
+    "versionLocked": false
+  },
+  ```
+  然后尝试重启 `./mcl`.
+  遇到此类版本问题, 还可以编辑 `config.json` 把插件的 channel 改成 stable.
 - 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
   手机登录同一个账号, 否则 mirai 会被强制下线.
-- mirai 的更新可能会出 bug. 如果遇到问题, 可以编辑 `config.json` 把 mirai
-  的 channel 改成 stable. 然后重启 `./mcl` 即可.
 - 如要将机器人部署到服务器, 建议先在自己电脑上登录 mirai console,
   并进行滑块验证.  成功以后关闭 mirai console,
   将 `bots/<qq号>/device.json` 文件拷贝到服务器. 这时服务器应该能顺利登录.
@@ -58,16 +84,18 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 npm install
 ```
 
-> 安装过程如遇到 phantomjs 下载失败, 可以手动下载到指定的目录中:
-> ```text
-> Downloading https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip
-> Saving to C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip
-> Receiving...
-> Error making request.
-> Error: connect ETIMEDOUT *.*.*.*:443
->     at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1148:16)
-> ```
-> 比如上面这种情况, 只需到 https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip 下载文件, 保存到 C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip, 然后重新运行 `npm install` 即可.
+#### Trouble Shooting
+
+- 安装过程如遇到 phantomjs 下载失败, 可以手动下载到指定的目录中:
+  ```text
+  Downloading https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip
+  Saving to C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip
+  Receiving...
+  Error making request.
+  Error: connect ETIMEDOUT *.*.*.*:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1148:16)
+  ```
+  比如上面这种情况, 只需到 https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip 下载文件, 保存到 C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip, 然后重新运行 `npm install` 即可.
 
 ### 3. 配置你的 bot
 
