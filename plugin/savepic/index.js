@@ -31,8 +31,9 @@ async function parseArgs (text, sender) {
   const isReloadCache = args.indexOf('-r') > -1
   const isAdmin = adminList.includes(sender.id)
   if (isReloadCache) {
-    if (isAdmin) return { code: 0, msg: '缓存已刷新' }
-    return { code: -1, msg: '不支持选项 -r' }
+    if (!isAdmin) return { code: -1, msg: '不支持选项 -r' }
+    savepicService.reload()
+    return { code: 0, msg: '缓存已刷新' }
   }
 
   // fileName
