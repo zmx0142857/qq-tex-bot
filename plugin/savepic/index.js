@@ -104,12 +104,12 @@ async function randPic (text, sender, chain) {
   let fileName
   let groupId = getGroupId(sender)
 
-  if (groupId && Math.random() > 0.5) {
+  if (groupId && (text || Math.random() > 0.5)) {
     fileName = await savepicService.choose(groupId, text)
   }
 
   // fallback to global dir
-  if (!fileName || Math.random() > 0.5) {
+  if (!fileName || (!text && Math.random() > 0.5)) {
     groupId = ''
     fileName = await savepicService.choose(groupId, text)
   }
