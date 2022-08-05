@@ -35,9 +35,12 @@ module.exports = {
     }
   },
   // 随机选择一个文件
-  async choose (groupId) {
+  async choose (groupId, keyword) {
     try {
-      const files = await this.init(groupId)
+      let files = await this.init(groupId)
+      if (keyword) {
+        files = files.filter(filename => filename.includes(keyword))
+      }
       if (files.length > 0) {
         return files[Math.random() * files.length | 0]
       }

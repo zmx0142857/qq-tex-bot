@@ -105,13 +105,13 @@ async function randPic (text, sender, chain) {
   let groupId = getGroupId(sender)
 
   if (groupId && Math.random() > 0.5) {
-    fileName = await savepicService.choose(groupId)
+    fileName = await savepicService.choose(groupId, text)
   }
 
   // fallback to global dir
   if (!fileName || Math.random() > 0.5) {
     groupId = ''
-    fileName = await savepicService.choose(groupId)
+    fileName = await savepicService.choose(groupId, text)
   }
 
   return fileName && [
@@ -128,7 +128,7 @@ module.exports = [
     whiteGroup: saveGroup,
   },
   {
-    reg: /^\/randpic$/i,
+    reg: /^\/randpic/i,
     method: randPic,
   },
   {
