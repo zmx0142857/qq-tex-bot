@@ -39,7 +39,9 @@ module.exports = {
     try {
       let files = await this.init(groupId)
       if (keyword) {
-        files = files.filter(filename => filename.includes(keyword))
+        files = files.filter(filename =>
+	  filename.toLowerCase().includes(keyword.toLowerCase())
+	)
       }
       if (files.length > 0) {
         return files[Math.random() * files.length | 0]
