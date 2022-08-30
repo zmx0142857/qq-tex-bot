@@ -81,7 +81,7 @@ function savePicUrl (chain, senderId, groupId) {
 
     // 完成 savepic
     savePicComplete(groupId, senderId, m.url).then(message => {
-      bot.sendMessage({
+      message && bot.sendMessage({
         group: groupId,
         message,
       })
