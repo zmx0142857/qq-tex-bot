@@ -6,6 +6,7 @@ const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const adminList = config.auth.admin || []
 const saveGroup = config.auth.saveGroup || []
+const savepicSession = {}
 
 function help() {
   return `用法:
@@ -79,7 +80,25 @@ async function savePic (text, sender, chain) {
     return res && message.plain(res.msg)
   } else {
     console.log('找不到图:', chain)
+    const groupDict = savepicSession[groupId] || {}
+    groupDict[sender.id] = fileName
+    setTimeout(() => {
+      delete groupDict[sender.id]
+    }, 60 * 1000)
     return message.plain('图呢')
+  }
+}
+
+// 完成保存图片
+async function savePicComplete (groupId, senderId, url) {
+  const groupDict = savepicSession[groupId]
+  if (groupDict) {
+    const fileName = groupDict[senderId]
+    if (fileName) {
+      delete groupDict[sender.id]
+      const res = await savepicService.add(groupId, fileName, url)
+      return res && message.plain(res.msg)
+    }
   }
 }
 
@@ -120,15 +139,15 @@ async function randPic (text, sender, chain) {
   ]
 }
 
-module.exports = [
+const savepicConfig = [
   {
-    reg: /^\/savepic/i,
+    reg: /^\/savepic /i,
     method: savePic,
     whiteList: adminList,
     whiteGroup: saveGroup,
   },
   {
-    reg: /^\/randpic/i,
+    reg: /^\/randpic /i,
     method: randPic,
   },
   {
@@ -137,3 +156,7 @@ module.exports = [
     trim: false,
   }
 ]
+
+savepicConfig.savePicComplete = savePicComplete
+
+module.exports = savepicConfig

@@ -1,6 +1,7 @@
 const { Bot, Message } = require('mirai-js')
 const config = require('./config')
 const message = require('./message')
+const { savePicComplete } = require('./plugin/savepic/index')
 
 const bot = new Bot()
 
@@ -68,7 +69,7 @@ const picDict = {} // messageId: url
 
 // 保存图片 url
 // 但不会保存自己发的图片
-function savePicUrl (chain) {
+function savePicUrl (chain, senderId, groupId) {
   const id = chain[0].id
   chain.forEach(m => {
     if (m.type === 'Image' && m.url) {
@@ -77,6 +78,9 @@ function savePicUrl (chain) {
       setTimeout(() => {
         delete picDict[id]
       }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
+
+      // 完成 savepic
+      savePicComplete(groupId, senderId, m.url)
     }
   })
 }
@@ -84,7 +88,7 @@ function savePicUrl (chain) {
 // 好友自动回复
 function autoreply (command) {
   bot.on('FriendMessage', async ({ messageChain, sender }) => {
-    savePicUrl(messageChain)
+    savePicUrl(messageChain, senderId, '')
     const { text } = messageChain[1]
     console.log(sender.id, text)
     const res = command(text, sender, messageChain)
@@ -110,7 +114,7 @@ function groupAutoreply (command) {
   bot.on('GroupMessage', async ({ messageChain, sender }) => {
     //console.log(sender.group.id)
     if (!config.groups[sender.group.id]) return
-    savePicUrl(messageChain)
+    savePicUrl(messageChain, sender.id, sender.group.id)
     const textMsg = messageChain.find(m => m.type === 'Plain')
     const text = (textMsg && textMsg.text) || ''
     const res = command(text, sender, messageChain)
