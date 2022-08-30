@@ -72,16 +72,20 @@ const picDict = {} // messageId: url
 function savePicUrl (chain, senderId, groupId) {
   const id = chain[0].id
   chain.forEach(m => {
-    if (m.type === 'Image' && m.url) {
-      console.log('savePic:', id, m.url)
-      picDict[id] = m.url
-      setTimeout(() => {
-        delete picDict[id]
-      }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
+    if (m.type !== 'Image' || !m.url) return
+    console.log('savePic:', id, m.url)
+    picDict[id] = m.url
+    setTimeout(() => {
+      delete picDict[id]
+    }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
 
-      // 完成 savepic
-      savePicComplete(groupId, senderId, m.url)
-    }
+    // 完成 savepic
+    savePicComplete(groupId, senderId, m.url).then(message => {
+      bot.sendMessage({
+        group: groupId,
+        message,
+      })
+    })
   })
 }
 

@@ -64,7 +64,8 @@ async function parseArgs (text, sender) {
 async function savePic (text, sender, chain) {
   if (!text) return message.plain(help())
 
-  if (!getGroupId(sender)) {
+  const senderGroupId = getGroupId(sender)
+  if (!senderGroupId) {
     return message.plain('抱歉，不支持私聊存图')
   }
 
@@ -80,8 +81,9 @@ async function savePic (text, sender, chain) {
     return res && message.plain(res.msg)
   } else {
     console.log('找不到图:', chain)
-    const groupDict = savepicSession[groupId] || {}
-    groupDict[sender.id] = fileName
+    savepicSession[senderGroupId] = savepicSession[senderGroupId] || {}
+    const groupDict = savepicSession[senderGroupId]
+    groupDict[sender.id] = { groupId, fileName }
     setTimeout(() => {
       delete groupDict[sender.id]
     }, 60 * 1000)
@@ -93,10 +95,10 @@ async function savePic (text, sender, chain) {
 async function savePicComplete (groupId, senderId, url) {
   const groupDict = savepicSession[groupId]
   if (groupDict) {
-    const fileName = groupDict[senderId]
-    if (fileName) {
-      delete groupDict[sender.id]
-      const res = await savepicService.add(groupId, fileName, url)
+    const item = groupDict[senderId]
+    if (item) {
+      const res = await savepicService.add(item.groupId, item.fileName, url)
+      delete groupDict[senderId]
       return res && message.plain(res.msg)
     }
   }
