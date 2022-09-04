@@ -2,7 +2,7 @@ const config = require('../../config')
 const message = require('../../message')
 const savepicService = require('./service')
 
-const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
+const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const adminList = config.auth.admin || []
 const saveGroup = config.auth.saveGroup || []
@@ -80,7 +80,6 @@ async function savePic (text, sender, chain) {
     const res = await savepicService.add(groupId, fileName, msg.url)
     return res && message.plain(res.msg)
   } else {
-    console.log('找不到图:', chain)
     savepicSession[senderGroupId] = savepicSession[senderGroupId] || {}
     const groupDict = savepicSession[senderGroupId]
     groupDict[sender.id] = { groupId, fileName }
@@ -97,6 +96,7 @@ async function savePicComplete (groupId, senderId, url) {
   if (groupDict) {
     const item = groupDict[senderId]
     if (item) {
+      console.log('savepicComplete', url)
       const res = await savepicService.add(item.groupId, item.fileName, url)
       delete groupDict[senderId]
       return res && message.plain(res.msg)

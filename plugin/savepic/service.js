@@ -4,7 +4,7 @@ const path = require('path')
 const config = require('../../config')
 const message = require('../../message')
 
-const extReg = /\.jpg$|\.jpeg$|\.png|\.gif$/i
+const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const moduleName = 'savepic'
 const picDir = path.join(config.image.path, moduleName)
 
