@@ -97,15 +97,15 @@ function autoreply (command) {
     console.log(sender.id, text)
     const res = command(text, sender, messageChain)
     if (!res) return
-    const message = await res.message
-    if (message) {
+    const msg = await res.message
+    if (msg) {
       const { id } = messageChain[0]
       bot.sendMessage({
         friend: sender.id,
         //quote: messageChain[0].id,
-        message
+        message: msg,
       }).then(replyId => {
-        // savePicUrl(message, replyId)
+        // savePicUrl(msg, replyId)
         if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }
@@ -124,15 +124,15 @@ function groupAutoreply (command) {
     message.trigger(text, { bot, sender, messageChain })
     const res = command(text, sender, messageChain)
     if (!res) return
-    const message = await res.message
-    if (message) {
+    const msg = await res.message
+    if (msg) {
       const { id } = messageChain[0]
       bot.sendMessage({
         group: sender.group.id,
         //quote: messageChain[0].id,
-        message
+        message: msg,
       }).then(replyId => {
-        // savePicUrl(message, replyId) TODO: 保存自己的图片?  不能用本地路径
+        // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
         if (res.isFormula) saveReply(id, replyId, sender.id)
       }).catch(console.error)
     }

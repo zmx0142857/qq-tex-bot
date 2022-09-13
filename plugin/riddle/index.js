@@ -2,12 +2,11 @@ const message = require('../../message')
 const { writeJson } = require('../../utils')
 const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank')
 const { riddleGroup } = require('../../config').auth
+const getRiddle = require('./source')
 
-const store = {} // { groupId: answer }
-
-function newRiddle () {
-  const riddle = '布什军队男兵多【日本动漫】'
-  const answer = '美少女战士'
+async function newRiddle () {
+  const res = await getRiddle() // 谜面 谜目 谜底
+  if (res.code !== 0) return message.plain(res.message)
   const bingo = ({ bot, sender, messageChain }) => {
     const groupId = sender.group && sender.group.id
     bot.sendMessage({
@@ -15,12 +14,12 @@ function newRiddle () {
         quote: messageChain[0].id,
         message: '中'
     })
-    message.removeListener(answer, bingo)
+    message.removeListener(res.answer, bingo)
     saveRank(groupId, sender)
     saveScore(groupId, sender)
   }
-  message.addListener(answer, bingo)
-  return message.plain(riddle)
+  message.addListener(res.answer, bingo)
+  return message.plain(res.question)
 }
 
 async function riddle (text, sender, chain) {
@@ -45,10 +44,6 @@ async function riddle (text, sender, chain) {
     const score = await loadScore(groupId, page)
     return message.plain(score)
   }
-}
-
-function riddleGuess () {
-
 }
 
 module.exports = {
