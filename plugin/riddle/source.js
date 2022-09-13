@@ -17,7 +17,7 @@ async function getRiddle1 () {
   }
   try {
     const [face, category, answer] = randLine.split(',')
-    return { code: 0, question: `${face}【${category}】`, answer }
+    return { code: 0, question: `${face}【${category}】`, answer: answer.trim() }
   } catch (e) {
     console.error(e)
     console.log(face, category, answer)

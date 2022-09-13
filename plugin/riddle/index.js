@@ -6,7 +6,7 @@ const getRiddle = require('./source')
 
 const store = {} // { groupId: answer }
 
-async function newRiddle () {
+async function newRiddle (groupId) {
   const res = await getRiddle() // 谜面 谜目 谜底
   if (res.code !== 0) return message.plain(res.message)
   const bingo = ({ bot, sender, messageChain }) => {
@@ -20,6 +20,7 @@ async function newRiddle () {
     saveRank(groupId, sender)
     saveScore(groupId, sender)
   }
+  store[groupId] = res.answer
   message.addListener(res.answer, bingo)
   return message.plain(res.question)
 }
