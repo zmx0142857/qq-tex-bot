@@ -121,6 +121,7 @@ function groupAutoreply (command) {
     savePicUrl(messageChain, sender.id, sender.group.id)
     const textMsg = messageChain.find(m => m.type === 'Plain')
     const text = (textMsg && textMsg.text) || ''
+    message.trigger(text, { bot, sender, messageChain })
     const res = command(text, sender, messageChain)
     if (!res) return
     const message = await res.message

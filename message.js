@@ -1,4 +1,21 @@
 module.exports = {
+  listeners: {},
+  addListener (key, callback) {
+    this.listeners[key] = this.listeners[key] || []
+    this.listeners[key].push(callback)
+  },
+  removeListener (key, callback) {
+    const listeners = this.listeners[key]
+    if (listeners) {
+      this.listeners[key] = listeners.filter(cb => cb !== callback)
+    }
+  },
+  trigger (key, context) {
+    const listeners = this.listeners[key]
+    if (listeners) {
+      listeners.forEach(callback => callback(context))
+    }
+  },
   plain (text) {
     return [{
       type: 'Plain',

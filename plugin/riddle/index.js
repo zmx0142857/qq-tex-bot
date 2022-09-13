@@ -7,10 +7,23 @@ const store = {} // { groupId: answer }
 
 function newRiddle () {
   const riddle = '布什军队男兵多【日本动漫】'
+  const answer = '美少女战士'
+  const bingo = ({ bot, sender, messageChain }) => {
+    const groupId = sender.group && sender.group.id
+    bot.sendMessage({
+        group: groupId,
+        quote: messageChain[0].id,
+        message: '中'
+    })
+    message.removeListener(answer, bingo)
+    saveRank(groupId, sender)
+    saveScore(groupId, sender)
+  }
+  message.addListener(answer, bingo)
   return message.plain(riddle)
 }
 
-function riddle (text, sender, chain) {
+async function riddle (text, sender, chain) {
   const groupId = sender.group && sender.group.id
   if (text === '') {
     return message.plain(`猜灯谜。用法：
@@ -32,6 +45,10 @@ function riddle (text, sender, chain) {
     const score = await loadScore(groupId, page)
     return message.plain(score)
   }
+}
+
+function riddleGuess () {
+
 }
 
 module.exports = {
