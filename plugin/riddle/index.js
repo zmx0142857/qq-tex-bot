@@ -22,6 +22,9 @@ async function newRiddle (groupId) {
   }
   store[groupId] = res.answer
   message.addListener(res.answer, bingo)
+  setTimeout(() => {
+    message.removeListener(res.answer, bingo)
+  }, 6 * 3600 * 1000) // 6 小时无回答则取消本题
   return message.plain(res.question)
 }
 
@@ -33,7 +36,8 @@ async function riddle (text, sender, chain) {
 /riddle rank [页码] 查看总排行
 /riddle begin 开始计分
 /riddle score [页码] 查看计分
-/riddle open 揭晓谜底`)
+/riddle open 揭晓谜底
+注：谜底为多个组合时用空格隔开，如：中秋 端午`)
   } else if (text === 'new') {
     return newRiddle(groupId);
   } else if (/^rank( \d+)?/.test(text)) {
