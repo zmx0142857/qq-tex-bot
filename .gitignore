@@ -5,3 +5,5 @@ package-lock.json
 config.js
 .vscode
 1a2b.*.json
+riddle-rank.*.json
+riddle-score.*.json
