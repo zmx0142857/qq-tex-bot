@@ -4,6 +4,8 @@ const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank
 const { riddleGroup } = require('../../config').auth
 const getRiddle = require('./source')
 
+const store = {} // { groupId: answer }
+
 async function newRiddle () {
   const res = await getRiddle() // 谜面 谜目 谜底
   if (res.code !== 0) return message.plain(res.message)
@@ -29,7 +31,8 @@ async function riddle (text, sender, chain) {
 /riddle new 新的灯谜
 /riddle rank [页码] 查看总排行
 /riddle begin 开始计分
-/riddle score [页码] 查看计分`)
+/riddle score [页码] 查看计分
+/riddle open 揭晓谜底`)
   } else if (text === 'new') {
     return newRiddle(groupId);
   } else if (/^rank( \d+)?/.test(text)) {
@@ -43,6 +46,10 @@ async function riddle (text, sender, chain) {
     const page = parseInt(text.slice(6)) || 1
     const score = await loadScore(groupId, page)
     return message.plain(score)
+  } else if (text === 'open') {
+    const answer = store[groupId]
+    if (!answer) return message.plain('当前没有谜题。发送 /riddle new 查看谜面')
+    return message.plain('谜底：' + answer)
   }
 }
 

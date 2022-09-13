@@ -1,8 +1,9 @@
 const fs = require('fs')
 
 async function getRiddle1 () {
+  let text
   try {
-    const text = await fs.promises.readFile('riddle.txt', 'utf-8')
+    text = await fs.promises.readFile('riddle.txt', 'utf-8')
   } catch (e) {
     console.error(e)
     return { code: 1, message: '获取谜面失败，请稍后再试' }
