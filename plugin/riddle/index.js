@@ -17,6 +17,7 @@ async function newRiddle (groupId) {
       quote: messageChain[0].id,
       message: '中'
     })
+    delete store[groupId]
     message.removeListener(groupId, answer, bingo)
     saveRank(groupId, sender)
     saveScore(groupId, sender)
@@ -32,7 +33,7 @@ async function newRiddle (groupId) {
   // 1 小时内无回答则取消本题
   setTimeout(() => {
     delete store[groupId]
-    message.removeListener(answer, bingo)
+    message.removeListener(groupId, answer, bingo)
   }, 3600 * 1000)
 
   return message.plain(question)
