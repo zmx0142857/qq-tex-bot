@@ -1,17 +1,22 @@
 module.exports = {
   listeners: {},
-  addListener (key, callback) {
-    this.listeners[key] = this.listeners[key] || []
-    this.listeners[key].push(callback)
+  addListener (groupId, key, callback) {
+    const group = this.listeners[groupId] = this.listeners[groupId] || {}
+    group[key] = group[key] || []
+    group[key].push(callback)
   },
-  removeListener (key, callback) {
-    const listeners = this.listeners[key]
+  removeListener (groupId, key, callback) {
+    const group = this.listeners[groupId]
+    if (!group) return
+    const listeners = group[key]
     if (listeners) {
-      this.listeners[key] = listeners.filter(cb => cb !== callback)
+      group[key] = listeners.filter(cb => cb !== callback)
     }
   },
-  trigger (key, context) {
-    const listeners = this.listeners[key]
+  trigger (groupId, key, context) {
+    const group = this.listeners[groupId]
+    if (!group) return
+    const listeners = group[key]
     if (listeners) {
       listeners.forEach(callback => callback(context))
     }

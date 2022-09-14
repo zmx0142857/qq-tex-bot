@@ -116,12 +116,12 @@ function autoreply (command) {
 // 监听群消息
 function groupAutoreply (command) {
   bot.on('GroupMessage', async ({ messageChain, sender }) => {
-    //console.log(sender.group.id)
-    if (!config.groups[sender.group.id]) return
-    savePicUrl(messageChain, sender.id, sender.group.id)
+    const groupId = sender.group.id
+    if (!config.groups[groupId]) return
+    savePicUrl(messageChain, sender.id, groupId)
     const textMsg = messageChain.find(m => m.type === 'Plain')
     const text = (textMsg && textMsg.text) || ''
-    message.trigger(text, { bot, sender, messageChain })
+    message.trigger(groupId, text, { bot, sender, messageChain })
     const res = command(text, sender, messageChain)
     if (!res) return
     const msg = await res.message

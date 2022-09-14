@@ -1,20 +1,22 @@
 const fs = require('fs')
 
-async function getRiddle1 () {
-  let text
-  try {
-    text = await fs.promises.readFile('riddle.txt', 'utf-8')
-  } catch (e) {
-    console.error(e)
-    return { code: 1, message: '获取谜面失败，请稍后再试' }
+const store = {}
+
+async function getRiddle1 (groupId) {
+  let text, lines
+  if (store[groupId]) {
+    lines = store[groupId]
+  } else {
+    try {
+      text = await fs.promises.readFile('riddle.txt', 'utf-8')
+    } catch (e) {
+      console.error(e)
+      return { code: 1, message: '获取谜面失败，请稍后再试' }
+    }
+    store[groupId] = lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
   }
-  const lines = text.trim().split('\n')
-  if (!lines.length) return { code: 2, message: '题库空空如也~' }
-  let randLine
-  while (!randLine) {
-    const index = Math.floor(Math.random() * lines.length)
-    randLine = lines[index]
-  }
+  if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
+  const randLine = lines.pop()
   try {
     const [face, category, answer] = randLine.split(',')
     return { code: 0, question: `${face}【${category}】`, answer: answer.trim() }
