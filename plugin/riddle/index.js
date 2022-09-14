@@ -6,6 +6,15 @@ const getRiddle = require('./source')
 
 const store = {} // { groupId: { question, answer } }
 
+function invalidateRiddle (groupId) {
+  const group = store[groupId]
+  if (group) {
+    clearTimeout(group.timer1)
+    clearTimeout(group.timer2)
+  }
+  delete store[groupId]
+}
+
 async function newRiddle (groupId) {
   const res = await getRiddle(groupId) // 谜面 谜目 谜底
   if (res.code !== 0) return message.plain(res.message)
@@ -17,7 +26,7 @@ async function newRiddle (groupId) {
       quote: messageChain[0].id,
       message: '中'
     })
-    delete store[groupId]
+    invalidateRiddle(groupId)
     message.removeListener(groupId, answer, bingo)
     saveRank(groupId, sender)
     saveScore(groupId, sender)
@@ -25,16 +34,17 @@ async function newRiddle (groupId) {
   message.addListener(groupId, answer, bingo)
 
   // 1 分钟内无法开底
-  store[groupId] = { question, answer: null }
-  setTimeout(() => {
-    store[groupId] = { question, answer }
+  const timer1 = setTimeout(() => {
+    store[groupId] = { ...store[groupId], answer }
   }, 60 * 1000)
 
   // 1 小时内无回答则取消本题
-  setTimeout(() => {
-    delete store[groupId]
+  const timer2 = setTimeout(() => {
+    invalidateRiddle(groupId)
     message.removeListener(groupId, answer, bingo)
   }, 3600 * 1000)
+
+  store[groupId] = { question, answer: null, timer1, timer2 }
 
   return message.plain(question)
 }
@@ -48,7 +58,8 @@ async function riddle (text, sender, chain) {
 /riddle begin 开始计分
 /riddle score [页码] 查看计分
 /riddle open 揭晓谜底
-注：谜底为多个组合时用空格隔开，如：中秋 端午`)
+注：无需使用指令/回复/at，直接发送谜底即可参与猜谜。
+谜底为多个组合时用空格隔开，如：中秋 端午`)
   } else if (text === 'get') {
     const group = store[groupId]
     if (group) return message.plain(group.question)
@@ -69,7 +80,7 @@ async function riddle (text, sender, chain) {
     if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
     const answer = group.answer
     if (!answer) return message.plain('你先别急')
-    delete store[groupId]
+    invalidateRiddle(groupId)
     return message.plain('谜底：' + answer)
   }
 }
