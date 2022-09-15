@@ -13,7 +13,9 @@ async function getRiddle1 (groupId) {
       console.error(e)
       return { code: 1, message: '获取谜面失败，请稍后再试' }
     }
-    store[groupId] = lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
+    if (!text.trim()) lines = []
+    else lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
+    store[groupId] = lines
   }
   if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
   const randLine = lines.pop()
@@ -22,7 +24,7 @@ async function getRiddle1 (groupId) {
     return { code: 0, question: `${face}【${category}】`, answer: answer.trim() }
   } catch (e) {
     console.error(e)
-    console.log(face, category, answer)
+    console.error('randLine:', randLine)
     return { code: 3, message: '谜题解析失败' }
   }
 }

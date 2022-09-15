@@ -38,11 +38,11 @@ async function newRiddle (groupId) {
     store[groupId] = { ...store[groupId], answer }
   }, 60 * 1000)
 
-  // 1 小时内无回答则取消本题
+  // 2 小时内无回答则取消本题
   const timer2 = setTimeout(() => {
     invalidateRiddle(groupId)
     message.removeListener(groupId, answer, bingo)
-  }, 3600 * 1000)
+  }, 2 * 3600 * 1000)
 
   store[groupId] = { question, answer: null, timer1, timer2 }
 
