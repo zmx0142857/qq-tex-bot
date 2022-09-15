@@ -1,11 +1,7 @@
 tmp*
-node_modules
+/node_modules
 yarn.lock
 package-lock.json
 config.js
 .vscode
-1a2b.*.json
-riddle-rank.*.json
-riddle-score.*.json
-riddle.txt
-riddle.*.txt
+/data
