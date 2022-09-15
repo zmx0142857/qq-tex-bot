@@ -8,3 +8,4 @@ config.js
 riddle-rank.*.json
 riddle-score.*.json
 riddle.txt
+riddle.*.txt

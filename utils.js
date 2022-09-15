@@ -1,6 +1,8 @@
 const fs = require('fs')
+const prefix = 'data/'
 
 function readJson (filename) {
+  filename = prefix + filename
   return new Promise((resolve, reject) => {
     fs.readFile(filename, (err, data) => {
       if (err) {
@@ -17,6 +19,7 @@ function readJson (filename) {
 }
 
 function writeJson (filename, data) {
+  filename = prefix + filename
   fs.writeFile(filename, JSON.stringify(data), () => {})
 }
 
