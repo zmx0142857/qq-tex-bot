@@ -90,8 +90,8 @@ async function oneATwoB (text, sender, chain) {
     if (!(len >= 1 && len <= 10))
       return message.plain('长度在 1-10 之间')
     limit = limit ? Number(limit) : limitMap[len]
-    if (!(limit > 1))
-      return message.plain('多给点机会嘛~')
+    if (!(limit >= 2 && limit <= 30))
+      return message.plain('次数在 2-30 之间')
     newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
   } else if (/^rank( \d+)?/.test(text)) {

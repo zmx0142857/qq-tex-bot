@@ -58,12 +58,13 @@ async function riddle (text, sender, chain) {
 /riddle begin 开始计分
 /riddle score [页码] 查看计分
 /riddle open 揭晓谜底
+/riddle skip 跳过谜题
 注：无需使用指令/回复/at，直接发送谜底即可参与猜谜。
 谜底为多个组合时用空格隔开，如：中秋 端午`)
   } else if (text === 'get') {
     const group = store[groupId]
     if (group) return message.plain(group.question)
-    return newRiddle(groupId);
+    return newRiddle(groupId)
   } else if (/^rank( \d+)?/.test(text)) {
     const page = parseInt(text.slice(5)) || 1
     const rank = await loadRank(groupId, page)
@@ -82,6 +83,9 @@ async function riddle (text, sender, chain) {
     if (!answer) return message.plain('你先别急')
     invalidateRiddle(groupId)
     return message.plain('谜底：' + answer)
+  } else if (text === 'skip') {
+    invalidateRiddle(groupId)
+    return newRiddle(groupId)
   }
 }
 
