@@ -2,7 +2,7 @@ const message = require('../../message')
 const { writeJson } = require('../../utils')
 const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank')
 const { riddleGroup } = require('../../config').auth
-const getRiddle = require('./source')
+const { getRiddle, resetRiddle } = require('./source')
 
 const store = {} // { groupId: { question, answer } }
 
@@ -70,6 +70,7 @@ async function riddle (text, sender, chain) {
     return message.plain(rank)
   } else if (text === 'begin') {
     clearScore(groupId)
+    resetRiddle(groupId)
     return message.plain('游戏已就绪，发送 /riddle get 查看谜面')
   } else if (/^score( \d+)?/.test(text)) {
     const page = parseInt(text.slice(6)) || 1

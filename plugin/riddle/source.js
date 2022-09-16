@@ -29,6 +29,10 @@ async function getRiddle1 (groupId) {
   }
 }
 
+function resetRiddle (groupId) {
+  delete store[groupId]
+}
+
 async function getRiddle2 () {
   const html = `<meta property="og:title" content="情侣 （4字称谓）的谜底是什么？">
     <meta property="og:description" content="情侣 （4字称谓）的谜底是【生意 伙伴】。">`
@@ -48,4 +52,7 @@ async function getRiddle2 () {
   return { code: 0, question, answer }
 }
 
-module.exports = getRiddle1
+module.exports = {
+  getRiddle: getRiddle1,
+  resetRiddle,
+}
