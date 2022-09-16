@@ -11,6 +11,7 @@ function invalidateRiddle (groupId) {
   if (group) {
     clearTimeout(group.timer1)
     clearTimeout(group.timer2)
+    message.removeListener(groupId, group.answer, group.bingo)
   }
   delete store[groupId]
 }
@@ -27,24 +28,22 @@ async function newRiddle (groupId) {
       message: '中'
     })
     invalidateRiddle(groupId)
-    message.removeListener(groupId, answer, bingo)
     saveRank(groupId, sender)
     saveScore(groupId, sender)
   }
-  message.addListener(groupId, answer, bingo)
 
   // 1 分钟内无法开底
   const timer1 = setTimeout(() => {
-    store[groupId] = { ...store[groupId], answer }
+    store[groupId].timer1 = null
   }, 60 * 1000)
 
   // 2 小时内无回答则取消本题
   const timer2 = setTimeout(() => {
     invalidateRiddle(groupId)
-    message.removeListener(groupId, answer, bingo)
   }, 2 * 3600 * 1000)
 
-  store[groupId] = { question, answer: null, timer1, timer2 }
+  store[groupId] = { question, answer, timer1, timer2, bingo }
+  message.addListener(groupId, answer, bingo)
 
   return message.plain(question)
 }
@@ -79,10 +78,9 @@ async function riddle (text, sender, chain) {
   } else if (text === 'open') {
     const group = store[groupId]
     if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
-    const answer = group.answer
-    if (!answer) return message.plain('你先别急')
+    if (group.timer1 !== null) return message.plain('你先别急')
     invalidateRiddle(groupId)
-    return message.plain('谜底：' + answer)
+    return message.plain('谜底：' + group.answer)
   } else if (text === 'skip') {
     invalidateRiddle(groupId)
     return newRiddle(groupId)
