@@ -14,6 +14,12 @@ cli.on('close', () => {
 const getGroupId = index => Object.keys(config.groups)[index]
 let currentGroup = getGroupId(0)
 const commands = [
+  [/^\/help/, () => console.log(`/help 显示帮助
+/ls 列出 bot 加入的群
+/cd [index] 切换到第 index 个群，index 从 0 开始
+/quit [groupId] 退群
+发送其它任意消息进行水群
+`)],
   // 群号列表
   [/^\/ls/, () => console.log(config.groups)],
   // 切换群
@@ -22,9 +28,8 @@ const commands = [
     )
   ],
   // 退群
-  [/^\/quit/, input => {
-    const groupId = getGroupId(input)
-    if (!groupId) return console.log('请输入正确的群号下标')
+  [/^\/quit/, async groupId => {
+    if (!config.groups.hasOwnProperty(groupId)) return console.log('请输入正确的群号')
     try {
       await bot.quitGroup({ group: groupId })
       console.log('已退出群聊', groupId)
