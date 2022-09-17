@@ -14,11 +14,25 @@ cli.on('close', () => {
 const getGroupId = index => Object.keys(config.groups)[index]
 let currentGroup = getGroupId(0)
 const commands = [
+  // 群号列表
   [/^\/ls/, () => console.log(config.groups)],
+  // 切换群
   [/^\/cd/, input => console.log(
       config.groups[currentGroup = getGroupId(input || 0)]
     )
   ],
+  // 退群
+  [/^\/quit/, input => {
+    const groupId = getGroupId(input)
+    if (!groupId) return console.log('请输入正确的群号下标')
+    try {
+      await bot.quitGroup({ group: groupId })
+      console.log('已退出群聊', groupId)
+    } catch (e) {
+      console.error('退群失败:', groupId, e)
+    }
+  }],
+  // 水群
   [/^/, input => input && bot.sendMessage({
       group: currentGroup,
       message: buildMsg(input)

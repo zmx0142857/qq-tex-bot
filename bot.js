@@ -1,4 +1,4 @@
-const { Bot, Message } = require('mirai-js')
+const { Bot, Message, Middleware } = require('mirai-js')
 const config = require('./config')
 const message = require('./message')
 const { savePicComplete } = require('./plugin/savepic/index')
@@ -140,11 +140,24 @@ function groupAutoreply (command) {
   console.log('group autoreply is listening...')
 }
 
+// admin 邀请 bot 入群, bot 自动同意
+function agreeJoinGroup () {
+  bot.on(
+    'BotInvitedJoinGroupRequestEvent',
+    new Middleware().invitedJoinGroupRequestProcessor().done(({ agree, sender }) => {
+      if (config.auth.admin.includes(sender.id)) {
+        agree()
+      }
+    })
+  )
+}
+
 module.exports = {
   bot,
   connect,
   autoreply,
   groupAutoreply,
   autoRecall,
+  agreeJoinGroup,
   picDict
 }

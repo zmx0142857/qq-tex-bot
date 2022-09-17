@@ -12,7 +12,8 @@ const {
   connect,
   autoreply,
   groupAutoreply,
-  autoRecall
+  autoRecall,
+  agreeJoinGroup,
 } = require('./bot')
 const cli = require('./cli')
 const command = require('./plugin')
@@ -21,6 +22,7 @@ const command = require('./plugin')
   await connect()
   if (config.replyFriend) autoreply(command) // 好友自动回复
   groupAutoreply(command)
+  agreeJoinGroup()
   autoRecall()
   cli()
 })()
