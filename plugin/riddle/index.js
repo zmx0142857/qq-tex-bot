@@ -50,17 +50,7 @@ async function newRiddle (groupId) {
 
 async function riddle (text, sender, chain) {
   const groupId = sender.group && sender.group.id
-  if (text === '') {
-    return message.plain(`猜灯谜。用法：
-/riddle get 查看谜面
-/riddle rank [页码] 查看总排行
-/riddle begin 开始计分
-/riddle score [页码] 查看计分
-/riddle open 揭晓谜底
-/riddle skip 跳过谜题
-注：无需使用指令/回复/at，直接发送谜底即可参与猜谜。
-谜底为多个组合时用空格隔开，如：中秋 端午`)
-  } else if (text === 'get') {
+  if (text === 'get') {
     const group = store[groupId]
     if (group) return message.plain(group.question)
     return newRiddle(groupId)
@@ -85,6 +75,24 @@ async function riddle (text, sender, chain) {
   } else if (text === 'skip') {
     invalidateRiddle(groupId)
     return newRiddle(groupId)
+  } else if (text === '露春') {
+    return message.plain('谜面不露春，是指谜面上不会出现谜底的任何一个字。谜目则无此限制，可以出现谜底中的字')
+  } else if (text === '探骊格') {
+    return message.plain('探骊格如同深海探宝，不指定谜目，要求将谜目谜底一起猜出，谜目谜底连起来与谜面相扣')
+  } else if (text === '卷帘格') {
+    return message.plain('卷帘格，意为『倒卷珠帘』，要把谜底倒过来读，如谜底是『孙行者』，则要读作『者行孙』')
+  } else if (text === '离合字') {
+    return message.plain('离合字是将一个字拆成多个部件，如：好女子、弓长张')
+  } else {
+    return message.plain(`猜灯谜。用法：
+/riddle get 查看谜面
+/riddle rank [页码] 查看总排行
+/riddle begin 开始计分
+/riddle score [页码] 查看计分
+/riddle open 揭晓谜底
+/riddle skip 跳过谜题
+注：无需使用指令/回复/at，直接发送谜底即可参与猜谜。
+谜底为多个组合时用空格隔开，如：中秋 端午`)
   }
 }
 
