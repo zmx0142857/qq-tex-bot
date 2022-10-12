@@ -1,7 +1,7 @@
 const tex2svg = require('./tex2svg')
 const AM = require('asciimath-js')
 const { am2tex } = AM
-const fs = require('pn/fs')
+const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
 const config = {
@@ -47,9 +47,9 @@ function onError (err) {
 
 // 用 image magick 命令行
 function magick (svg) {
-  return Promise.resolve(() => fs.writeFile('tmp.svg', svg))
+  return fs.promises.writeFile('tmp.svg', svg)
     .then(() => new Promise((resolve, reject) => {
-      child.exec(`magick tmp.svg ${path.join(config.path, config.name)}`, err => {
+      child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.path, config.name)}`, err => {
         if (err) reject(err)
         else {
           //console.log('formula done')
@@ -63,7 +63,7 @@ function magick (svg) {
 // 用 svg2png 和 phantom js
 function phantom (svg) {
   return svg2png(svg)
-    .then(buf => fs.writeFile(
+    .then(buf => fs.promises.writeFile(
       path.join(config.path, config.name), buf)
     )
     .then(() => {

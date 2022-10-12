@@ -143,7 +143,7 @@ async function randPic (text, sender, chain) {
 
 const savepicConfig = [
   {
-    reg: /^\/savepic /i,
+    reg: /^\/savepic/i,
     method: savePic,
     whiteList: adminList,
     whiteGroup: saveGroup,
