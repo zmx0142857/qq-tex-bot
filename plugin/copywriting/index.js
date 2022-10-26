@@ -1,5 +1,12 @@
 const message = require('../../message')
-const store = require('./store')
+let store
+
+const mod = [
+  {
+    reg: /^\/文案/,
+    method: main,
+  },
+]
 
 function factory (key) {
   return async function (text) {
@@ -13,16 +20,25 @@ function factory (key) {
 }
 
 async function main (text) {
-  return message.plain('可用文案: ' + Object.keys(store).join('、'))
+  if (text === '-r') {
+    loadStore()
+    // TODO 并不会刷新
+    return message.plain('缓存已刷新')
+  } else {
+    return message.plain('可用文案: ' + Object.keys(store).join('、'))
+  }
 }
 
-module.exports = [
-  {
-    reg: /^\/文案/,
-    method: main,
-  },
-  ...Object.keys(store).map(key => ({
-    reg: new RegExp('/' + key),
-    method: factory(key),
-  })),
-]
+function loadStore () {
+  store = require('./store')
+  mod.length = 1
+  mod.push(
+    ...Object.keys(store).map(key => ({
+      reg: new RegExp('/' + key),
+      method: factory(key),
+    }))
+  )
+}
+
+loadStore()
+module.exports = mod
