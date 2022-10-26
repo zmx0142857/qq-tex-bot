@@ -144,9 +144,10 @@ function groupAutoreply (command) {
 function agreeJoinGroup () {
   bot.on(
     'BotInvitedJoinGroupRequestEvent',
-    new Middleware().invitedJoinGroupRequestProcessor().done(({ agree, sender }) => {
-      if (config.auth.admin.includes(sender.id)) {
-        agree()
+    new Middleware().invitedJoinGroupRequestProcessor().done((res) => {
+      if (config.auth.admin.includes(res.fromId)) {
+        console.log('已同意加入', res.groupId, res.groupName)
+        res.agree()
       }
     })
   )

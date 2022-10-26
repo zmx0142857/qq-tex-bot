@@ -3,7 +3,7 @@ const store = require('./store')
 
 function factory (key) {
   return async function (text) {
-    const a = text ? text.split(/\s/) : []
+    const a = text ? text.split(/\s+/) : []
     if (a.length === store[key].argc) {
       return message.plain(store[key].template(a))
     } else {
