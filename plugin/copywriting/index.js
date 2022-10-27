@@ -14,7 +14,9 @@ function factory (key) {
     const a = text ? text.split(/\s+/) : []
     const { argc, template, help } = store[key]
     if (a.length === argc) {
-      const res = template.replace(/\${a\[(\d+)]}/g, (match, i) => a[i])
+      const res = template.replace(/\${([^}]*)}/g, (match, src) => {
+        return Function(['a'], 'return ' + src)(a)
+      })
       return message.plain(res)
     } else {
       return message.plain(help)
@@ -29,11 +31,6 @@ async function main (text) {
   } else {
     return message.plain('可用文案: ' + Object.keys(store).join('、'))
   }
-}
-
-async function loadStore () {
-  const data = await fs.promises.readFile('data/copywriting.json', 'utf-8')
-  updateStore(data)
 }
 
 function loadStoreSync() {
