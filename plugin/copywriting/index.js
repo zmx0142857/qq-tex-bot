@@ -33,7 +33,7 @@ async function main (text) {
 }
 
 async function loadStore () {
-  const data = await fs.readFile('copywriting.json', 'utf-8')
+  const data = await fs.readFile('data/copywriting.json', 'utf-8')
   store = JSON.parse(data)
   mod.length = 1
   mod.push(
