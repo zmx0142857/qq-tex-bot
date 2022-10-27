@@ -1,5 +1,5 @@
 const message = require('../../message')
-const fs = require('fs').promises
+const fs = require('fs')
 let store
 
 const mod = [
@@ -24,8 +24,7 @@ function factory (key) {
 
 async function main (text) {
   if (text === '-r') {
-    await loadStore()
-    // TODO 并不会刷新
+    loadStoreSync()
     return message.plain('缓存已刷新')
   } else {
     return message.plain('可用文案: ' + Object.keys(store).join('、'))
@@ -33,7 +32,16 @@ async function main (text) {
 }
 
 async function loadStore () {
-  const data = await fs.readFile('data/copywriting.json', 'utf-8')
+  const data = await fs.promises.readFile('data/copywriting.json', 'utf-8')
+  updateStore(data)
+}
+
+function loadStoreSync() {
+  const data = fs.readFileSync('data/copywriting.json', 'utf-8')
+  updateStore(data)
+}
+
+function updateStore (data) {
   store = JSON.parse(data)
   mod.length = 1
   mod.push(
@@ -44,5 +52,5 @@ async function loadStore () {
   )
 }
 
-loadStore()
+loadStoreSync()
 module.exports = mod
