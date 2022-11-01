@@ -21,11 +21,20 @@ async function getRiddle1 (groupId) {
   const randLine = lines.pop()
   try {
     const [face, category, answer] = randLine.split(',')
-    return { code: 0, question: `${face}【${category}】`, answer: answer.trim() }
+    return { code: 0, question: `${face}【${category}】`, answer: answer.trim(), raw: randLine }
   } catch (e) {
     console.error(e)
     console.error('randLine:', randLine)
     return { code: 3, message: '谜题解析失败' }
+  }
+}
+
+function putBackRiddle (groupId, raw) {
+  const lines = store[groupId]
+  if (lines) {
+    lines.push(raw)
+  } else {
+    console.error('putBack failed: lines is undefined')
   }
 }
 

@@ -50,6 +50,7 @@ async function newRiddle (groupId) {
   // 2 小时内无回答则取消本题
   const timer2 = setTimeout(() => {
     invalidateRiddle(groupId)
+    putBackRiddle(groupId, res.raw)
   }, 2 * 3600 * 1000)
 
   store[groupId] = { question, answer, timer1, timer2, bingo }
