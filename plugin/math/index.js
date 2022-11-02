@@ -121,8 +121,9 @@ function lineHelper (src, fn = identical) {
     }
     src = buf.join('')
   }
+  const convertLine = s => s.includes('&') ? fn(s) : '& ' + fn(s)
   return '\\begin{aligned}'
-    + src.split('\n').map(s => '& ' + fn(s)).join(' \\\\ ')
+    + src.split('\n').map(convertLine).join(' \\\\ ')
     + '\\end{aligned}'
 }
 
