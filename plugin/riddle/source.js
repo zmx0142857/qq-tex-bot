@@ -20,8 +20,14 @@ async function getRiddle1 (groupId) {
   if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
   const randLine = lines.pop()
   try {
-    const [face, category, answer] = randLine.split(',')
-    return { code: 0, question: `${face}【${category}】`, answer: answer.trim(), raw: randLine }
+    const [face, category, answer, hint] = randLine.split(',')
+    return {
+      code: 0,
+      question: `${face}【${category}】`,
+      answer: answer.trim(),
+      raw: randLine,
+      hint: hint || '没有提示捏',
+    }
   } catch (e) {
     console.error(e)
     console.error('randLine:', randLine)

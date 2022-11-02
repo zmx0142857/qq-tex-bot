@@ -4,7 +4,7 @@ const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank
 const { riddleGroup } = require('../../config').auth
 const { getRiddle, resetRiddle } = require('./source')
 
-const store = {} // { groupId: { question, answer } }
+const store = {} // { groupId: { question, answer, raw, timer1, timer2 } }
 const helpDict = {
   '露春': '谜面不露春，是指谜面上不会出现谜底的任何一个字。谜目则无此限制，可以出现谜底中的字',
   '探骊格': '探骊格如同深海探宝，不指定谜目，要求将谜目谜底一起猜出，谜目谜底连起来与谜面相扣',
@@ -15,6 +15,7 @@ const helpDict = {
   '徐妃格': '取『只得徐妃半面妆』之意，去掉谜底相同的偏旁',
   '摘匾格': '类似徐妃格，去掉谜底相同的部首',
 }
+let skipIsBusy
 
 function invalidateRiddle (groupId) {
   const group = store[groupId]
@@ -77,6 +78,10 @@ async function riddle (text, sender, chain) {
     const page = parseInt(text.slice(6)) || 1
     const score = await loadScore(groupId, page)
     return message.plain(score)
+  } else if (text === 'hint') {
+    const group = store[groupId]
+    if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
+    return message.plain('提示：' + group.hint)
   } else if (text === 'open') {
     const group = store[groupId]
     if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
@@ -84,6 +89,11 @@ async function riddle (text, sender, chain) {
     invalidateRiddle(groupId)
     return message.plain('谜底：' + group.answer)
   } else if (text === 'skip') {
+    // 3s 冷却
+    if (skipIsBusy) return
+    skipIsBusy = true
+    setTimeout(() => skipIsBusy = false, 3000)
+
     invalidateRiddle(groupId)
     return newRiddle(groupId)
   } else {
@@ -91,9 +101,10 @@ async function riddle (text, sender, chain) {
     if (help) return message.plain(help)
     return message.plain(`猜灯谜。用法：
 /riddle get 查看谜面
-/riddle rank [页码] 查看总排行
 /riddle begin 开始计分
 /riddle score [页码] 查看计分
+/riddle rank [页码] 查看总排行
+/riddle hint 获取提示
 /riddle open 揭晓谜底
 /riddle skip 跳过谜题
 注：无需使用指令/回复/at，直接发送谜底即可参与猜谜。
