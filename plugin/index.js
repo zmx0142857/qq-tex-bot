@@ -1,18 +1,32 @@
 const message = require('../message')
 const config = require('../config')
 
-const commands = []
-for (const module of (config.plugins || [])) {
-  try {
-    const cmd = require('./' + module)
-    if (Array.isArray(cmd)) {
-      commands.push(...cmd)
-    } else {
-      commands.push(cmd)
+const commands = [
+  {
+    reg: /^\/remake$/,
+    method: async () => {
+      loadCommands()
+      return message.plain('已重开')
+    },
+    whiteList: config.auth.admin,
+  },
+]
+
+function loadCommands () {
+  commands.length = 1
+  for (const module of (config.plugins || [])) {
+    try {
+      let cmd = require('./' + module)
+      if (typeof cmd === 'function') cmd = cmd()
+      if (Array.isArray(cmd)) {
+        commands.push(...cmd)
+      } else {
+        commands.push(cmd)
+      }
+    } catch (e) {
+      console.error('[err] module not found:', module)
+      console.error(e)
     }
-  } catch (e) {
-    console.error('[err] module not found:', module)
-    console.error(e)
   }
 }
 
@@ -30,11 +44,13 @@ function checkBlack(list, group, sender) {
   return true
 }
 
-module.exports = function command (text, sender, chain) {
+function exeCommands (text, sender, chain) {
   const { whiteList, whiteGroup, blackList, blackGroup } = config.auth
   // 名单过滤
-  if (!checkWhite(whiteList, whiteGroup, sender)) return
-  if (!checkBlack(blackList, blackGroup, sender)) return
+  if (!config.auth.admin || !config.auth.admin.includes(sender.id)) {
+    if (!checkWhite(whiteList, whiteGroup, sender)) return
+    if (!checkBlack(blackList, blackGroup, sender)) return
+  }
 
   // 寻找第一个匹配的命令, 并执行
   for (const cmd of commands) {
@@ -69,4 +85,9 @@ module.exports = function command (text, sender, chain) {
       })
     }
   }
+}
+
+loadCommands()
+module.exports = {
+  exeCommands,
 }

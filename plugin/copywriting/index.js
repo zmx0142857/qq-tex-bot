@@ -1,11 +1,13 @@
 const message = require('../../message')
 const fs = require('fs')
+const { copywritingGroup } = require('../../config').auth
 let store
 
 const mod = [
   {
     reg: /^\/文案/,
     method: main,
+    whiteGroup: copywritingGroup,
   },
 ]
 
@@ -36,6 +38,7 @@ async function main (text) {
 function loadStoreSync() {
   const data = fs.readFileSync('data/copywriting.json', 'utf-8')
   updateStore(data)
+  return mod
 }
 
 function updateStore (data) {
@@ -45,9 +48,9 @@ function updateStore (data) {
     ...Object.keys(store).map(key => ({
       reg: new RegExp('^/' + key),
       method: factory(key),
+      whiteGroup: copywritingGroup,
     }))
   )
 }
 
-loadStoreSync()
-module.exports = mod
+module.exports = loadStoreSync

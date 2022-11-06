@@ -16,12 +16,12 @@ const {
   agreeJoinGroup,
 } = require('./bot')
 const cli = require('./cli')
-const command = require('./plugin')
+const { exeCommands } = require('./plugin')
 
 ;(async () => {
   await connect()
-  if (config.replyFriend) autoreply(command) // 好友自动回复
-  groupAutoreply(command)
+  if (config.replyFriend) autoreply(exeCommands) // 好友自动回复
+  groupAutoreply(exeCommands)
   agreeJoinGroup()
   autoRecall()
   cli()
