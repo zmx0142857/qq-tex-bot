@@ -5,7 +5,7 @@
   "dependencies": {
     "asciimath-js": "^1.0.1",
     "mathjax-full": "^3.1.4",
-    "mirai-js": "^1.7.2",
+    "mirai-js": "^2.8.7",
     "svg2png": "^4.1.1"
   },
   "name": "qq-tex-bot",

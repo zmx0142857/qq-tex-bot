@@ -47,6 +47,39 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
   时会报错 (kotlin no such method).  解决方法是编辑 mirai 的 `config.json`,
   修改以下插件的 version:
   ```
+  "net.mamoe:mirai-console": {
+    "channel": "beta",
+    "version": "2.13.0-RC2",
+    "type": "libs",
+    "versionLocked": false
+  },
+  "net.mamoe:mirai-console-terminal": {
+    "channel": "beta",
+    "version": "2.13.0-RC2",
+    "type": "libs",
+    "versionLocked": false
+  },
+  "net.mamoe:mirai-core-all": {
+    "channel": "beta",
+    "version": "2.13.0-RC2",
+    "type": "libs",
+    "versionLocked": false
+  },
+  "org.itxtech:mcl-addon": {
+    "channel": "c2001",
+    "version": "2.0.2",
+    "type": "plugins",
+    "versionLocked": false
+  },
+  "net.mamoe:mirai-api-http": {
+    "channel": "stable-v2",
+    "version": "2.6.2",
+    "type": "plugins",
+    "versionLocked": false
+  }
+  ```
+  <!--
+  ```
   {
     "id": "net.mamoe:mirai-console",
     "channel": "stable",
@@ -69,6 +102,7 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
     "versionLocked": false
   },
   ```
+  -->
   然后尝试重启 `./mcl`.
   遇到此类版本问题, 还可以编辑 `config.json` 把插件的 channel 改成 stable.
 - 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
@@ -105,7 +139,8 @@ npm install
 ```js
 module.exports = {
   server: {
-    authKey: '', // mirai-api-http 提供的 authKey
+    verifyKey: '', // mirai-api-http 2.x 提供的 verifyKey
+    // authKey: '', // mirai-api-http 1.x 提供的 authKey
     qq: 123456, // 机器人的 qq 号
   },
   groups: {
@@ -113,7 +148,8 @@ module.exports = {
   },
   image: {
     // 图片目录绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows
-    path: '??/mirai/data/net.mamoe.mirai-api-http/images',
+    path: '/path/to/mirai', // mirai-api-http 2.x
+    // path: '??/mirai/data/net.mamoe.mirai-api-http/images', // mirai-api-http 1.x
   },
   auth: {
     admin: [123124123], // 你的 qq 号
