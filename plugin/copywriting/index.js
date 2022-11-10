@@ -14,8 +14,8 @@ const mod = [
 function factory (key) {
   return async function (text) {
     // kfc is available on thursday only
-    // use +8 timezone
-    if (key.toLowerCase() === 'kfc' && new Date(Number(new Date()) + 8 * 3600000).getDay() !== 4) return
+    // there is not need to convert timezone
+    if (key.toLowerCase() === 'kfc' && new Date().getDay() !== 4) return
     const a = text ? text.split(/\s+/) : []
     const { argc, template, help } = store[key]
     const t = Array.isArray(template) ? template[Math.floor(Math.random() * template.length)] : template
