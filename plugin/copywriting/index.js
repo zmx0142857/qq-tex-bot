@@ -13,12 +13,17 @@ const mod = [
 
 function factory (key) {
   return async function (text) {
+    // kfc is available on thursday only
+    // use +8 timezone
+    if (key.toLowerCase() === 'kfc' && new Date(Number(new Date()) + 8 * 3600000).getDay() !== 4) return
     const a = text ? text.split(/\s+/) : []
     const { argc, template, help } = store[key]
+    const t = Array.isArray(template) ? template[Math.floor(Math.random() * template.length)] : template
     if (a.length === argc) {
-      const res = template.replace(/\${([^}]*)}/g, (match, src) => {
+      let res = t.replace(/\${([^}]*)}/g, (match, src) => {
         return Function(['a'], 'return ' + src)(a)
       })
+      if (res.length > 1000) res = res.slice(0, 997) + '...'
       return message.plain(res)
     } else {
       return message.plain(help)
@@ -46,7 +51,7 @@ function updateStore (data) {
   mod.length = 1
   mod.push(
     ...Object.keys(store).map(key => ({
-      reg: new RegExp('^/' + key),
+      reg: new RegExp('^/' + key, 'i'),
       method: factory(key),
       whiteGroup: copywritingGroup,
     }))
