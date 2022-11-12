@@ -24,7 +24,7 @@ function factory (key) {
         return Function(['a'], 'return ' + src)(a)
       })
       if (res.length > 1000) res = res.slice(0, 997) + '...'
-      return message.plain(res)
+      return message.emoji(res)
     } else {
       return message.plain(help)
     }

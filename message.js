@@ -27,6 +27,23 @@ module.exports = {
       text,
     }]
   },
+  // 处理消息中的 qq 表情. 如, 滑稽的代码是 \178
+  emoji (text) {
+    const msg = []
+    let match = text.match(/\\(\d+)/)
+    while (match) {
+      if (match.index) {
+        msg.push({ type: 'Plain', text: text.slice(0, match.index) })
+      }
+      msg.push({ type: 'Face', faceId: parseInt(match[1]) })
+      text = text.slice(match.index + match[0].length)
+      match = text.match(/\\(\d+)/)
+    }
+    if (text) {
+      msg.push({ type: 'Plain', text })
+    }
+    return msg
+  },
   image (path) {
     if (/^http:|^https:/.test(path)) {
       return [{
