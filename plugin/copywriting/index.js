@@ -15,7 +15,7 @@ function factory (key) {
   return async function (text) {
     // kfc is available on thursday only
     // there is not need to convert timezone
-    if (key.toLowerCase() === 'kfc' && new Date().getDay() !== 4) return
+    if (key.toLowerCase() === 'kfc' && new Date().getDay() !== 4) return message.plain('小店已经打烊，客官请周四再来吧')
     const a = text ? text.split(/\s+/) : []
     const { argc, template, help } = store[key]
     const t = Array.isArray(template) ? template[Math.floor(Math.random() * template.length)] : template
