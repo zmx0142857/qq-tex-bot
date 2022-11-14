@@ -77,11 +77,13 @@ async function savePic (text, sender, chain) {
   let msg, url
   if (!url) {
     msg = chain.find(m => m.type === 'Image')
-    url = msg.url
+    url = msg && msg.url
   }
   if (!url) {
     msg = chain.find(item => item.type === 'Quote')
-    url = picDict[msg.id]
+    if (msg) {
+      url = picDict[msg.id]
+    }
   }
 
   if (url) { // 直接保存
@@ -89,7 +91,7 @@ async function savePic (text, sender, chain) {
     const res = await savepicService.add(groupId, fileName, url)
     return res && message.plain(res.msg)
   } else { // 等待对方发出图片后保存
-    const callback = ({ bot, url }) => {
+    const callback = async ({ bot, url }) => {
       message.removeListener(senderGroupId, message.imageSymbol, callback)
       const res = await savepicService.add(groupId, fileName, url)
       if (res) {
@@ -161,7 +163,5 @@ const savepicConfig = [
     trim: false,
   }
 ]
-
-savepicConfig.savePicComplete = savePicComplete
 
 module.exports = savepicConfig

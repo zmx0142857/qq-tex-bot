@@ -69,7 +69,7 @@ const picDict = {} // messageId: url
 // 保存图片 url
 // 但不会保存自己发的图片
 function savePicUrl ({ messageChain, sender, groupId }) {
-  const id = chain[0].id
+  const id = messageChain[0].id
   messageChain.forEach(m => {
     if (m.type !== 'Image' || !m.url) return
     const url = m.url
