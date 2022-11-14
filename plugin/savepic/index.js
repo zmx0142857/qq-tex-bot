@@ -86,27 +86,44 @@ async function savePic (text, sender, chain) {
     }
   }
 
-  if (url) { // 直接保存
+  // 直接保存
+  if (url) {
     console.log('savepic', url)
     const res = await savepicService.add(groupId, fileName, url)
     return res && message.plain(res.msg)
-  } else { // 等待对方发出图片后保存
-    const callback = async ({ bot, url }) => {
-      message.removeListener(senderGroupId, message.imageSymbol, callback)
-      const res = await savepicService.add(groupId, fileName, url)
-      if (res) {
-        bot.sendMessage({
-          group: senderGroupId,
-          message: res.msg,
-        })
-      }
-    }
-    message.addListener(senderGroupId, message.imageSymbol, callback)
-    setTimeout(() => {
-      message.removeListener(senderGroupId, message.imageSymbol, callback)
-    }, 60 * 1000)
-    return message.plain('图呢')
   }
+
+  // 没收到图，等待对方发出图片后保存
+  const callback = async ({ bot, url }) => {
+    removeListener()
+    const res = await savepicService.add(groupId, fileName, url)
+    if (res) {
+      bot.sendMessage({
+        group: senderGroupId,
+        message: res.msg,
+      })
+    }
+  }
+  message.addListener(senderGroupId, message.imageSymbol, callback)
+
+  const cancelText = '取消'
+  const cancel = ({ bot, sender: cancelSender }) => {
+    if (sender.id === cancelSender.id) {
+      removeListener()
+      bot.sendMessage({
+        group: senderGroupId,
+        message: '已取消',
+      })
+    }
+  }
+  message.addListener(senderGroupId, cancelText, cancel)
+
+  const removeListener = () => {
+    message.removeListener(senderGroupId, message.imageSymbol, callback)
+    message.removeListener(senderGroupId, cancelText, cancel)
+  }
+  setTimeout(removeListener, 60 * 1000)
+  return message.plain('图呢')
 }
 
 async function sendPic (text, sender, chain) {
