@@ -12,6 +12,7 @@
 - `/savepic`: 保存群聊图片, 化身弔图稽器人
 - `/1a2b`: 老少皆宜的猜数字小游戏
 - `/riddle`: 猜灯谜
+- `/文案`: 文案生成器
 
 <div>
 <img src="img/S10509-115328.jpg" alt="图1" width="45%">
@@ -29,7 +30,7 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 
 - 安装 mirai-api-http 插件, 用于提供 http 接口:
   ```shell
-  ./mcl --update-package net.mamoe:mirai-api-http --type plugin --channel stable
+  ./mcl --update-package net.mamoe:mirai-api-http --type plugin --channel stable-v2
   ```
 - 安装[滑块验证模块](https://github.com/project-mirai/mirai-login-solver-selenium):
   ```shell
@@ -43,8 +44,8 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 
 #### Trouble Shooting
 
-- 目前 mirai-console 已经更新, 但 mirai-api-http 仍是旧版, 启动 mcl
-  时会报错 (kotlin no such method).  解决方法是编辑 mirai 的 `config.json`,
+- mirai 各插件更新迭代很快, 启动 mcl 时容易出现版本不一致而报错的问题 (比如
+  kotlin 的 no such method 之类).  解决方法是编辑 mirai 的 `config.json`,
   修改以下插件的 version:
   ```
   "net.mamoe:mirai-console": {
@@ -104,9 +105,9 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
   ```
   -->
   然后尝试重启 `./mcl`.
-  遇到此类版本问题, 还可以编辑 `config.json` 把插件的 channel 改成 stable.
 - 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
   手机登录同一个账号, 否则 mirai 会被强制下线.
+  你可以在 `config/Console/AutoLogin.yml` 中切换协议.
 - 如要将机器人部署到服务器, 建议先在自己电脑上登录 mirai console,
   并进行滑块验证.  成功以后关闭 mirai console,
   将 `bots/<qq号>/device.json` 文件拷贝到服务器. 这时服务器应该能顺利登录.
@@ -131,6 +132,7 @@ npm install
       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1148:16)
   ```
   比如上面这种情况, 只需到 https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip 下载文件, 保存到 C:\Users\Administrator\AppData\Local\Temp\phantomjs\phantomjs-2.1.1-windows.zip, 然后重新运行 `npm install` 即可.
+- 如果始终无法装上 phantomjs, 也可以安装 [image magick](https://imagemagick.org), 并确保 `magick` 命令可用, 然后, 在 bot 的 `config.js` 中指定 `image.engine` 为 `magick` (见下节).
 
 ### 3. 配置你的 bot
 
@@ -170,10 +172,10 @@ module.exports = {
 
 |参数|解释|类型|是否必填|
 |----|----|----|----|
-| server.authKey | mirai-api-http 提供的 authKey, 请妥善保存, 不要泄露 | String | 必填 |
-| server.qq | 机器人的 qq 号 | Number | 必填 |
-| groups | 机器人加入的群, 以 `群号: 群名` 的格式填写, 可填多个 | Object | 必填 |
-| image.path | mirai 图片目录的绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows | String | 必填 |
+| server.verifyKey | mirai-api-http 提供的 verifyKey, 请妥善保存, 不要泄露 | String | <span style="color:red">必填</span> |
+| server.qq | 机器人的 qq 号 | Number | <span style="color:red">必填</span> |
+| groups | 机器人加入的群, 以 `群号: 群名` 的格式填写, 可填多个 | Object | <span style="color:red">必填</span> |
+| image.path | mirai 图片目录的绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows | String | <span style="color:red">必填</span> |
 | server.baseUrl | mirai 服务的地址 | String | 默认值 http://localhost:8080 |
 | tex.ex | 公式的字体大小 | Number | 默认值 16 |
 | image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
