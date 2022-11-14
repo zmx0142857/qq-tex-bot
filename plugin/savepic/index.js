@@ -1,12 +1,12 @@
 const config = require('../../config')
 const message = require('../../message')
 const savepicService = require('./service')
+const { picDict } = require('../../bot')
 
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const adminList = config.auth.admin || []
 const saveGroup = config.auth.saveGroup || []
-const savepicSession = {}
 
 function help() {
   return `用法:
@@ -74,33 +74,36 @@ async function savePic (text, sender, chain) {
   const [groupId, fileName] = res
 
   // 在 chain 中找图
-  const msg = chain.find(m => m.type === 'Image' && m.url)
-  if (msg) {
-    console.log('savepic', msg.url)
-    const res = await savepicService.add(groupId, fileName, msg.url)
+  let msg, url
+  if (!url) {
+    msg = chain.find(m => m.type === 'Image')
+    url = msg.url
+  }
+  if (!url) {
+    msg = chain.find(item => item.type === 'Quote')
+    url = picDict[msg.id]
+  }
+
+  if (url) { // 直接保存
+    console.log('savepic', url)
+    const res = await savepicService.add(groupId, fileName, url)
     return res && message.plain(res.msg)
-  } else {
-    savepicSession[senderGroupId] = savepicSession[senderGroupId] || {}
-    const groupDict = savepicSession[senderGroupId]
-    groupDict[sender.id] = { groupId, fileName }
+  } else { // 等待对方发出图片后保存
+    const callback = ({ bot, url }) => {
+      message.removeListener(senderGroupId, message.imageSymbol, callback)
+      const res = await savepicService.add(groupId, fileName, url)
+      if (res) {
+        bot.sendMessage({
+          group: senderGroupId,
+          message: res.msg,
+        })
+      }
+    }
+    message.addListener(senderGroupId, message.imageSymbol, callback)
     setTimeout(() => {
-      delete groupDict[sender.id]
+      message.removeListener(senderGroupId, message.imageSymbol, callback)
     }, 60 * 1000)
     return message.plain('图呢')
-  }
-}
-
-// 完成保存图片
-async function savePicComplete (groupId, senderId, url) {
-  const groupDict = savepicSession[groupId]
-  if (groupDict) {
-    const item = groupDict[senderId]
-    if (item) {
-      console.log('savepicComplete', url)
-      const res = await savepicService.add(item.groupId, item.fileName, url)
-      delete groupDict[senderId]
-      return res && message.plain(res.msg)
-    }
   }
 }
 

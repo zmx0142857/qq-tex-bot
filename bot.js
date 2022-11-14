@@ -1,7 +1,6 @@
 const { Bot, Message, Middleware } = require('mirai-js')
 const config = require('./config')
 const message = require('./message')
-const { savePicComplete } = require('./plugin/savepic/index')
 
 const bot = new Bot()
 
@@ -69,22 +68,22 @@ const picDict = {} // messageId: url
 
 // 保存图片 url
 // 但不会保存自己发的图片
-function savePicUrl (chain, senderId, groupId) {
+function savePicUrl ({ messageChain, sender, groupId }) {
   const id = chain[0].id
-  chain.forEach(m => {
+  messageChain.forEach(m => {
     if (m.type !== 'Image' || !m.url) return
-    console.log('savePic:', id, m.url)
-    picDict[id] = m.url
+    const url = m.url
+    console.log('receive pic:', id, url)
+    picDict[id] = url
     setTimeout(() => {
       delete picDict[id]
     }, 1000 * 60 * 60 * 24) // 24 小时后释放空间
 
-    // 完成 savepic
-    savePicComplete(groupId, senderId, m.url).then(message => {
-      message && bot.sendMessage({
-        group: groupId,
-        message,
-      })
+    message.trigger(groupId, message.imageSymbol, {
+      bot,
+      sender,
+      messageChain,
+      url,
     })
   })
 }
@@ -118,24 +117,27 @@ function groupAutoreply (command) {
   bot.on('GroupMessage', async ({ messageChain, sender }) => {
     const groupId = sender.group.id
     if (!config.groups[groupId]) return
-    savePicUrl(messageChain, sender.id, groupId)
+    const context = { bot, messageChain, sender, groupId }
     const textMsg = messageChain.find(m => m.type === 'Plain')
     const text = (textMsg && textMsg.text) || ''
-    message.trigger(groupId, text, { bot, sender, messageChain })
+
+    savePicUrl(context)
+    message.trigger(groupId, text, context)
+    message.match(groupId, text, context)
+
     const res = command(text, sender, messageChain)
     if (!res) return
     const msg = await res.message
-    if (msg) {
-      const { id } = messageChain[0]
-      bot.sendMessage({
-        group: sender.group.id,
-        //quote: messageChain[0].id,
-        message: msg,
-      }).then(replyId => {
-        // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
-        if (res.isFormula) saveReply(id, replyId, sender.id)
-      }).catch(console.error)
-    }
+    if (!msg) return
+    const { id } = messageChain[0]
+    bot.sendMessage({
+      group: sender.group.id,
+      //quote: messageChain[0].id,
+      message: msg,
+    }).then(replyId => {
+      // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
+      if (res.isFormula) saveReply(id, replyId, sender.id)
+    }).catch(console.error)
   })
   console.log('group autoreply is listening...')
 }
