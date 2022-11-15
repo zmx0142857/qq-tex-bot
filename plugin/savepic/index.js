@@ -94,14 +94,16 @@ async function savePic (text, sender, chain) {
   }
 
   // 没收到图，等待对方发出图片后保存
-  const callback = async ({ bot, url }) => {
-    removeListener()
-    const res = await savepicService.add(groupId, fileName, url)
-    if (res) {
-      bot.sendMessage({
-        group: senderGroupId,
-        message: res.msg,
-      })
+  const callback = async ({ bot, url, sender: picSender }) => {
+    if (sender.id === picSender.id) {
+      removeListener()
+      const res = await savepicService.add(groupId, fileName, url)
+      if (res) {
+        bot.sendMessage({
+          group: senderGroupId,
+          message: res.msg,
+        })
+      }
     }
   }
   message.addListener(senderGroupId, message.imageSymbol, callback)

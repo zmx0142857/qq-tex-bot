@@ -34,7 +34,10 @@ function autoRecall () {
       const id = replyDict[messageId]
       if (!id) return
       console.log(authorId + ' recalled ' + messageId)
-      bot.recall({ messageId: id })
+      bot.recall({
+        messageId: id,
+        target: (group && group.id) || authorId,
+      })
 
       // timeDelta (两分钟) 内同一个人连续撤回两次, 则触发提示
       const now = Number(new Date())
