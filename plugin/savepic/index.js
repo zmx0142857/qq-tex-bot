@@ -154,9 +154,9 @@ async function randPic (text, sender, chain) {
   }
 
   // fallback to global dir
-  if (!fileName || (!text && Math.random() > 0.5)) {
+  if (!fileName || Math.random() > 0.5) {
     groupId = ''
-    fileName = await savepicService.choose(groupId, text)
+    fileName = (await savepicService.choose(groupId, text)) || fileName
   }
 
   return fileName && [
