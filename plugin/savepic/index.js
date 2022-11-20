@@ -24,13 +24,24 @@ function getGroupId (sender) {
   return res && String(res)
 }
 
+function normalizeFileName(fileName) {
+  fileName = fileName.replace(invalidChars, '-')
+  if (!extReg.test(fileName)) {
+    fileName += '.jpg'
+  }
+  return fileName
+}
+
 // 处理命令参数
 async function parseArgs (text, sender) {
   const args = text.split(/\s+/)
+  const isAdmin = adminList.includes(sender.id)
+  const isReloadCache = args.includes('-r')
+  const isMove = args.includes('-m')
+  const isGlobal = args.includes('-g') && isAdmin
+  const isDelete = args.includes('-d')
 
   // -r
-  const isReloadCache = args.indexOf('-r') > -1
-  const isAdmin = adminList.includes(sender.id)
   if (isReloadCache) {
     if (!isAdmin) return { code: -1, msg: '不支持选项 -r' }
     savepicService.reload()
@@ -39,23 +50,32 @@ async function parseArgs (text, sender) {
 
   // fileName
   const fileNames = args.filter(s => s[0] !== '-')
-  if (fileNames.length > 1) return { code: -1, msg: '文件名不能含有空白字符' }
-  if (fileNames.length === 0) return { code: -2, msg: help() }
-  let fileName = fileNames[0]
-  fileName = fileName.replace(invalidChars, '-')
-  if (!extReg.test(fileName)) {
-    fileName += '.jpg'
-  }
+  const len = fileNames.length
+  const expectLen = isMove ? 2 : 1
+  if (len < expectLen) return { code: -2, msg: help() }
+  if (len > expectLen) return { code: -1, msg: '文件名不能含有空白字符' }
+
+  const fileName = normalizeFileName(fileNames[0])
 
   // -g
-  const isGlobal = args.indexOf('-g') > -1 && isAdmin
   const groupId = isGlobal ? '' : getGroupId(sender)
 
   // -d
-  const isDelete = args.indexOf('-d') > -1
   if (isDelete) {
     if (isAdmin) return await savepicService.delete(groupId, fileName)
     return { code: -1, msg: '不支持选项 -d' }
+  }
+
+  // -m
+  if (isMove) {
+    if (!isAdmin) return { code: -1, msg: '不支持选项 -m' }
+    let [newGroupId, newFileName] = fileNames[1].split('/')
+    if (!newFileName) {
+      newFileName = newGroupId
+      newGroupId = groupId
+    }
+    newFileName = normalizeFileName(newFileName)
+    return await savepicService.rename(groupId, fileName, newGroupId, newFileName)
   }
 
   return [groupId, fileName]
@@ -155,8 +175,11 @@ async function randPic (text, sender, chain) {
 
   // fallback to global dir
   if (!fileName || Math.random() > 0.5) {
-    groupId = ''
-    fileName = (await savepicService.choose(groupId, text)) || fileName
+    const gFileName = await savepicService.choose('', text)
+    if (gFileName) {
+      groupId = ''
+      fileName = gFileName
+    }
   }
 
   return fileName && [

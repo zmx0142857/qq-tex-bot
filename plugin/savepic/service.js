@@ -61,6 +61,29 @@ module.exports = {
       return [message.error]
     }
   },
+  async rename (groupId, fileName, newGroupId, newFileName) {
+    try {
+      const files = await this.init(groupId)
+      const newFiles = await this.init(newGroupId)
+      const index = files.indexOf(fileName)
+      if (index === -1) {
+        return { code: -1, msg: '重命名失败，没有找到图片' }
+      }
+      if (newFiles.includes(newFileName)) {
+        return { code: -1, msg: '重命名失败，新名称已被使用' }
+      }
+      files.splice(index, 1)
+      newFiles.push(newFileName)
+      
+      const filePath = path.join(picDir, groupId, fileName)
+      const newFilePath = path.join(picDir, newGroupId, newFileName)
+      await fs.promises.rename(filePath, newFilePath)
+      return { code: 0, msg: '已重新命名 ' + newFileName }
+    } catch (e) {
+      console.error(e)
+      return { code: -1, msg: '出错了 qwq' }
+    }
+  },
   // 新增文件
   async add (groupId, fileName, url) {
     try {
