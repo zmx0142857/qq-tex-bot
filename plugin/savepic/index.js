@@ -13,8 +13,9 @@ function help() {
 /savepic <文件名> <图片>
 /savepic -g <文件名> <全局图片>
 /savepic -r 刷新缓存
-/savepic -d <文件名> 删除文件
-/randpic 随机图片
+/savepic -d <文件名> 删除图图片
+/savepic -m <文件名> 重命名图片
+/randpic <关键字> 随机图片
 <文件名>.jpg 发送指定图片`
 }
 
@@ -62,8 +63,8 @@ async function parseArgs (text, sender) {
 
   // -d
   if (isDelete) {
-    if (isAdmin) return await savepicService.delete(groupId, fileName)
-    return { code: -1, msg: '不支持选项 -d' }
+    if (!isAdmin) return { code: -1, msg: '不支持选项 -d' }
+    return savepicService.delete(groupId, fileName)
   }
 
   // -m
@@ -75,7 +76,7 @@ async function parseArgs (text, sender) {
       newGroupId = groupId
     }
     newFileName = normalizeFileName(newFileName)
-    return await savepicService.rename(groupId, fileName, newGroupId, newFileName)
+    return savepicService.rename(groupId, fileName, newGroupId, newFileName)
   }
 
   return [groupId, fileName]

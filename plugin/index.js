@@ -4,16 +4,29 @@ const config = require('../config')
 const commands = [
   {
     reg: /^\/remake$/,
-    method: async () => {
+    async method () {
       loadCommands()
       return message.plain('已重开')
     },
     whiteList: config.auth.admin,
   },
+  {
+    reg: /^\/block$/,
+    async method (text) {
+      config.auth.blackList = config.auth.blackList || []
+      config.auth.blackList.push(parseInt(text))
+      const msg = '已拉黑 ' + text
+      console.log(msg)
+      return message.plain(msg)
+    },
+    whiteList: config.auth.admin,
+  },
 ]
+const initLen = commands.length
 
 function loadCommands () {
-  commands.length = 1
+  console.log('bot is remaking...')
+  commands.length = initLen
   for (const module of (config.plugins || [])) {
     try {
       let cmd = require('./' + module)
