@@ -10,8 +10,12 @@ async function connect () {
     baseUrl: 'http://localhost:8080',
     ...config.server
   }
-  await bot.open(server)
-  console.log(`connected to mirai-api-http at ${server.baseUrl}`)
+  try {
+    await bot.open(server)
+    console.log(`connected to mirai-api-http at ${server.baseUrl}`)
+  } catch (err) {
+    console.error('连接失败, 请确认 mirai-api-http 已经启动\n', err)
+  }
 }
 
 const replyDict = {} // { [messageId]: replyId }

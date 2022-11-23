@@ -1,7 +1,6 @@
-tmp*
+/tmp*
 /node_modules
-yarn.lock
-package-lock.json
-config.js
-.vscode
+/yarn.lock
+/package-lock.json
+/.vscode
 /data

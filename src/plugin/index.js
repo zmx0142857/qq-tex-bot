@@ -6,6 +6,7 @@ const commands = [
     reg: /^\/remake$/,
     async method () {
       loadCommands()
+      config.loadConfig()
       return message.plain('已重开')
     },
     whiteList: config.auth.admin,

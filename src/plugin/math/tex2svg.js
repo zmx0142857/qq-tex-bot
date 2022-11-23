@@ -28,8 +28,9 @@ const argv = {
 }
 
 // 这里不能用 let/const
-// eslint-disable-next-line no-var
-var MathJax = {
+/* global MathJax */
+// eslint-disable-next-line no-global-assign
+MathJax = {
   options: {
     enableAssistiveMml: argv.assistiveMml
   },
