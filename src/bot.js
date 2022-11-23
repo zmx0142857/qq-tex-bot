@@ -1,4 +1,4 @@
-const { Bot, Message, Middleware } = require('mirai-js')
+const { Bot, Middleware } = require('mirai-js')
 const config = require('./config')
 const message = require('./message')
 
@@ -43,7 +43,7 @@ function autoRecall () {
       const now = Number(new Date())
       const last = recallDate[authorId]
       const timeDelta = 2 * 60 * 1000
-      if (last === last) recallDate[authorId] = now
+      if (!isNaN(last)) recallDate[authorId] = now
       if (now - last < timeDelta) {
         // 节流, timeDelta 内只提示一次
         recallDate[authorId] = NaN // 表示冷却中
@@ -94,7 +94,7 @@ function savePicUrl ({ messageChain, sender, groupId }) {
 // 好友自动回复
 function autoreply (command) {
   bot.on('FriendMessage', async ({ messageChain, sender }) => {
-    savePicUrl(messageChain, senderId, '')
+    savePicUrl(messageChain, sender.id, '')
     const { text } = messageChain[1]
     console.log(sender.id, text)
     const res = command(text, sender, messageChain)
@@ -104,7 +104,7 @@ function autoreply (command) {
       const { id } = messageChain[0]
       bot.sendMessage({
         friend: sender.id,
-        //quote: messageChain[0].id,
+        // quote: messageChain[0].id,
         message: msg,
       }).then(replyId => {
         // savePicUrl(msg, replyId)
@@ -135,7 +135,7 @@ function groupAutoreply (command) {
     const { id } = messageChain[0]
     bot.sendMessage({
       group: sender.group.id,
-      //quote: messageChain[0].id,
+      // quote: messageChain[0].id,
       message: msg,
     }).then(replyId => {
       // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径

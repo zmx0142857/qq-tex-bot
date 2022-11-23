@@ -21,6 +21,7 @@ function factory (key) {
     const t = Array.isArray(template) ? template[Math.floor(Math.random() * template.length)] : template
     if (a.length === argc) {
       let res = t.replace(/\${([^}]*)}/g, (match, src) => {
+        // eslint-disable-next-line no-new-func
         return Function(['a'], 'return ' + src)(a)
       })
       if (res.length > 1000) res = res.slice(0, 997) + '...'

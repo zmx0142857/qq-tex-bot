@@ -6,10 +6,11 @@ function readJson (filename) {
   return new Promise((resolve, reject) => {
     fs.readFile(filename, (err, data) => {
       if (err) {
-        if (err.code === 'ENOENT')
+        if (err.code === 'ENOENT') {
           data = [] // 不存在就新建
-        else
+        } else {
           return reject(err)
+        }
       } else {
         data = JSON.parse(data)
       }
@@ -24,7 +25,7 @@ function writeJson (filename, data) {
 }
 
 function pager ({ data, page = 1, pageSize = 10, sortBy, mapList }) {
-  const begin = (page-1) * pageSize
+  const begin = (page - 1) * pageSize
   const total = data.length
   const totalPages = (total / pageSize | 0) + 1
   if (sortBy) data = data.sort(sortBy)

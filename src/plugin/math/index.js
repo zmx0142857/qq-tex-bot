@@ -41,8 +41,7 @@ AM.define.push(...[
 
 function onError (err) {
   console.error(err)
-  if (err.message === 'mathjax_error')
-    return Promise.resolve([message.parseError])
+  if (err.message === 'mathjax_error') { return Promise.resolve([message.parseError]) }
 }
 
 // 用 image magick 命令行
@@ -52,7 +51,7 @@ function magick (svg) {
       child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.path, config.name)}`, err => {
         if (err) reject(err)
         else {
-          //console.log('formula done')
+          // console.log('formula done')
           resolve([{ type: 'Image', path: config.name }])
         }
       })
@@ -67,7 +66,7 @@ function phantom (svg) {
       path.join(config.path, config.name), buf)
     )
     .then(() => {
-      //console.log('formula done')
+      // console.log('formula done')
       return [{ type: 'Image', path: config.name }]
     })
     .catch(console.error)
@@ -106,13 +105,13 @@ function lineHelper (src, fn = identical) {
     // 只保留最外层换行
     // 将 \\ 转为换行
     for (let i = 0; i < src.length; ++i) {
-      let c = src[i]
-      if (i >= 5 && src.slice(i-5, i+1) === '\\begin') {
+      const c = src[i]
+      if (i >= 5 && src.slice(i - 5, i + 1) === '\\begin') {
         ++depth
-      } else if (i >= 3 && src.slice(i-3, i+1) === '\\end') {
+      } else if (i >= 3 && src.slice(i - 3, i + 1) === '\\end') {
         --depth
       }
-      if (depth === 0 && c === '\\' && src[i+1] === '\\') {
+      if (depth === 0 && c === '\\' && src[i + 1] === '\\') {
         buf.push('\n')
         ++i
       } else if (depth === 0 || c !== '\n') {
@@ -122,9 +121,9 @@ function lineHelper (src, fn = identical) {
     src = buf.join('')
   }
   const convertLine = s => s.includes('&') ? fn(s) : '& ' + fn(s)
-  return '\\begin{aligned}'
-    + src.split('\n').map(convertLine).join(' \\\\ ')
-    + '\\end{aligned}'
+  return '\\begin{aligned}' +
+    src.split('\n').map(convertLine).join(' \\\\ ') +
+    '\\end{aligned}'
 }
 
 async function convert (tex) {

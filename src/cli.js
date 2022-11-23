@@ -24,13 +24,14 @@ const commands = [
   // 群号列表
   [/^\/ls/, () => console.log(config.groups)],
   // 切换群
-  [/^\/cd/, input => console.log(
-      config.groups[currentGroup = getGroupId(input || 0)]
-    )
-  ],
+  [/^\/cd/, input => {
+    console.log(config.groups[currentGroup = getGroupId(input || 0)])
+  }],
   // 退群
   [/^\/quit/, async groupId => {
-    if (!config.groups.hasOwnProperty(groupId)) return console.log('请输入正确的群号')
+    if (!Object.prototype.hasOwnProperty.call(config.groups, groupId)) {
+      return console.log('请输入正确的群号')
+    }
     try {
       await bot.quitGroup({ group: groupId })
       console.log('已退出群聊', groupId)
@@ -40,15 +41,15 @@ const commands = [
   }],
   // 水群
   [/^/, input => input && bot.sendMessage({
-      group: currentGroup,
-      message: message.emoji(input)
-    }).catch(console.error)
+    group: currentGroup,
+    message: message.emoji(input)
+  }).catch(console.error)
   ]
 ]
 
 function processCli (text) {
   // 寻找第一个匹配的命令, 并执行
-  for ([key, method] of commands) {
+  for (const [key, method] of commands) {
     if (!key.test(text)) continue
     return method(text.replace(key, '').trim())
   }

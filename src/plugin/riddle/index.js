@@ -1,8 +1,7 @@
 const message = require('../../message')
-const { writeJson } = require('../../utils')
 const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank')
 const { riddleGroup } = require('../../config').auth
-const { getRiddle, resetRiddle } = require('./source')
+const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 
 const store = {} // { groupId: { question, answer, raw, timer1, timer2 } }
 const helpDict = {
@@ -14,6 +13,8 @@ const helpDict = {
   '梨花格': '梨花格是谐音格，可以放心使用谐音梗',
   '徐妃格': '取『只得徐妃半面妆』之意，去掉谜底相同的偏旁',
   '摘匾格': '类似徐妃格，去掉谜底相同的部首',
+  '白头格': '首字谐音',
+  '折巾格': '将谜底第一字左右拆开成两个字，只取其半边字连下文来读',
 }
 let skipIsBusy
 
@@ -30,7 +31,7 @@ function invalidateRiddle (groupId) {
 async function newRiddle (groupId) {
   const res = await getRiddle(groupId) // 谜面 谜目 谜底
   if (res.code !== 0) return message.plain(res.message)
-  const { question, answer } = res
+  const { question, answer, hint } = res
   const bingo = ({ bot, sender, messageChain }) => {
     const groupId = sender.group && sender.group.id
     bot.sendMessage({
@@ -54,7 +55,7 @@ async function newRiddle (groupId) {
     putBackRiddle(groupId, res.raw)
   }, 2 * 3600 * 1000)
 
-  store[groupId] = { question, answer, timer1, timer2, bingo }
+  store[groupId] = { question, answer, hint, timer1, timer2, bingo }
   message.addListener(groupId, answer, bingo)
 
   return message.plain(question)
@@ -92,7 +93,7 @@ async function riddle (text, sender, chain) {
     // 3s 冷却
     if (skipIsBusy) return
     skipIsBusy = true
-    setTimeout(() => skipIsBusy = false, 3000)
+    setTimeout(() => { skipIsBusy = false }, 3000)
 
     invalidateRiddle(groupId)
     return newRiddle(groupId)

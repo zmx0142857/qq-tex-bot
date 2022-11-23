@@ -93,7 +93,7 @@ function exeCommands (text, sender, chain) {
     return {
       isFormula,
       message: method(text, sender, chain).catch(e => {
-        console.error(e);
+        console.error(e)
         return [message.error]
       })
     }

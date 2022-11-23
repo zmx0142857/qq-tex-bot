@@ -5,7 +5,7 @@ async function load (filename, page) {
     data: await readJson(filename),
     page,
     sortBy: (a, b) => b.score - a.score,
-    mapList: (item, index, totalIndex) => `${totalIndex+1}. ${item.name} ${item.score}`
+    mapList: (item, index, totalIndex) => `${totalIndex + 1}. ${item.name} ${item.score}`
   })
 }
 

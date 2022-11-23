@@ -40,8 +40,8 @@ module.exports = {
       let files = await this.init(groupId)
       if (keyword) {
         files = files.filter(filename =>
-	  filename.toLowerCase().includes(keyword.toLowerCase())
-	)
+          filename.toLowerCase().includes(keyword.toLowerCase())
+        )
       }
       if (files.length > 0) {
         return files[Math.random() * files.length | 0]
@@ -74,7 +74,7 @@ module.exports = {
       }
       files.splice(index, 1)
       newFiles.push(newFileName)
-      
+
       const filePath = path.join(picDir, groupId, fileName)
       const newFilePath = path.join(picDir, newGroupId, newFileName)
       await fs.promises.rename(filePath, newFilePath)

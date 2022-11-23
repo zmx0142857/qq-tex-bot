@@ -27,7 +27,7 @@ function newGame (groupId, options = {}) {
  * @param {number} len
  */
 function newDigits(len = defaultLen) {
-  const digits = Array.from({ length: 10 }, (_, i) => i);
+  const digits = Array.from({ length: 10 }, (_, i) => i)
   const answer = []
   for (let i = 0; i < len; ++i) {
     answer.push(digits.splice(Math.floor(Math.random() * digits.length), 1))
@@ -46,7 +46,7 @@ function isValid(current, guess) {
   }
   // 要求每位数字不同
   let prev = ''
-  for (let d of guess.split('').sort()) {
+  for (const d of guess.split('').sort()) {
     if (d === prev) return false
     prev = d
   }
@@ -85,13 +85,11 @@ async function oneATwoB (text, sender, chain) {
 /1a2b rank [页码] 查看排行
 /1a2b <数字> 参与游戏`)
   } else if (/new( \d+)?( \d+)?/.test(text)) {
-    let [_, len, limit] = text.split(/\s+/)
+    let [, len, limit] = text.split(/\s+/)
     len = Number(len) || defaultLen
-    if (!(len >= 1 && len <= 10))
-      return message.plain('长度在 1-10 之间')
+    if (!(len >= 1 && len <= 10)) { return message.plain('长度在 1-10 之间') }
     limit = limit ? Number(limit) : limitMap[len]
-    if (!(limit >= 2 && limit <= 30))
-      return message.plain('次数在 2-30 之间')
+    if (!(limit >= 2 && limit <= 30)) { return message.plain('次数在 2-30 之间') }
     newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
   } else if (/^rank( \d+)?/.test(text)) {
@@ -113,9 +111,11 @@ async function oneATwoB (text, sender, chain) {
     const isLose = ++current.guessCount >= current.limit
     if (isWin || isLose) delete store[groupId]
 
-    const prompt = isWin ? `恭喜你猜对了！ ${current.guessCount}/${current.limit}`
-      : isLose ? `已猜 ${current.limit} 次，游戏结束。\n答案：${current.answer}`
-      : `输入 /1a2b <${current.len} 位不同数字> 参与游戏 ${current.guessCount}/${current.limit}`
+    const prompt = isWin
+      ? `恭喜你猜对了！ ${current.guessCount}/${current.limit}`
+      : isLose
+        ? `已猜 ${current.limit} 次，游戏结束。\n答案：${current.answer}`
+        : `输入 /1a2b <${current.len} 位不同数字> 参与游戏 ${current.guessCount}/${current.limit}`
 
     // 记录成绩
     if (isWin) {

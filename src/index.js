@@ -8,7 +8,7 @@ try {
 }
 
 const {
-  //bot,
+  // bot,
   connect,
   autoreply,
   groupAutoreply,
