@@ -27,7 +27,7 @@ function writeJson (filename, data) {
 function pager ({ data, page = 1, pageSize = 10, sortBy, mapList }) {
   const begin = (page - 1) * pageSize
   const total = data.length
-  const totalPages = (total / pageSize | 0) + 1
+  const totalPages = (((total || 1) - 1) / pageSize | 0) + 1
   if (sortBy) data = data.sort(sortBy)
   data = data.slice(begin, begin + pageSize)
   if (mapList) data = data.map((v, i) => mapList(v, i, begin + i))
