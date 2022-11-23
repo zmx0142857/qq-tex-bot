@@ -7,7 +7,7 @@ const bot = new Bot()
 // 连接到 mirai-api-http 服务
 async function connect () {
   const server = {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://127.0.0.1:8080',
     ...config.server
   }
   try {
