@@ -6,7 +6,7 @@ const { picDict } = require('../../bot')
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const adminList = config.auth.admin || []
-const saveGroup = config.auth.saveGroup || []
+const saveGroup = config.plugins.savepic.saveGroup || []
 
 function help() {
   return `用法:

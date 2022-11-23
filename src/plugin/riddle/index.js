@@ -1,6 +1,6 @@
 const message = require('../../message')
 const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank')
-const { riddleGroup } = require('../../config').auth
+const riddleGroup = require('../../config').plugins.riddle.whiteGroup
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
 

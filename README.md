@@ -160,13 +160,22 @@ module.exports = {
     // blackGroup: [], // 群聊黑名单
     // whiteGroup: [], // 群聊白名单
   },
-  // 开启的插件列表
-  plugins: [
-    'math',
-    // 'savepic',
-    // '1a2b',
-    // 'rotate',
-  ],
+  // 启用的插件
+  plugins: {
+    math: {},
+    savepic: {
+      saveGroup: []
+    },
+    '1a2b': {
+      whiteGroup: [],
+    },
+    riddle: {
+      whiteGroup: [],
+    },
+    copywriting: {
+      whiteGroup: [],
+    },
+  },
 }
 ```
 
@@ -176,6 +185,7 @@ module.exports = {
 | server.qq | 机器人的 qq 号 | Number | <span style="color:red">必填</span> |
 | groups | 机器人加入的群, 以 `群号: 群名` 的格式填写, 可填多个 | Object | <span style="color:red">必填</span> |
 | image.path | mirai 图片目录的绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows | String | <span style="color:red">必填</span> |
+| plugins | 开启的插件 | Object | <span style="color:red">必填</span> |
 | server.baseUrl | mirai 服务的地址 | String | 默认值 http://localhost:8080 |
 | tex.ex | 公式的字体大小 | Number | 默认值 16 |
 | image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
@@ -186,9 +196,6 @@ module.exports = {
 | auth.whiteList | 白名单 | Number[] | 默认为空 |
 | auth.blackGroup | 群聊黑名单 | Number[] | 默认为空 |
 | auth.whiteGroup | 群聊白名单 | Number[] | 默认为空 |
-| auth.saveGroup | savepic 群聊白名单 | Number[] | 默认为空 |
-| auth._1a2bGroup | 1a2b 群聊白名单 | Number[] | 默认为空 |
-| plugins | 开启的插件列表 | String[] | 默认为空 |
 
 最后, 运行 `npm start` 或 `node index.js` 启动机器人.
 

@@ -28,7 +28,7 @@ const initLen = commands.length
 function loadCommands () {
   console.log('bot is remaking...')
   commands.length = initLen
-  for (const module of (config.plugins || [])) {
+  for (const module of (Object.keys(config.plugins) || [])) {
     try {
       let cmd = require('./' + module)
       if (typeof cmd === 'function') cmd = cmd()

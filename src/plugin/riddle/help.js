@@ -11,6 +11,6 @@ const helpDict = {
   '折巾格': '将谜底第一字左右拆开成两个字，只取其半边字连下文来读',
   '蜂腰格': '蜂腰格，又名中分格、断绵格。谜底须三字以上的单数词句，但中间一字要上下分开作两字读',
 }
-helpDict['中分格'] = help['断绵格'] = help['蜂腰格']
+helpDict['中分格'] = helpDict['断绵格'] = helpDict['蜂腰格']
 
 module.exports = helpDict

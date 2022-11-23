@@ -1,6 +1,6 @@
 const message = require('../../message')
 const { loadRank, saveRank } = require('./rank')
-const { _1a2bGroup } = require('../../config').auth
+const _1a2bGroup = require('../../config').plugins['1a2b'].whiteGroup
 
 const store = {} // { groupId: Game }
 const defaultLen = 4
