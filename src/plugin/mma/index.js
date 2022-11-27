@@ -1,0 +1,79 @@
+const WebSocket = require('ws')
+const message = require('../../message')
+const config = require('../../config')
+const tex = require('../math/index')[1].method
+
+const hides = [
+  /Wolfram Language .* Engine for .* x86 (64-bit)/,
+  /Copyright \d+-\d+ Wolfram Research, Inc\./,
+  /^In\[\d+\]:=/
+]
+
+const texForm = /^Out\[\d+\]\/\/TeXForm=/
+
+let ws
+let resolve
+let timer
+const buf = []
+const lastTime = {}
+
+function onMessage (data) {
+  const msg = String(data, 'utf-8')
+  console.log(msg)
+  if (hides.some(reg => reg.test(msg))) return
+
+  clearTimeout(timer)
+  buf.push(msg)
+  timer = setTimeout(() => {
+    if (resolve) {
+      const out = buf.join('\n').trim()
+      if (texForm.test(out)) {
+        tex(out.replace(texForm, '')).then(resolve)
+      } else {
+        resolve(message.plain(out))
+      }
+    }
+    buf.length = 0
+  }, 16)
+}
+
+function initWs () {
+  const url = `ws://127.0.0.1:${config.plugins.mma.port || 2333}/`
+  ws = new WebSocket(url)
+  ws.on('open', () => {
+    console.log('ws opened', url)
+    ws.on('message', onMessage)
+    ws.on('error', console.error)
+    ws.on('close', (code, reason) => {
+      console.log('ws closed', code, reason)
+    })
+    ws.on('unexpectedResponse', ({ req, res }) => {
+      console.error('ws unexpected response', req, res)
+    })
+  })
+  return new Promise((res, rej) => {
+    setTimeout(res, 5000)
+  })
+}
+
+async function mma (text, sender, chain) {
+  const newTime = new Date()
+  const diff = newTime - lastTime[sender.id]
+  lastTime[sender.id] = newTime
+  if (diff < 15000) {
+    return message.plain(`你先别急 (${15 - Math.round(diff / 1000)}s)`)
+  }
+
+  if (!ws) await initWs()
+  return new Promise((res, rej) => {
+    resolve = res
+    ws.send(text)
+  })
+}
+
+module.exports = {
+  reg: /^\/mma/i,
+  method: mma,
+  whiteGroup: config.plugins.mma.whiteGroup,
+  whiteList: config.plugins.mma.whiteList,
+}

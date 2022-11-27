@@ -175,6 +175,13 @@ module.exports = {
     copywriting: {
       whiteGroup: [],
     },
+    mma: {
+      // 配置了 whiteGroup 后，该群成员都可使用，不限于 admin。
+      // 如要只允许 admin 使用，请去掉 whiteGroup
+      // whiteList: config.auth.admin,
+      whiteGroup: [],
+      whiteList: [],
+    }
   },
 }
 ```
