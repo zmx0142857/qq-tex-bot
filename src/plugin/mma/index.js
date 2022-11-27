@@ -59,10 +59,11 @@ function initWs () {
 async function mma (text, sender, chain) {
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
-  lastTime[sender.id] = newTime
-  if (diff < 15000) {
-    return message.plain(`你先别急 (${15 - Math.round(diff / 1000)}s)`)
+  const coolDown = 20
+  if (diff < coolDown * 1000) {
+    return message.plain(`你先别急 (${coolDown - Math.round(diff / 1000)}s)`)
   }
+  lastTime[sender.id] = newTime
 
   if (!ws) await initWs()
   return new Promise((res, rej) => {
