@@ -176,4 +176,11 @@ module.exports = [
     method: am,
     isFormula: true,
   },
+  {
+    reg: /^\\tex/i,
+    isFormula: true,
+    async method () {
+      return '笨！'
+    }
+  },
 ]

@@ -47,7 +47,9 @@ function autoRecall () {
       const now = Number(new Date())
       const last = recallDate[authorId]
       const timeDelta = 2 * 60 * 1000
-      if (!isNaN(last)) recallDate[authorId] = now
+      if (!isNaN(last) || last === undefined) {
+        recallDate[authorId] = now
+      }
       if (now - last < timeDelta) {
         // 节流, timeDelta 内只提示一次
         recallDate[authorId] = NaN // 表示冷却中
