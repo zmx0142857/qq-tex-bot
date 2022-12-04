@@ -4,9 +4,7 @@ const riddleGroup = require('../../config').plugins.riddle.whiteGroup
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
 
-const store = {} // { groupId: { question, answer, raw, timer1, timer2 } }
-
-let skipIsBusy
+const store = {} // { groupId: { question, answer, raw, timer1, timer2, timer3 } }
 
 function invalidateRiddle (groupId) {
   const group = store[groupId]
@@ -45,7 +43,7 @@ async function newRiddle (groupId) {
     putBackRiddle(groupId, res.raw)
   }, 2 * 3600 * 1000)
 
-  store[groupId] = { question, answer, hint, timer1, timer2, bingo }
+  store[groupId] = { question, answer, hint, timer1, timer2, timer3: null, bingo }
   message.addListener(groupId, answer, bingo)
 
   return message.plain(question)
@@ -80,10 +78,12 @@ async function riddle (text, sender, chain) {
     invalidateRiddle(groupId)
     return message.plain('谜底：' + group.answer)
   } else if (text === 'skip') {
+    const group = store[groupId]
+    if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
+    if (group.timer3 !== null) return
     // 3s 冷却
-    if (skipIsBusy) return
-    skipIsBusy = true
-    setTimeout(() => { skipIsBusy = false }, 3000)
+    group.timer3 = true
+    setTimeout(() => { group.timer3 = null }, 3000)
 
     invalidateRiddle(groupId)
     return newRiddle(groupId)

@@ -18,8 +18,10 @@ function newGame (groupId, options = {}) {
     guessCount: 0, // 已猜测次数
     answer: newDigits(options.len),
     history: [],
+    timer: true,
     ...options,
   }
+  setTimeout(() => store[groupId].timer = null, 3000)
 }
 
 /**
@@ -85,6 +87,8 @@ async function oneATwoB (text, sender, chain) {
 /1a2b rank [页码] 查看排行
 /1a2b <数字> 参与游戏`)
   } else if (/new( \d+)?( \d+)?/.test(text)) {
+    const current = store[groupId]
+    if (current && current.timer) return
     let [, len, limit] = text.split(/\s+/)
     len = Number(len) || defaultLen
     if (!(len >= 1 && len <= 10)) { return message.plain('长度在 1-10 之间') }

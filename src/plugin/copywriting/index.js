@@ -1,6 +1,6 @@
 const message = require('../../message')
 const fs = require('fs')
-const copywritingGroup = require('../../config').plugins.whiteGroup
+const copywritingGroup = require('../../config').plugins.copywriting.whiteGroup
 let store
 
 const mod = [
