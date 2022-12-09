@@ -21,7 +21,9 @@ function newGame (groupId, options = {}) {
     timer: true,
     ...options,
   }
-  setTimeout(() => store[groupId].timer = null, 3000)
+  setTimeout(() => {
+    store[groupId].timer = null
+  }, 3000)
 }
 
 /**

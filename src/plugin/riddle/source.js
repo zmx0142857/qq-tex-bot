@@ -1,6 +1,14 @@
 const fs = require('fs')
+const { readJson, writeJson } = require('../../utils')
 
 const store = {}
+
+function syncData(groupId, lines) {
+  const filename = `riddle-score.${groupId}.json`
+  const data = readJson(filename)
+  data.lines = lines
+  writeJson(filename, data)
+}
 
 async function getRiddle (groupId) {
   let text, lines
@@ -16,11 +24,13 @@ async function getRiddle (groupId) {
     if (!text.trim()) lines = []
     else lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
     store[groupId] = lines
+    syncData(groupId, lines)
   }
   if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
   const randLine = lines.pop()
   try {
     const [face, category, answer, hint] = randLine.split(',')
+    syncData(groupId, lines)
     return {
       code: 0,
       question: `${face}【${category}】`,
@@ -39,6 +49,7 @@ function putBackRiddle (groupId, raw) {
   const lines = store[groupId]
   if (lines) {
     lines.push(raw)
+    syncData(groupId, lines)
   } else {
     console.error('putBack failed: lines is undefined')
   }
@@ -46,6 +57,7 @@ function putBackRiddle (groupId, raw) {
 
 function resetRiddle (groupId) {
   delete store[groupId]
+  syncData(groupId, [])
 }
 
 module.exports = {
