@@ -3,9 +3,9 @@ const { readJson, writeJson } = require('../../utils')
 
 const store = {}
 
-function syncData(groupId, lines) {
+async function syncData(groupId, lines) {
   const filename = `riddle-score.${groupId}.json`
-  const data = readJson(filename)
+  const data = await readJson(filename)
   data.lines = lines
   writeJson(filename, data)
 }
@@ -23,7 +23,6 @@ async function initStore (groupId) {
   if (!text.trim()) lines = []
   else lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
   store[groupId] = lines
-  syncData(groupId, lines)
   return lines
 }
 
@@ -31,6 +30,7 @@ async function getRiddle (groupId) {
   const lines = await initStore(groupId)
   if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
   const randLine = lines.pop()
+  syncData(groupId, lines)
   try {
     const [face, category, answer, hint] = randLine.split(',')
     const ret = {
@@ -40,7 +40,6 @@ async function getRiddle (groupId) {
       raw: randLine,
       hint: hint || '没有提示捏',
     }
-    syncData(groupId, lines)
     return ret
   } catch (e) {
     console.error(e)

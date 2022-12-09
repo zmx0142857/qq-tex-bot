@@ -1,12 +1,16 @@
 const { readJson, writeJson, pager } = require('../../utils')
 
-async function load (filename, page) {
-  let data = await readJson(filename)
-  if (data && data.score) {
+function compatScore(data) {
+  if (data && !Array.isArray(data)) {
     data = data.score
   }
+  return data || []
+}
+
+async function load (filename, page) {
+  let data = await readJson(filename)
   return pager({
-    data,
+    data: compatScore(data),
     page,
     sortBy: (a, b) => b.score - a.score,
     mapList: (item, index, totalIndex) => `${totalIndex + 1}. ${item.name} ${item.score}`
@@ -15,10 +19,7 @@ async function load (filename, page) {
 
 async function save (filename, sender) {
   const data = await readJson(filename)
-  let score = data
-  if (data && data.score) {
-    score = data.score
-  }
+  const score = compatScore(data)
   const record = score.find(d => d.id === sender.id)
   if (record) {
     record.score += 1
@@ -26,6 +27,7 @@ async function save (filename, sender) {
   } else {
     score.push({ id: sender.id, name: sender.memberName || sender.name, score: 1 })
   }
+  data.score = score
   writeJson(filename, data)
 }
 
