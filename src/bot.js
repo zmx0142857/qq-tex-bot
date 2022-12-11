@@ -21,6 +21,7 @@ async function connect () {
 const replyDict = {} // { [messageId]: replyId }
 const recallDate = {} // { [senderId]: date }
 const recallQueue = {} // { [recallType]: replyId }
+const recallTimer = {} // { [recallType]: timerId }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
 function saveReply({ messageId, replyId, recallType, target }) {
@@ -33,7 +34,8 @@ function saveReply({ messageId, replyId, recallType, target }) {
         target,
       })
     }
-    setTimeout(() => {
+    clearTimeout(recallTimer[recallType])
+    recallTimer[recallType] = setTimeout(() => {
       delete recallQueue[recallType]
     }, 1000 * 60 * 2) // 2 分钟后释放空间
   } else {
@@ -164,7 +166,7 @@ function groupAutoreply (command) {
     if (res.recall) {
       // temporary hack
       if (res.recall === '1a2b' && (
-        typeof msg !== 'string' || !msg.startsWith('输入 /1a2b')
+        typeof msg !== 'string' || !/^(输入|已猜|恭喜)/.test(msg)
       )) return
       saveReply({
         messageId: id,
