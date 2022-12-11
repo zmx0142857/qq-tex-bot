@@ -1,6 +1,6 @@
 {
   "name": "qq-tex-bot",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "render tex formula on qq",
   "main": "src/index.js",
   "repository": "https://github.com/zmx0142857/qq-tex-bot",

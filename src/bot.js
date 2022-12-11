@@ -20,13 +20,28 @@ async function connect () {
 
 const replyDict = {} // { [messageId]: replyId }
 const recallDate = {} // { [senderId]: date }
+const recallQueue = {} // { [recallType]: replyId }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
-function saveReply(messageId, replyId, recallType) {
-  replyDict[messageId] = { id: replyId, type: recallType }
-  setTimeout(() => {
-    delete replyDict[messageId]
-  }, 1000 * 60 * 2) // 2 分钟后释放空间
+function saveReply({ messageId, replyId, recallType, target }) {
+  if (recallType === '1a2b') {
+    const messageId = recallQueue[recallType]
+    recallQueue[recallType] = replyId
+    if (messageId) {
+      bot.recall({
+        messageId,
+        target,
+      })
+    }
+    setTimeout(() => {
+      delete recallQueue[recallType]
+    }, 1000 * 60 * 2) // 2 分钟后释放空间
+  } else {
+    replyDict[messageId] = { id: replyId, type: recallType }
+    setTimeout(() => {
+      delete replyDict[messageId]
+    }, 1000 * 60 * 2) // 2 分钟后释放空间
+  }
 }
 
 // 监听消息撤回
@@ -102,16 +117,21 @@ function autoreply (command) {
     const res = command(text, sender, messageChain)
     if (!res) return
     const msg = await res.message
-    if (msg) {
-      const { id } = messageChain[0]
-      bot.sendMessage({
-        friend: sender.id,
-        // quote: messageChain[0].id,
-        message: msg,
-      }).then(replyId => {
-        // savePicUrl(msg, replyId)
-        if (res.recall) saveReply(id, replyId, res.recall)
-      }).catch(console.error)
+    if (!msg) return
+    const { id } = messageChain[0]
+    const replyId = await bot.sendMessage({
+      friend: sender.id,
+      // quote: messageChain[0].id,
+      message: msg,
+    })
+    // savePicUrl(msg, replyId)
+    if (res.recall) {
+      saveReply({
+        messageId: id,
+        replyId,
+        recallType: res.recall,
+        target: sender.id,
+      })
     }
   })
   console.log('autoreply is listening...')
@@ -135,14 +155,24 @@ function groupAutoreply (command) {
     const msg = await res.message
     if (!msg) return
     const { id } = messageChain[0]
-    bot.sendMessage({
+    const replyId = await bot.sendMessage({
       group: sender.group.id,
       // quote: messageChain[0].id,
       message: msg,
-    }).then(replyId => {
-      // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
-      if (res.recall) saveReply(id, replyId, res.recall)
-    }).catch(console.error)
+    })
+    // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
+    if (res.recall) {
+      // temporary hack
+      if (res.recall === '1a2b' && (
+        typeof msg !== 'string' || !msg.startsWith('输入 /1a2b')
+      )) return
+      saveReply({
+        messageId: id,
+        replyId,
+        recallType: res.recall,
+        target: sender.group.id,
+      })
+    }
   })
   console.log('group autoreply is listening...')
 }

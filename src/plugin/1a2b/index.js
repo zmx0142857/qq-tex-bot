@@ -81,14 +81,7 @@ const limitMap = [0, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12]
 
 async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
-  // console.log(sender, chain)
-  if (text === '') {
-    return message.plain(`根据提示猜数字。A 表示数字与位置均正确，B 表示数字正确但位置错误。
-用法：
-/1a2b new [长度] [次数] 新的游戏
-/1a2b rank [页码] 查看排行
-/1a2b <数字> 参与游戏`)
-  } else if (/new( \d+)?( \d+)?/.test(text)) {
+  if (/new( \d+)?( \d+)?$/.test(text)) {
     const current = store[groupId]
     if (current && current.timer) return
     let [, len, limit] = text.split(/\s+/)
@@ -98,7 +91,7 @@ async function oneATwoB (text, sender, chain) {
     if (!(limit >= 2 && limit <= 30)) { return message.plain('次数在 2-30 之间') }
     newGame(groupId, { len, limit })
     return message.plain(`已生成新的 ${store[groupId].len} 位数字`)
-  } else if (/^rank( \d+)?/.test(text)) {
+  } else if (/^rank( \d+)?$/.test(text)) {
     const page = parseInt(text.slice(5)) || 1
     const rank = await loadRank(groupId, page)
     return message.plain(rank)
@@ -128,7 +121,13 @@ async function oneATwoB (text, sender, chain) {
       saveRank(groupId, sender)
     }
 
-    return message.plain(prompt + '\n' + current.history.join('\n'))
+    return prompt + '\n' + current.history.join('\n')
+  } else {
+    return `根据提示猜数字。A 表示数字与位置均正确，B 表示数字正确但位置错误。
+用法：
+/1a2b new [长度] [次数] 新的游戏
+/1a2b rank [页码] 查看排行
+/1a2b <数字> 参与游戏`
   }
 }
 
@@ -136,4 +135,5 @@ module.exports = {
   reg: /^\/1a2b/i,
   method: oneATwoB,
   whiteGroup: _1a2bGroup,
+  recall: '1a2b',
 }
