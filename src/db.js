@@ -9,7 +9,7 @@ module.exports = async function getDB () {
       filename: 'data/database.db',
       driver: sqlite3.Database
     })
-    db.on('trace', console.error)
+    db.on('trace', console.log)
   }
   return db
 }
