@@ -166,7 +166,7 @@ function groupAutoreply (command) {
     if (res.recall) {
       // temporary hack
       if (res.recall === '1a2b' && (
-        typeof msg !== 'string' || !/^(输入|已猜|恭喜)/.test(msg)
+        typeof msg !== 'string' || !/^输入/.test(msg)
       )) return
       saveReply({
         messageId: id,
