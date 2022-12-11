@@ -76,7 +76,7 @@ function exeCommands (text, sender, chain) {
       blackList,
       blackGroup,
       trim = true,
-      isFormula,
+      recall,
     } = cmd
 
     if (!reg.test(text)) continue
@@ -95,7 +95,7 @@ function exeCommands (text, sender, chain) {
 
     // 构造响应体
     return {
-      isFormula,
+      recall,
       message: method(text, sender, chain).catch(e => {
         console.error(e)
         return [message.error]

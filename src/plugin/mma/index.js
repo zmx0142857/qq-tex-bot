@@ -84,5 +84,5 @@ module.exports = {
   method: mma,
   whiteGroup: config.plugins.mma.whiteGroup,
   whiteList: config.plugins.mma.whiteList,
-  isFormula: true,
+  recall: 'mma',
 }

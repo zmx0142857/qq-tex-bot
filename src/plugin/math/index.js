@@ -164,21 +164,20 @@ module.exports = [
   {
     reg: /^\/text/i,
     method: text,
-    isFormula: true,
+    recall: 'math',
   },
   {
     reg: /^\/tex/i,
     method: tex,
-    isFormula: true,
+    recall: 'math',
   },
   {
     reg: /^\/am/i,
     method: am,
-    isFormula: true,
+    recall: 'math',
   },
   {
     reg: /^\\tex/i,
-    isFormula: true,
     async method () {
       return '笨！'
     }

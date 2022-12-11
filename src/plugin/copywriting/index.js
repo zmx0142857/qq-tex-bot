@@ -55,7 +55,7 @@ function updateStore (data) {
       reg: new RegExp('^/' + key, 'i'),
       method: factory(key),
       whiteGroup: copywritingGroup,
-      isFormula: true,
+      recall: 'copywriting',
     }))
   )
 }

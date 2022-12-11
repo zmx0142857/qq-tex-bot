@@ -26,11 +26,9 @@ async function initStore (groupId) {
   return { groupid: groupId, no, data: datas[no] }
 }
 
-async function deleteOneRiddle (groupId) {
+async function deleteOneRiddle (groupId, no) {
   const db = await getDB()
-  await db.run(`delete from riddle_question where groupid=? and no=(
-    select max(no) from riddle_question where groupid=?
-  )`, groupId, groupId)
+  await db.run('delete from riddle_question where groupid=? and no=?', groupId, no)
 }
 
 async function getRiddle (groupId) {
@@ -38,7 +36,7 @@ async function getRiddle (groupId) {
   if (line.code) return line
   if (!line.no) return { code: 2, message: '已经没有更多谜题了！' }
 
-  deleteOneRiddle(groupId)
+  deleteOneRiddle(groupId, line.no)
 
   try {
     const [face, category, answer, hint] = line.data.split(',')

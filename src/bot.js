@@ -22,8 +22,8 @@ const replyDict = {} // { [messageId]: replyId }
 const recallDate = {} // { [senderId]: date }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
-function saveReply(messageId, replyId, senderId) {
-  replyDict[messageId] = replyId
+function saveReply(messageId, replyId, recallType) {
+  replyDict[messageId] = { id: replyId, type: recallType }
   setTimeout(() => {
     delete replyDict[messageId]
   }, 1000 * 60 * 2) // 2 分钟后释放空间
@@ -35,13 +35,15 @@ function autoRecall () {
   bot.on(['GroupRecallEvent', 'FriendRecallEvent'],
     async res => {
       const { messageId, authorId, group } = res
-      const id = replyDict[messageId]
-      if (!id) return
+      const reply = replyDict[messageId]
+      const target = (group && group.id) || authorId
+      if (!reply) return
       console.log(authorId + ' recalled ' + messageId)
       bot.recall({
-        messageId: id,
-        target: (group && group.id) || authorId,
+        messageId: reply.id,
+        target,
       })
+      if (reply.type !== 'math') return
 
       // timeDelta (两分钟) 内同一个人连续撤回两次, 则触发提示
       const now = Number(new Date())
@@ -57,17 +59,11 @@ function autoRecall () {
           recallDate[authorId] = undefined
         }, timeDelta)
 
-        if (group && group.id) {
-          bot.sendMessage({
-            group: group.id,
-            message: [message.mathHelp]
-          })
-        } else {
-          bot.sendMessage({
-            friend: authorId,
-            message: [message.mathHelp]
-          })
-        }
+        const key = group && group.id ? 'group' : 'friend'
+        bot.sendMessage({
+          [key]: target,
+          message: [message.mathHelp]
+        })
       }
     }
   )
@@ -114,7 +110,7 @@ function autoreply (command) {
         message: msg,
       }).then(replyId => {
         // savePicUrl(msg, replyId)
-        if (res.isFormula) saveReply(id, replyId, sender.id)
+        if (res.recall) saveReply(id, replyId, res.recall)
       }).catch(console.error)
     }
   })
@@ -145,7 +141,7 @@ function groupAutoreply (command) {
       message: msg,
     }).then(replyId => {
       // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
-      if (res.isFormula) saveReply(id, replyId, sender.id)
+      if (res.recall) saveReply(id, replyId, res.recall)
     }).catch(console.error)
   })
   console.log('group autoreply is listening...')
