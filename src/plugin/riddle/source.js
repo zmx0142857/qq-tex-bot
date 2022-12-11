@@ -3,6 +3,12 @@ const { readJson, writeJson } = require('../../utils')
 
 const store = {}
 
+async function loadData(groupId) {
+  const filename = `riddle-score.${groupId}.json`
+  const data = await readJson(filename)
+  return data.lines
+}
+
 async function syncData(groupId, lines) {
   const filename = `riddle-score.${groupId}.json`
   const data = await readJson(filename)
@@ -13,6 +19,7 @@ async function syncData(groupId, lines) {
 async function initStore (groupId) {
   let text
   let lines = store[groupId]
+  if (!lines) lines = await loadData(groupId)
   if (lines) return lines
   try {
     text = await fs.promises.readFile('data/riddle.txt', 'utf-8')

@@ -8,7 +8,7 @@ function compatScore(data) {
 }
 
 async function load (filename, page) {
-  let data = await readJson(filename)
+  const data = await readJson(filename)
   return pager({
     data: compatScore(data),
     page,

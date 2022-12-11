@@ -2,6 +2,7 @@ const WebSocket = require('ws')
 const message = require('../../message')
 const config = require('../../config')
 const tex = require('../math/index')[1].method
+const { bot } = require('../../bot')
 
 const hides = [
   /Wolfram Language .* Engine for .* x86 (64-bit)/,
@@ -26,7 +27,7 @@ function onMessage (data) {
   buf.push(msg)
   timer = setTimeout(() => {
     if (resolve) {
-      const out = buf.join('\n').trim()
+      const out = buf.join('\n').trimEnd()
       if (texForm.test(out)) {
         tex(out.replace(texForm, '')).then(resolve)
       } else {
@@ -65,7 +66,13 @@ async function mma (text, sender, chain) {
   }
   lastTime[sender.id] = newTime
 
-  if (!ws) await initWs()
+  if (!ws) {
+    bot.sendMessage({
+      group: sender.group.id,
+      message: '在启动啦ˉ\\_(ツ)_/ˉ...',
+    })
+    await initWs()
+  }
   return new Promise((res, rej) => {
     resolve = res
     ws.send(text)
@@ -77,4 +84,5 @@ module.exports = {
   method: mma,
   whiteGroup: config.plugins.mma.whiteGroup,
   whiteList: config.plugins.mma.whiteList,
+  isFormula: true,
 }

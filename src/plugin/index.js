@@ -86,7 +86,10 @@ function exeCommands (text, sender, chain) {
     if (!checkBlack(blackList, blackGroup, sender)) return
 
     if (trim) {
-      text = text.replace(reg, '').trim()
+      text = text.replace(reg, '')
+      // trim 模式的命令后至少有一空格，如：/riddle get 是合法命令，/riddleget 则不是
+      if (text && text[0] !== ' ') return
+      text = text.trim()
     }
     console.log(sender.id, reg, text)
 
