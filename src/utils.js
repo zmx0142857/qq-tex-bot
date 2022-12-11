@@ -12,7 +12,12 @@ function readJson (filename) {
           return reject(err)
         }
       } else {
-        data = JSON.parse(data)
+        try {
+          data = JSON.parse(data)
+        } catch (e) {
+          console.error(filename, e)
+          data = []
+        }
       }
       resolve(data)
     })

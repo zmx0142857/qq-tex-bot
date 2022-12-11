@@ -1,59 +1,47 @@
-const { readJson, writeJson, pager } = require('../../utils')
+const { pager } = require('../../utils')
+const getDB = require('../../db')
 
-function compatScore(data) {
-  if (data && !Array.isArray(data)) {
-    data = data.score
-  }
-  return data || []
-}
-
-async function load (filename, page) {
-  const data = await readJson(filename)
+async function load (table, groupId, page) {
+  const db = await getDB()
+  const data = await db.all(`select * from ${table} where groupid=? order by score desc`, groupId)
   return pager({
-    data: compatScore(data),
+    data,
     page,
-    sortBy: (a, b) => b.score - a.score,
     mapList: (item, index, totalIndex) => `${totalIndex + 1}. ${item.name} ${item.score}`
   })
 }
 
-async function save (filename, sender) {
-  const data = await readJson(filename)
-  const score = compatScore(data)
-  const record = score.find(d => d.id === sender.id)
-  if (record) {
-    record.score += 1
-    record.name = sender.memberName || sender.name // 更新名片
+async function save (table, groupId, sender) {
+  const db = await getDB()
+  const qq = sender.id
+  const name = sender.memberName || sender.name
+  const count = await db.get(`select count(*) as count from ${table} where groupid=? and qq=?`, groupId, qq)
+  if (count.count > 0) {
+    await db.run(`update ${table} set score=score+1, name=? where groupid=? and qq=?`, name, groupId, qq)
   } else {
-    score.push({ id: sender.id, name: sender.memberName || sender.name, score: 1 })
+    await db.run(`insert into ${table} (groupid, qq, name, score) values (?,?,?,?)`, groupId, qq, name, 1)
   }
-  data.score = score
-  writeJson(filename, data)
 }
 
 async function loadRank (groupId, page) {
-  const filename = `riddle-rank.${groupId}.json`
-  return load(filename, page)
+  return load('riddle_rank', groupId, page)
 }
 
 async function saveRank (groupId, sender) {
-  const filename = `riddle-rank.${groupId}.json`
-  return save(filename, sender)
+  return save('riddle_rank', groupId, sender)
 }
 
 async function loadScore (groupId, page) {
-  const filename = `riddle-score.${groupId}.json`
-  return load(filename, page)
+  return load('riddle_score', groupId, page)
 }
 
 async function saveScore (groupId, sender) {
-  const filename = `riddle-score.${groupId}.json`
-  return save(filename, sender)
+  return save('riddle_score', groupId, sender)
 }
 
 async function clearScore (groupId) {
-  const filename = `riddle-score.${groupId}.json`
-  writeJson(filename, [])
+  const db = await getDB()
+  await db.run('delete from riddle_score where groupid=?', groupId)
 }
 
 module.exports = {

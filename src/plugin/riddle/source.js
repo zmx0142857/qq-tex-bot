@@ -1,73 +1,72 @@
 const fs = require('fs')
-const { readJson, writeJson } = require('../../utils')
-
-const store = {}
-
-async function loadData(groupId) {
-  const filename = `riddle-score.${groupId}.json`
-  const data = await readJson(filename)
-  return data.lines
-}
-
-async function syncData(groupId, lines) {
-  const filename = `riddle-score.${groupId}.json`
-  const data = await readJson(filename)
-  data.lines = lines
-  writeJson(filename, data)
-}
+const getDB = require('../../db')
 
 async function initStore (groupId) {
+  const db = await getDB()
+  const line = await db.get('select * from riddle_question where groupid=? order by no desc limit 1', groupId)
+  if (line) return line // 尝试取一条谜
+
+  // 读 txt 并入库
   let text
-  let lines = store[groupId]
-  if (!lines) lines = await loadData(groupId)
-  if (lines) return lines
   try {
     text = await fs.promises.readFile('data/riddle.txt', 'utf-8')
   } catch (e) {
     console.error(e)
     return { code: 1, message: '获取谜面失败，请稍后再试' }
   }
-  if (!text.trim()) lines = []
-  else lines = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
-  store[groupId] = lines
-  return lines
+
+  let datas
+  if (!text.trim()) datas = []
+  else datas = text.trim().split('\n').sort(() => Math.random() < 0.5 ? -1 : 1)
+  datas.unshift('') // 哨兵
+  await db.run('insert into riddle_question (groupid, no, data) values ' + datas.map(data => '(?,?,?)').join(',\n'),
+    ...datas.map((data, index) => [groupId, index, data]).flat()
+  )
+  const no = datas.length - 1
+  return { groupid: groupId, no, data: datas[no] }
+}
+
+async function deleteOneRiddle (groupId) {
+  const db = await getDB()
+  await db.run(`delete from riddle_question where groupid=? and no=(
+    select max(no) from riddle_question where groupid=?
+  )`, groupId, groupId)
 }
 
 async function getRiddle (groupId) {
-  const lines = await initStore(groupId)
-  if (!lines.length) return { code: 2, message: '已经没有更多谜题了！' }
-  const randLine = lines.pop()
-  syncData(groupId, lines)
+  const line = await initStore(groupId)
+  if (line.code) return line
+  if (!line.no) return { code: 2, message: '已经没有更多谜题了！' }
+
+  deleteOneRiddle(groupId)
+
   try {
-    const [face, category, answer, hint] = randLine.split(',')
+    const [face, category, answer, hint] = line.data.split(',')
     const ret = {
       code: 0,
       question: `${face}【${category}】`,
       answer: answer.trim(),
-      raw: randLine,
+      raw: line.data,
       hint: hint || '没有提示捏',
     }
     return ret
   } catch (e) {
     console.error(e)
-    console.error('randLine:', randLine)
+    console.error('line:', line)
     return { code: 3, message: '谜题解析失败' }
   }
 }
 
-function putBackRiddle (groupId, raw) {
-  const lines = store[groupId]
-  if (lines) {
-    lines.push(raw)
-    syncData(groupId, lines)
-  } else {
-    console.error('putBack failed: lines is undefined')
-  }
+async function putBackRiddle (groupId, raw) {
+  const db = await getDB()
+  const max = await db.run('select max(no) as max from riddle_question where groupid=?', groupId)
+  if (max.max === null) return console.error('putBack failed: store not inited')
+  await db.run('insert into riddle_question (groupid, no, data) values (?,?,?)', groupId, max.max + 1, raw)
 }
 
-function resetRiddle (groupId) {
-  delete store[groupId]
-  syncData(groupId, [])
+async function resetRiddle (groupId) {
+  const db = await getDB()
+  await db.run('delete from riddle_question where groupid=?', groupId)
 }
 
 module.exports = {
