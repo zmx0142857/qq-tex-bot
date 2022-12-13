@@ -1,6 +1,8 @@
 const message = require('../../message')
 const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank')
-const riddleGroup = require('../../config').plugins.riddle.whiteGroup
+const config = require('../../config')
+const adminList = config.auth.admin
+const riddleGroup = config.plugins.riddle.whiteGroup
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
 
@@ -60,6 +62,7 @@ async function riddle (text, sender, chain) {
     const rank = await loadRank(groupId, page)
     return message.plain(rank)
   } else if (text === 'remake') {
+    if (!adminList.includes(sender.id)) return
     clearScore(groupId)
     resetRiddle(groupId)
     return message.plain('游戏已就绪，发送 /riddle get 查看谜面')
@@ -78,6 +81,7 @@ async function riddle (text, sender, chain) {
     invalidateRiddle(groupId)
     return message.plain('谜底：' + group.answer)
   } else if (text === 'skip') {
+    if (!adminList.includes(sender.id)) return
     const group = store[groupId]
     if (!group) return message.plain('当前没有谜题。发送 /riddle get 查看谜面')
     if (group.timer3 !== null) return

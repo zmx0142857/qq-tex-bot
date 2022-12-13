@@ -25,19 +25,24 @@ const recallTimer = {} // { [recallType]: timerId }
 
 // 将收到的消息 id 与机器人的回复 id 保存下来, 以备将来撤回
 function saveReply({ messageId, replyId, recallType, target }) {
-  if (recallType === '1a2b') {
-    const messageId = recallQueue[recallType]
-    recallQueue[recallType] = replyId
+  if (/^1a2b/.test(recallType)) {
+    const key = '1a2b'
+    const messageId = recallQueue[key]
     if (messageId) {
       bot.recall({
         messageId,
         target,
       })
     }
-    clearTimeout(recallTimer[recallType])
-    recallTimer[recallType] = setTimeout(() => {
-      delete recallQueue[recallType]
-    }, 1000 * 60 * 2) // 2 分钟后释放空间
+    if (recallType === key) {
+      recallQueue[key] = replyId
+      clearTimeout(recallTimer[key])
+      recallTimer[key] = setTimeout(() => {
+        delete recallQueue[key]
+      }, 1000 * 60 * 2) // 2 分钟后释放空间
+    } else {
+      delete recallQueue[key]
+    }
   } else {
     replyDict[messageId] = { id: replyId, type: recallType }
     setTimeout(() => {
@@ -165,9 +170,10 @@ function groupAutoreply (command) {
     // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
     if (res.recall) {
       // temporary hack
-      if (res.recall === '1a2b' && (
-        typeof msg !== 'string' || !/^输入/.test(msg)
-      )) return
+      if (res.recall === '1a2b') {
+        if (typeof msg !== 'string' || !/^输入/.test(msg)) return
+        if (typeof msg === 'string' && /^(已猜|恭喜)/.test(msg)) res.recall = '1a2b-end'
+      }
       saveReply({
         messageId: id,
         replyId,
