@@ -171,7 +171,7 @@ function groupAutoreply (command) {
     if (res.recall) {
       // temporary hack
       if (res.recall === '1a2b') {
-        if (typeof msg !== 'string' || !/^输入/.test(msg)) return
+        if (typeof msg !== 'string' || !/^(输入|已猜|恭喜)/.test(msg)) return
         if (typeof msg === 'string' && /^(已猜|恭喜)/.test(msg)) res.recall = '1a2b-end'
       }
       saveReply({
