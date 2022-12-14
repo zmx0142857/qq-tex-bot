@@ -57,7 +57,7 @@ async function getRiddle (groupId) {
 
 async function putBackRiddle (groupId, raw) {
   const db = await getDB()
-  const max = await db.run('select max(no) as max from riddle_question where groupid=?', groupId)
+  const max = await db.get('select max(no) as max from riddle_question where groupid=?', groupId)
   if (max.max === null) return console.error('putBack failed: store not inited')
   await db.run('insert into riddle_question (groupid, no, data) values (?,?,?)', groupId, max.max + 1, raw)
 }
