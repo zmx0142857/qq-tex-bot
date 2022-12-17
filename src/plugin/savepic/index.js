@@ -14,7 +14,7 @@ function help() {
 /savepic -g <文件名> <全局图片>
 /savepic -r 刷新缓存
 /savepic -d <文件名> 删除图图片
-/savepic -m <文件名> 重命名图片
+/savepic -m <原文件名> <新文件名> 重命名图片
 /randpic <关键字> 随机图片
 <文件名>.jpg 发送指定图片`
 }
