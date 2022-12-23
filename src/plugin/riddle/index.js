@@ -5,6 +5,7 @@ const adminList = config.auth.admin
 const riddleGroup = config.plugins.riddle.whiteGroup
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
+const { bot } = require('../../bot')
 
 const store = {} // { groupId: { question, answer, raw, timer1, timer2, timer3 } }
 
@@ -43,6 +44,10 @@ async function newRiddle (groupId) {
   const timer2 = setTimeout(() => {
     invalidateRiddle(groupId)
     putBackRiddle(groupId, res.raw)
+    bot.sendMessage({
+      group: groupId,
+      message: '谜题已过期，发送 /riddle get 重新查看'
+    })
   }, 2 * 3600 * 1000)
 
   store[groupId] = { question, answer, hint, timer1, timer2, timer3: null, bingo }
