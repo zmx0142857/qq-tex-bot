@@ -7,6 +7,7 @@ const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
 const adminList = config.auth.admin || []
 const saveGroup = config.plugins.savepic.saveGroup || []
+const blackGroup = config.plugins.savepic.blackGroup
 
 function help() {
   return `用法:
@@ -199,11 +200,13 @@ const savepicConfig = [
   {
     reg: /^\/randpic/i,
     method: randPic,
+    blackGroup,
   },
   {
     reg: extReg,
     method: sendPic,
     trim: false,
+    blackGroup,
   }
 ]
 
