@@ -17,17 +17,21 @@ let resolve
 let timer
 const buf = []
 const lastTime = {}
+const limit = 3000
 
 function onMessage (data) {
   const msg = String(data, 'utf-8')
-  console.log(msg)
   if (hides.some(reg => reg.test(msg))) return
 
   clearTimeout(timer)
   buf.push(msg)
   timer = setTimeout(() => {
     if (resolve) {
-      const out = buf.join('\n').trimEnd()
+      let out = buf.join('\n').trimEnd()
+      if (out.length + 3 > limit) {
+        out = out.slice(0, limit) + '...'
+      }
+      console.log(out)
       if (texForm.test(out)) {
         tex(out.replace(texForm, '')).then(resolve)
       } else {
