@@ -37,6 +37,10 @@ AM.define.push(...[
   [/＝/g, '='],
   [/Σ/g, 'sum'],
   [/∏/g, 'prod'],
+  [/；/g, ';'],
+  [/，/g, ','],
+  [/：/g, ':'],
+  [/！/g, '!'],
 ])
 
 function onError (err) {
