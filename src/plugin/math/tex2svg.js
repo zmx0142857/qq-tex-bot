@@ -67,55 +67,54 @@ MathJax.startup.promise.then(() => {
   console.log('mathjax started')
 })
 
-module.exports = function tex2svg (formula) {
-  return MathJax.tex2svgPromise(formula, config).then(node =>
-    MathJax.startup.adaptor.innerHTML(node)
-  )
-    .then(svg => {
-    // 宽高单位从 ex 改为 px
-      const w = /width="[^e]*ex"/
-      const h = /height="[^e]*ex"/
-      const width = parseFloat(svg.match(w)[0].slice(7)) * config.ex
-      const height = parseFloat(svg.match(h)[0].slice(8)) * config.ex
+module.exports = async function tex2svg (formula) {
+  const node = await MathJax.tex2svgPromise(formula, config)
+  let svg = await MathJax.startup.adaptor.innerHTML(node)
 
-      // 增加背景色
-      const backgroundColor = 'white'
-      const style = /style="[^"]*"/
-      const originalStyle = svg.match(style)[0]
-      const styleWithBackgroundColor = originalStyle.slice(0, -1) + `; background-color: ${backgroundColor}` + '"'
+  // 宽高单位从 ex 改为 px
+  const widthReg = /width="[^e]*ex"/
+  const widthMatch = svg.match(widthReg)
+  let width
+  if (widthMatch) {
+    width = parseFloat(widthMatch[0].slice(7)) * config.ex
+    svg = svg.replace(widthReg, `width="${width}"`)
+  }
 
-      // console.log(svg.match(style))
-      // console.log(width, height)
+  const heightReg = /height="[^e]*ex"/
+  const heightMatch = svg.match(heightReg)
+  let height
+  if (heightMatch) {
+    height = parseFloat(heightMatch[0].slice(8)) * config.ex
+    svg = svg.replace(heightReg, `height="${height}"`)
+  }
 
-      // 加白边
-      // viewBox="-100 -983.9 5492.7 1188.9"
-      const v = /viewBox="([^"]*)"/
-      const matchV = svg.match(v)
-      if (matchV) {
-        const viewBox = matchV[1].split(' ')
-          .map(parseFloat)
-          .map((x, i) => i < 2 ? x - 100 : x + 200)
-          .join(' ')
-        svg = svg.replace(v, `viewBox="${viewBox}"`)
-      }
+  // 为 phantomjs 的 svg 设置背景色, 否则默认为透明
+  const styleReg = /style="[^"]*"/
+  const styleMatch = svg.match(styleReg)
+  if (styleMatch) {
+    const style = styleMatch[0].slice(0, -1) + '; background-color: white' + '"'
+    svg = svg.replace(styleReg, style)
+  }
 
-      const matchError = svg.match(/data-mjx-error="([^"]*)"/)
+  // 加白边
+  // viewBox="-100 -983.9 5492.7 1188.9"
+  const viewBoxReg = /viewBox="([^"]*)"/
+  const viewBoxMatch = svg.match(viewBoxReg)
+  if (viewBoxMatch) {
+    const viewBox = viewBoxMatch[1].split(' ')
+      .map(parseFloat)
+      .map((x, i) => i < 2 ? x - 100 : x + 200)
+      .join(' ')
+    svg = svg.replace(viewBoxReg, `viewBox="${viewBox}"`)
+  }
 
-      svg = svg.replace(w, `width="${width}"`) // 设置宽高
-        .replace(h, `height="${height}"`)
-        .replace('data-background="true"', 'fill="#fff"') // 为报错文字设置背景色
-        .replace(style, styleWithBackgroundColor) // 为 phantomjs 的 svg 设置背景
-        .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
+  // 收集错误信息
+  const errorReg = /data-mjx-error="([^"]*)"/
+  const errorMatch = svg.match(errorReg)
+  const error = errorMatch && errorMatch[1]
 
-      return {
-        width,
-        height,
-        svg,
-        error: matchError && matchError[1],
-      }
-    })
-    .catch(e => {
-      console.error(e.stack)
-      throw new Error('mathjax_error')
-    })
+  svg = svg.replace('data-background="true"', 'fill="#fff"') // 为报错文字设置背景色
+    .replace(/&(?![#a-z0-9])/g, '&amp;') // & 转义
+
+  return { width, height, svg, error }
 }

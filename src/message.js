@@ -83,26 +83,6 @@ module.exports = {
       }]
     }
   },
-  mathHelp: {
-    type: 'Plain',
-    text: `用法:
-/am <asciimath公式>
-/tex <tex公式>
-/text <tex文本>
-帮助文档在这里喔 https://zmx0142857.github.io/note/#math`
-  },
-  useTex: {
-    type: 'Plain',
-    text: '您是不是想要使用 /tex 而不是 /am ?'
-  },
-  tooWide: {
-    type: 'Plain',
-    text: '文字太宽了！下次记得换行咯。'
-  },
-  parseError: {
-    type: 'Plain',
-    text: ' [error] 无法识别此公式, 格式有误?'
-  },
   invalidRotate: {
     type: 'Plain',
     text: '用法: /rotate [90/180/270]'

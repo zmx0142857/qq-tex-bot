@@ -11,6 +11,17 @@ const config = {
 }
 const svg2png = config.engine === 'phantom' ? require('svg2png') : null
 const message = require('../../message')
+const strings = {
+  help: `用法:
+/am <asciimath公式>
+/tex <tex公式>
+/text <tex文本>
+帮助文档在这里喔 https://zmx0142857.github.io/note/#math`,
+  tooWide: '文字太宽了！下次记得换行咯。',
+  useTex: '您是不是想要使用 /tex 而不是 /am ?',
+  aligned: '提示: 使用 \\begin{aligned} \\end{aligned} 换行',
+  stupid: '笨！',
+}
 
 // customize asciimath
 AM.define.push(...[
@@ -44,37 +55,25 @@ AM.define.push(...[
   [/？/g, '?'],
 ])
 
-function onError (err) {
-  console.error(err)
-  if (err.message === 'mathjax_error') { return Promise.resolve([message.parseError]) }
-}
-
 // 用 image magick 命令行
-function magick (svg) {
-  return fs.promises.writeFile('tmp.svg', svg)
-    .then(() => new Promise((resolve, reject) => {
-      child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.path, config.name)}`, err => {
-        if (err) reject(err)
-        else {
-          // console.log('formula done')
-          resolve([{ type: 'Image', path: config.name }])
-        }
-      })
-    }))
-    .catch(onError)
+async function magick (svg) {
+  await fs.promises.writeFile('tmp.svg', svg)
+  return new Promise((resolve, reject) => {
+    child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.path, config.name)}`, err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(message.image(config.name))
+      }
+    })
+  })
 }
 
 // 用 svg2png 和 phantom js
-function phantom (svg) {
-  return svg2png(svg)
-    .then(buf => fs.promises.writeFile(
-      path.join(config.path, config.name), buf)
-    )
-    .then(() => {
-      // console.log('formula done')
-      return [{ type: 'Image', path: config.name }]
-    })
-    .catch(console.error)
+async function phantom (svg) {
+  const buf = await svg2png(svg)
+  await fs.promises.writeFile(path.join(config.path, config.name), buf)
+  return message.image(config.name)
 }
 
 const imageEngine = config.engine === 'magick' ? magick : phantom
@@ -138,29 +137,33 @@ async function convert (tex) {
   }
   const msg = await imageEngine(res.svg)
   if (res.width > res.height * 20) {
-    msg.push(message.tooWide)
+    msg.push(message.plain(strings.tooWide))
   }
   return msg
 }
 
 async function text (src) {
-  if (!src) return [message.mathHelp]
+  if (!src) return strings.help
   src = contextHelper(src)
   src = lineHelper(src)
   return convert(src)
 }
 
 async function tex (src) {
-  if (!src) return [message.mathHelp]
-  return convert(src)
+  if (!src) return strings.help
+  const msg = await convert(src)
+  if (src.includes('\\\\')) {
+    msg.push(message.plain(strings.aligned))
+  }
+  return msg
 }
 
 async function am (src) {
-  if (!src) return [message.mathHelp]
+  if (!src) return strings.help
   const tex = lineHelper(src, am2tex)
   const msg = await convert(tex)
   if (/\\[a-zA-Z]/.test(src)) {
-    msg.push(message.useTex)
+    msg.push(message.plain(strings.useTex))
   }
   return msg
 }
@@ -183,8 +186,6 @@ module.exports = [
   },
   {
     reg: /^\\tex/i,
-    async method () {
-      return '笨！'
-    }
+    method: async () => strings.stupid,
   },
 ]
