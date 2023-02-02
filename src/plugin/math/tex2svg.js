@@ -114,8 +114,4 @@ module.exports = function tex2svg (formula) {
         error: matchError && matchError[1],
       }
     })
-    .catch(e => {
-      console.error(e.stack)
-      throw new Error('mathjax_error')
-    })
 }
