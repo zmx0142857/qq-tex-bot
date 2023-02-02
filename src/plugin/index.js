@@ -15,10 +15,20 @@ const commands = [
     reg: /^\/block/,
     async method (text) {
       config.auth.blackList = config.auth.blackList || []
-      config.auth.blackList.push(parseInt(text))
-      const msg = '已拉黑 ' + text
+      const args = text.split(/\s/)
+      const qq = args.find(arg => arg && arg[0] !== '-')
+      if (!qq) return '用法: /block [-d] qq号'
+      const isUnblock = args.includes('-d')
+      let msg
+      if (isUnblock) {
+        config.auth.blackList = config.auth.blackList .filter(n => n !== parseInt(qq))
+        msg = '取消拉黑 ' + qq
+      } else {
+        config.auth.blackList.push(parseInt(qq))
+        msg = '已拉黑 ' + qq
+      }
       console.log(msg)
-      return message.plain(msg)
+      return msg
     },
     whiteList: config.auth.admin,
   },

@@ -41,6 +41,7 @@ AM.define.push(...[
   [/，/g, ','],
   [/：/g, ':'],
   [/！/g, '!'],
+  [/？/g, '?'],
 ])
 
 function onError (err) {
