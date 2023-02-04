@@ -42,7 +42,16 @@ async function main (text) {
 }
 
 function loadStoreSync() {
-  const data = fs.readFileSync('data/copywriting.json', 'utf-8')
+  const dataPath = 'data/copywriting.json'
+  const srcPath = 'src/plugin/copywriting/copywriting.json'
+  if (!fs.existsSync(dataPath)) {
+    if (!fs.existsSync('data')) {
+      fs.mkdirSync('data')
+    }
+    fs.copyFileSync(srcPath, dataPath)
+  }
+
+  const data = fs.readFileSync(dataPath, 'utf-8')
   updateStore(data)
   return mod
 }

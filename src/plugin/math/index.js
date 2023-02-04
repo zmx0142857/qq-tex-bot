@@ -83,7 +83,7 @@ function contextHelper (src) {
   return src.split('$$').map(s1 => {
     isDisplay = !isDisplay
     if (!isDisplay) {
-      return '\n' + s1 + '\n'
+      return s1.trim()
     } else {
       let isFormula = false
       return s1.split('$').map(s2 => {
@@ -91,13 +91,13 @@ function contextHelper (src) {
         if (!isFormula) {
           return s2
         } else {
-          return s2.split('\n').map(
+          return s2.split('\n').filter(Boolean).map(
             s => '\\text{' + s + '}'
           ).join('\n')
         }
       }).join('')
     }
-  }).join('')
+  }).filter(Boolean).join('\n')
 }
 
 const identical = x => x
@@ -152,7 +152,7 @@ async function text (src) {
 async function tex (src) {
   if (!src) return strings.help
   const msg = await convert(src)
-  if (src.includes('\\\\')) {
+  if (/\\\\|\\newline/.test(src) && !/begin|displaylines/.test(src)) {
     msg.push(message.plain(strings.aligned))
   }
   return msg
