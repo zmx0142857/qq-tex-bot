@@ -1,9 +1,19 @@
 //const { am2tex } = require('asciimath-js')
-//const tex2svg = require('./tex2svg')
+const tex2svg = require('./src/plugin/math/tex2svg')
+const src = `
+\\left[
+\\begin{matrix}
+\\begin{array}{cc|c}
+a & b & c \\\\
+d & e & f \\\\
+\\end{array}
+\\end{matrix}
+\\right]
+`
 
-//setTimeout(() => {
-  //tex2svg(am2tex('&#10197;')).then(console.log)
-//}, 300)
+setTimeout(() => {
+  tex2svg(src).then(res => console.log(res.svg))
+}, 300)
 
 /*
 function testPhantom () {
