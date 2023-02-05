@@ -91,13 +91,13 @@ function contextHelper (src) {
         if (!isFormula) {
           return s2
         } else {
-          return s2.split('\n').filter(Boolean).map(
-            s => '\\text{' + s + '}'
+          return s2.split('\n').map(
+            s => s ? '\\text{' + s + '}' : s
           ).join('\n')
         }
       }).join('')
     }
-  }).filter(Boolean).join('\n')
+  }).join('\n').trim().replace(/\n+/g, '\n')
 }
 
 const identical = x => x
