@@ -166,6 +166,12 @@ function groupAutoreply (command) {
       group: sender.group.id,
       // quote: messageChain[0].id,
       message: msg,
+    }).catch(err => {
+      console.error('msg:', msg, err)
+      return bot.sendMessage({
+        group: sender.group.id,
+        message: [message.error],
+      })
     })
     // savePicUrl(msg, replyId) TODO: 保存自己的图片?  不能用本地路径
     if (res.recall) {

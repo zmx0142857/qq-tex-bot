@@ -137,7 +137,7 @@ async function convert (tex) {
   }
   const msg = await imageEngine(res.svg)
   if (res.width > res.height * 20) {
-    msg.push(message.plain(strings.tooWide))
+    msg.push(message.plain(strings.tooWide)[0])
   }
   return msg
 }
@@ -153,7 +153,7 @@ async function tex (src) {
   if (!src) return strings.help
   const msg = await convert(src)
   if (/\\\\|\\newline/.test(src) && !/begin|displaylines/.test(src)) {
-    msg.push(message.plain(strings.aligned))
+    msg.push(message.plain(strings.aligned)[0])
   }
   return msg
 }
@@ -163,7 +163,7 @@ async function am (src) {
   const tex = lineHelper(src, am2tex)
   const msg = await convert(tex)
   if (/\\[a-zA-Z]/.test(src)) {
-    msg.push(message.plain(strings.useTex))
+    msg.push(message.plain(strings.useTex[0]))
   }
   return msg
 }
