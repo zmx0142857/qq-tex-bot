@@ -2,7 +2,7 @@
 function wrap (name) {
   const log = console[name]
   console[name] = (...args) => {
-    log(new Date(), ...args)
+    log(new Date().toLocaleString(), ...args)
   }
 }
 wrap('log')

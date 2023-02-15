@@ -32,10 +32,19 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
   ```shell
   ./mcl --update-package net.mamoe:mirai-api-http --type plugin --channel stable-v2
   ```
+  打开配置文件 `config/net.mamoe.mirai-api-http/setting.yml`, 在 http 协议下增加一个 ws (https://github.com/Drincann/Mirai-js/issues/124):
+  ```yaml
+  adapters:
+    - http
+    - ws
+  ...
+  ```
+<!--
 - 安装[滑块验证模块](https://github.com/project-mirai/mirai-login-solver-selenium):
   ```shell
   ./mcl --update-package net.mamoe:mirai-login-solver-selenium --type plugin --channel nightly
   ```
+-->
 - 运行 `./mcl`, 一切正常的话, mirai-console 就会启动起来.
 - 最后, 参考官方说明, 可以配置一下 qq 的自动登录.
   ```shell
