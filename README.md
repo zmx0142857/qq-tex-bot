@@ -55,65 +55,8 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
 
 - mirai 各插件更新迭代很快, 启动 mcl 时容易出现版本不一致而报错的问题 (比如
   kotlin 的 no such method 之类).  解决方法是编辑 mirai 的 `config.json`,
-  修改以下插件的 version:
-  ```
-  "net.mamoe:mirai-console": {
-    "channel": "beta",
-    "version": "2.13.0-RC2",
-    "type": "libs",
-    "versionLocked": false
-  },
-  "net.mamoe:mirai-console-terminal": {
-    "channel": "beta",
-    "version": "2.13.0-RC2",
-    "type": "libs",
-    "versionLocked": false
-  },
-  "net.mamoe:mirai-core-all": {
-    "channel": "beta",
-    "version": "2.13.0-RC2",
-    "type": "libs",
-    "versionLocked": false
-  },
-  "org.itxtech:mcl-addon": {
-    "channel": "c2001",
-    "version": "2.0.2",
-    "type": "plugins",
-    "versionLocked": false
-  },
-  "net.mamoe:mirai-api-http": {
-    "channel": "stable-v2",
-    "version": "2.6.2",
-    "type": "plugins",
-    "versionLocked": false
-  }
-  ```
-  <!--
-  ```
-  {
-    "id": "net.mamoe:mirai-console",
-    "channel": "stable",
-    "version": "2.6.7",
-    "type": "libs",
-    "versionLocked": false
-  },
-  {
-    "id": "net.mamoe:mirai-console-terminal",
-    "channel": "stable",
-    "version": "2.6.7",
-    "type": "libs",
-    "versionLocked": false
-  },
-  {
-    "id": "net.mamoe:mirai-core-all",
-    "channel": "beta",
-    "version": "2.8.0-M1",
-    "type": "libs",
-    "versionLocked": false
-  },
-  ```
-  -->
-  然后尝试重启 `./mcl`.
+  手动修改插件的 version, 然后尝试重启 `./mcl`.
+  本仓库的 `mirai/config.json` 可以做一定的参考.
 - 默认情况下 mirai 以 android 协议登录, 此时不允许再用 android
   手机登录同一个账号, 否则 mirai 会被强制下线.
   你可以在 `config/Console/AutoLogin.yml` 中切换协议.
