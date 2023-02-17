@@ -1,6 +1,5 @@
 const tex2svg = require('./tex2svg')
-const AM = require('asciimath-js')
-const { am2tex } = AM
+const { AsciiMath } = require('asciimath-parser')
 const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
@@ -18,42 +17,44 @@ const strings = {
 /text <tex文本>
 帮助文档在这里喔 https://zmx0142857.github.io/note/#math`,
   tooWide: '文字太宽了！下次记得换行咯。',
-  useTex: '您是不是想要使用 /tex 而不是 /am ?',
+  // useTex: '您是不是想要使用 /tex 而不是 /am ?',
   aligned: '提示: 使用 \\begin{aligned} \\end{aligned} 换行',
   stupid: '笨！',
 }
 
 // customize asciimath
-AM.define.push(...[
-  [/\*\*/g, '^'],
-  [/([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)/g, '^($1)'],
-  [/([₀₁₂₃₄₅₆₇₈₉₊₋]+)/g, '_($1)'],
-  [/(\p{Unified_Ideograph}+)/ug, '"$1"'], // 汉字用正体, 不用斜体
-  [/[⁰₀]/g, '0'],
-  [/[¹₁]/g, '1'],
-  [/[²₂]/g, '2'],
-  [/[³₃]/g, '3'],
-  [/[⁴₄]/g, '4'],
-  [/[⁵₅]/g, '5'],
-  [/[⁶₆]/g, '6'],
-  [/[⁷₇]/g, '7'],
-  [/[⁸₈]/g, '8'],
-  [/[⁹₉]/g, '9'],
-  [/（/g, '('],
-  [/）/g, ')'],
-  [/[＋⁺₊]/g, '+'],
-  [/[－⁻₋]/g, '-'],
-  [/＊/g, '*'],
-  [/／/g, '/'],
-  [/＝/g, '='],
-  [/Σ/g, 'sum'],
-  [/∏/g, 'prod'],
-  [/；/g, ';'],
-  [/，/g, ','],
-  [/：/g, ':'],
-  [/！/g, '!'],
-  [/？/g, '?'],
-])
+const amParser = new AsciiMath({
+  replaceBeforeTokenizing: [
+    [/\*\*/g, '^'],
+    [/([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)/g, '^($1)'],
+    [/([₀₁₂₃₄₅₆₇₈₉₊₋]+)/g, '_($1)'],
+    [/(\p{Unified_Ideograph}+)/ug, '"$1"'], // 汉字用正体, 不用斜体
+    [/[⁰₀]/g, '0'],
+    [/[¹₁]/g, '1'],
+    [/[²₂]/g, '2'],
+    [/[³₃]/g, '3'],
+    [/[⁴₄]/g, '4'],
+    [/[⁵₅]/g, '5'],
+    [/[⁶₆]/g, '6'],
+    [/[⁷₇]/g, '7'],
+    [/[⁸₈]/g, '8'],
+    [/[⁹₉]/g, '9'],
+    [/（/g, '('],
+    [/）/g, ')'],
+    [/[＋⁺₊]/g, '+'],
+    [/[－⁻₋]/g, '-'],
+    [/＊/g, '*'],
+    [/／/g, '/'],
+    [/＝/g, '='],
+    [/Σ/g, 'sum'],
+    [/∏/g, 'prod'],
+    [/；/g, ';'],
+    [/，/g, ','],
+    [/：/g, ':'],
+    [/！/g, '!'],
+    [/？/g, '?'],
+  ]
+})
 
 // 用 image magick 命令行
 async function magick (svg) {
@@ -160,11 +161,11 @@ async function tex (src) {
 
 async function am (src) {
   if (!src) return strings.help
-  const tex = lineHelper(src, am2tex)
+  const tex = lineHelper(src, v => amParser.toTex(v))
   const msg = await convert(tex)
-  if (/\\[a-zA-Z]/.test(src)) {
-    msg.push(message.plain(strings.useTex[0]))
-  }
+  // if (/\\[a-zA-Z]/.test(src)) {
+  //   msg.push(message.plain(strings.useTex)[0])
+  // }
   return msg
 }
 
