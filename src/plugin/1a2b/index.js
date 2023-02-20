@@ -1,6 +1,6 @@
 const message = require('../../message')
 const { loadRank, saveRank } = require('./rank')
-const _1a2bGroup = require('../../config').plugins['1a2b'].whiteGroup
+const config = require('../../config')
 
 const store = {} // { groupId: Game }
 const defaultLen = 4
@@ -131,9 +131,9 @@ async function oneATwoB (text, sender, chain) {
   }
 }
 
-module.exports = {
+module.exports = () => ({
   reg: /^\/1a2b/i,
   method: oneATwoB,
-  whiteGroup: _1a2bGroup,
+  whiteGroup: config.plugins['1a2b'].whiteGroup,
   recall: '1a2b',
-}
+})

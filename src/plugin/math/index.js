@@ -3,13 +3,13 @@ const { AsciiMath } = require('asciimath-parser')
 const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
-const config = {
-  engine: 'phantom',
-  name: 'tmp.png',
-  ...require('../../config').image
-}
-const svg2png = config.engine === 'phantom' ? require('svg2png') : null
+const config = require('../../config')
 const message = require('../../message')
+let svg2png
+try {
+  svg2png = require('svg2png')
+} catch (e) { }
+
 const strings = {
   help: `用法:
 /am <asciimath公式>
@@ -61,11 +61,12 @@ const amParser = new AsciiMath({
 async function magick (svg) {
   await fs.promises.writeFile('tmp.svg', svg)
   return new Promise((resolve, reject) => {
-    child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.path, config.name)}`, err => {
+    const name = config.image.name || 'tmp.png'
+    child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.image.path, name)}`, err => {
       if (err) {
         reject(err)
       } else {
-        resolve(message.image(config.name))
+        resolve(message.image(name))
       }
     })
   })
@@ -74,11 +75,10 @@ async function magick (svg) {
 // 用 svg2png 和 phantom js
 async function phantom (svg) {
   const buf = await svg2png(svg)
-  await fs.promises.writeFile(path.join(config.path, config.name), buf)
-  return message.image(config.name)
+  const name = config.image.name || 'tmp.png'
+  await fs.promises.writeFile(path.join(config.image.path, name), buf)
+  return message.image(name)
 }
-
-const imageEngine = config.engine === 'magick' ? magick : phantom
 
 function contextHelper (src) {
   let isDisplay = false
@@ -137,6 +137,7 @@ async function convert (tex) {
   if (res.error) {
     return message.plain(res.error)
   }
+  const imageEngine = config.engine === 'magick' ? magick : phantom
   const msg = await imageEngine(res.svg)
   if (res.width > res.height * 20) {
     msg.push(message.plain(strings.tooWide)[0])

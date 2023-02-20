@@ -14,6 +14,11 @@
 - `/riddle`: 猜灯谜
 - `/文案`: 文案生成器
 
+管理员命令:
+- `/remake`: 重新载入配置 (开发中)
+- `/block <qq号>`: 临时拉黑某人, bot 下次启动时拉黑自动解除
+- `/unblock <qq号>`: 解除临时拉黑
+
 <div>
 <img src="img/S10509-115328.jpg" alt="图1" width="45%">
 <img src="img/S10509-115344.jpg" alt="图2" width="45%">
@@ -46,7 +51,7 @@ mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写
   ```
 -->
 - 运行 `./mcl`, 一切正常的话, mirai-console 就会启动起来.
-- 最后, 参考官方说明, 可以配置一下 qq 的自动登录.
+- 在 mirai-console 中输入 `/help` 查看帮助. 这时顺便配置一下 qq 的自动登录:
   ```shell
   /autoLogin add <account> <password> [passwordKind]    # 添加自动登录
   ```
@@ -160,12 +165,13 @@ module.exports = {
 
 ## cli
 
-机器人的简单命令行界面
+机器人的简单命令行界面. 当你运行 `npm start` 后就自动进入命令模式了, 有以下指令可用:
 
 - `/ls`: 查看当前加入的所有群
 - `/cd [index]`: 切换到第 index 个群, 如省略 index, 则显示当前的群
 - `文字消息 \178`: 发送文字消息到当前的群. `\178` 代表滑稽的 qq 表情.
   [更多表情码在这里](https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8)
+- `/quit <群号>`: 退群.
 
 <!--
 ## mirai-api-http 的使用

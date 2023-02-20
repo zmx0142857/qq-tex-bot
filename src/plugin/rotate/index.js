@@ -4,9 +4,7 @@ const path = require('path')
 const child = require('child_process')
 const message = require('../../message')
 const { picDict } = require('../../bot')
-const config = {
-  ...require('../../config').image,
-}
+const config = require('../../config')
 
 // 处理旋转图片的请求
 // 但自己发的图片除外
@@ -27,7 +25,7 @@ async function rotateImage (text, sender, chain) {
     return [message.picNotFound]
   }
   const name = quote.origin[0] && quote.origin[0].text === '[动画表情]' ? 'tmp.gif' : 'tmp.jpg'
-  const filename = path.join(config.path, name)
+  const filename = path.join(config.image.path, name)
   return new Promise((resolve, reject) => {
     const pipe = request(url).pipe(fs.createWriteStream(filename))
     pipe.on('finish', () => {

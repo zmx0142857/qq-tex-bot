@@ -6,7 +6,7 @@ const message = require('../../message')
 
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const moduleName = 'savepic'
-const picDir = path.join(config.image.path, moduleName)
+const picDir = () => path.join(config.image.path, moduleName)
 
 function mkdir (dir) {
   if (!fs.existsSync(dir)) {
@@ -23,7 +23,7 @@ module.exports = {
   async init (groupId) {
     if (this.cache[groupId]) return this.cache[groupId]
     try {
-      const dir = path.join(picDir, groupId)
+      const dir = path.join(picDir(), groupId)
       mkdir(dir)
       let files = await fs.promises.readdir(dir)
       files = files.filter(fileName => extReg.test(fileName))
@@ -75,8 +75,8 @@ module.exports = {
       files.splice(index, 1)
       newFiles.push(newFileName)
 
-      const filePath = path.join(picDir, groupId, fileName)
-      const newFilePath = path.join(picDir, newGroupId, newFileName)
+      const filePath = path.join(picDir(), groupId, fileName)
+      const newFilePath = path.join(picDir(), newGroupId, newFileName)
       await fs.promises.rename(filePath, newFilePath)
       return { code: 0, msg: '已重新命名 ' + newFileName }
     } catch (e) {
@@ -92,7 +92,7 @@ module.exports = {
         return { code: -1, msg: '图片已存在，请重新命名' }
       }
       files.push(fileName)
-      const filePath = path.join(picDir, groupId, fileName)
+      const filePath = path.join(picDir(), groupId, fileName)
       request(url).pipe(fs.createWriteStream(filePath))
       return { code: 0, msg: '已保存 ' + fileName }
     } catch (e) {
@@ -109,7 +109,7 @@ module.exports = {
         return { code: -1, msg: '图片不存在' }
       }
       files.splice(index, 1)
-      const filePath = path.join(picDir, groupId, fileName)
+      const filePath = path.join(picDir(), groupId, fileName)
       await fs.promises.rename(filePath, filePath + '.del')
       return { code: 0, msg: '已删除 ' + fileName }
     } catch (e) {

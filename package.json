@@ -11,7 +11,7 @@
     "lint": "eslint --fix src"
   },
   "dependencies": {
-    "asciimath-parser": "0.4.0-beta.1",
+    "asciimath-parser": "0.4.0-beta.3",
     "mathjax-full": "^3.1.4",
     "mirai-js": "^2.8.7",
     "sqlite": "^4.1.2",
@@ -21,6 +21,9 @@
   },
   "devDependencies": {
     "eslint": "^8.28.0",
-    "eslint-config-standard": "^17.0.0"
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0"
   }
 }

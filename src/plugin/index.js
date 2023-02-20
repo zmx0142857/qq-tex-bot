@@ -1,43 +1,44 @@
 const message = require('../message')
 const config = require('../config')
 
-const commands = [
-  {
-    reg: /^\/remake$/,
-    async method () {
-      loadCommands()
-      config.loadConfig()
-      return message.plain('已重开')
-    },
-    whiteList: config.auth.admin,
-  },
-  {
-    reg: /^\/block/,
-    async method (text) {
-      config.auth.blackList = config.auth.blackList || []
-      const args = text.split(/\s/)
-      const qq = args.find(arg => arg && arg[0] !== '-')
-      if (!qq) return '用法: /block [-d] qq号'
-      const isUnblock = args.includes('-d')
-      let msg
-      if (isUnblock) {
-        config.auth.blackList = config.auth.blackList .filter(n => n !== parseInt(qq))
-        msg = '取消拉黑 ' + qq
-      } else {
-        config.auth.blackList.push(parseInt(qq))
-        msg = '已拉黑 ' + qq
-      }
-      console.log(msg)
-      return msg
-    },
-    whiteList: config.auth.admin,
-  },
-]
-const initLen = commands.length
+const commands = []
 
 function loadCommands () {
   console.log('bot is remaking...')
-  commands.length = initLen
+  commands.length = 0
+  commands.push(
+    {
+      reg: /^\/remake$/,
+      async method () {
+        loadCommands()
+        config.loadConfig()
+        return message.plain('已重开')
+      },
+      whiteList: config.auth.admin,
+    },
+    {
+      reg: /^\/block/,
+      async method (text) {
+        config.auth.blackList = config.auth.blackList || []
+        const args = text.split(/\s/)
+        const qq = args.find(arg => arg && arg[0] !== '-')
+        if (!qq) return '用法: /block [-d] qq号'
+        const isUnblock = args.includes('-d')
+        let msg
+        if (isUnblock) {
+          config.auth.blackList = config.auth.blackList.filter(n => n !== parseInt(qq))
+          msg = '取消拉黑 ' + qq
+        } else {
+          config.auth.blackList.push(parseInt(qq))
+          msg = '已拉黑 ' + qq
+        }
+        console.log(msg)
+        return msg
+      },
+      whiteList: config.auth.admin,
+    },
+  )
+
   for (const module of (Object.keys(config.plugins) || [])) {
     try {
       let cmd = require('./' + module)

@@ -21,6 +21,7 @@
  *  limitations under the License.
  */
 
+const config = require('../../config').tex
 const argv = {
   packages: 'base, autoload, require, ams, newcommand',
   fontCache: true,
@@ -54,14 +55,6 @@ MathJax = {
 //  Load the MathJax startup module
 require('mathjax-full/' + (argv.dist ? 'es5' : 'components/src/tex-svg') + '/tex-svg.js')
 
-const config = {
-  display: true, // false 为行间公式
-  em: 32,
-  ex: 16,
-  containerWidth: 80 * 16,
-  ...require('../../config').tex
-}
-
 const svgReplace = [
   // phantomjs 的 svg 背景色默认为透明, 这里改为白色
   [/(style="[^"]*)"/, '$1; background-color: white"'],
@@ -87,7 +80,15 @@ MathJax.startup.promise.then(() => {
 })
 
 module.exports = async function tex2svg (formula) {
-  const node = await MathJax.tex2svgPromise(formula, config)
+  const texConfig = {
+    display: true, // false 为行间公式
+    em: 32,
+    ex: 16,
+    containerWidth: 80 * 16,
+    ...config.tex
+  }
+
+  const node = await MathJax.tex2svgPromise(formula, texConfig)
   let svg = await MathJax.startup.adaptor.innerHTML(node)
 
   // 宽高单位从 ex 改为 px
@@ -95,7 +96,7 @@ module.exports = async function tex2svg (formula) {
   const widthMatch = svg.match(widthReg)
   let width
   if (widthMatch) {
-    width = parseFloat(widthMatch[0].slice(7)) * config.ex
+    width = parseFloat(widthMatch[0].slice(7)) * texConfig.ex
     svg = svg.replace(widthReg, `width="${width}"`)
   }
 
@@ -103,7 +104,7 @@ module.exports = async function tex2svg (formula) {
   const heightMatch = svg.match(heightReg)
   let height
   if (heightMatch) {
-    height = parseFloat(heightMatch[0].slice(8)) * config.ex
+    height = parseFloat(heightMatch[0].slice(8)) * texConfig.ex
     svg = svg.replace(heightReg, `height="${height}"`)
   }
 
@@ -113,7 +114,9 @@ module.exports = async function tex2svg (formula) {
   const error = errorMatch && errorMatch[1]
 
   // 其他正则替换
-  svgReplace.forEach(arg => svg = svg.replace(...arg))
+  svgReplace.forEach(arg => {
+    svg = svg.replace(...arg)
+  })
 
   return { svg, width, height, error }
 }

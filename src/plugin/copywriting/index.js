@@ -1,15 +1,9 @@
 const message = require('../../message')
 const fs = require('fs')
-const copywritingGroup = require('../../config').plugins.copywriting.whiteGroup
+const config = require('../../config')
 let store
 
-const mod = [
-  {
-    reg: /^\/文案/,
-    method: main,
-    whiteGroup: copywritingGroup,
-  },
-]
+const mod = []
 
 function factory (key) {
   return async function (text) {
@@ -58,12 +52,18 @@ function loadStoreSync() {
 
 function updateStore (data) {
   store = JSON.parse(data)
-  mod.length = 1
+  const whiteGroup = config.plugins.copywriting.whiteGroup
+  mod.length = 0
+  mod.push({
+    reg: /^\/文案/,
+    method: main,
+    whiteGroup,
+  })
   mod.push(
     ...Object.keys(store).map(key => ({
       reg: new RegExp('^/' + key, 'i'),
       method: factory(key),
-      whiteGroup: copywritingGroup,
+      whiteGroup,
       recall: 'copywriting',
     }))
   )

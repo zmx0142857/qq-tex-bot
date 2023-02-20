@@ -83,10 +83,10 @@ async function mma (text, sender, chain) {
   })
 }
 
-module.exports = {
+module.exports = () => ({
   reg: /^\/mma/i,
   method: mma,
   whiteGroup: config.plugins.mma.whiteGroup,
   whiteList: config.plugins.mma.whiteList,
   recall: 'mma',
-}
+})

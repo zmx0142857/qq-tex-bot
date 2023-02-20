@@ -5,9 +5,6 @@ const { picDict } = require('../../bot')
 
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
-const adminList = config.auth.admin || []
-const saveGroup = config.plugins.savepic.saveGroup || []
-const blackGroup = config.plugins.savepic.blackGroup
 
 function help() {
   return `用法:
@@ -37,7 +34,7 @@ function normalizeFileName(fileName) {
 // 处理命令参数
 async function parseArgs (text, sender) {
   const args = text.split(/\s+/)
-  const isAdmin = adminList.includes(sender.id)
+  const isAdmin = config.auth.admin.includes(sender.id)
   const isReloadCache = args.includes('-r')
   const isMove = args.includes('-m')
   const isGlobal = args.includes('-g') && isAdmin
@@ -190,23 +187,23 @@ async function randPic (text, sender, chain) {
   ]
 }
 
-const savepicConfig = [
+const savepicConfig = () => [
   {
     reg: /^\/savepic/i,
     method: savePic,
-    whiteList: adminList,
-    whiteGroup: saveGroup,
+    whiteList: config.auth.admin,
+    whiteGroup: config.plugins.savepic.saveGroup || [],
   },
   {
     reg: /^\/randpic/i,
     method: randPic,
-    blackGroup,
+    blackGroup: config.plugins.savepic.blackGroup,
   },
   {
     reg: extReg,
     method: sendPic,
     trim: false,
-    blackGroup,
+    blackGroup: config.plugins.savepic.blackGroup,
   }
 ]
 
