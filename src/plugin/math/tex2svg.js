@@ -21,7 +21,7 @@
  *  limitations under the License.
  */
 
-const config = require('../../config').tex
+const config = require('../../config')
 const argv = {
   packages: 'base, autoload, require, ams, newcommand',
   fontCache: true,
@@ -85,7 +85,7 @@ module.exports = async function tex2svg (formula) {
     em: 32,
     ex: 16,
     containerWidth: 80 * 16,
-    ...config.tex
+    ...(config.tex || {})
   }
 
   const node = await MathJax.tex2svgPromise(formula, texConfig)
