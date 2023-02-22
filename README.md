@@ -17,7 +17,6 @@
 管理员命令:
 - `/remake`: 重新载入配置 (开发中)
 - `/block <qq号>`: 临时拉黑某人, bot 下次启动时拉黑自动解除
-- `/unblock <qq号>`: 解除临时拉黑
 
 <div>
 <img src="img/S10509-115328.jpg" alt="图1" width="45%">
