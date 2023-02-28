@@ -11,7 +11,8 @@ function factory (key) {
     // there is not need to convert timezone
     if (key.toLowerCase() === 'kfc' && new Date().getDay() !== 4) return message.plain('小店已经打烊，客官请周四再来吧')
     const a = text ? text.split(/\s+/) : []
-    const { argc, template, help } = store[key]
+    const { template, usage = '', example } = store[key]
+    const argc = usage ? usage.split(/\s+/).length : 0
     const t = Array.isArray(template) ? template[Math.floor(Math.random() * template.length)] : template
     if (a.length === argc) {
       let res = t.replace(/\${([^}]*)}/g, (match, src) => {
@@ -21,7 +22,8 @@ function factory (key) {
       if (res.length > 1000) res = res.slice(0, 997) + '...'
       return message.emoji(res)
     } else {
-      return message.plain(help)
+      const exampleText = example ? `\n如: /文案 ${key} ${example}` : ''
+      return message.plain(`用法: /文案 ${key} ${usage}${exampleText}`)
     }
   }
 }
@@ -31,7 +33,13 @@ async function main (text) {
     loadStoreSync()
     return message.plain('缓存已刷新')
   } else {
-    return message.plain('可用文案: ' + Object.keys(store).join('、'))
+    let [key, ...args] = text.trim().split(/\s+/)
+    key = key.toLowerCase()
+    const item = store[key]
+    if (item) {
+      return factory(key)(args.join(' '))
+    }
+    return message.plain('用法: /文案 关键字\n可用关键字: ' + Object.keys(store).join('、'))
   }
 }
 
@@ -58,15 +66,16 @@ function updateStore (data) {
     reg: /^\/文案/,
     method: main,
     whiteGroup,
+    recall: 'copywriting',
   })
-  mod.push(
-    ...Object.keys(store).map(key => ({
-      reg: new RegExp('^/' + key, 'i'),
-      method: factory(key),
-      whiteGroup,
-      recall: 'copywriting',
-    }))
-  )
+  // mod.push(
+  //  ...Object.keys(store).map(key => ({
+  //    reg: new RegExp('^/' + key, 'i'),
+  //    method: factory(key),
+  //    whiteGroup,
+  //    recall: 'copywriting',
+  //  }))
+  // )
 }
 
 module.exports = loadStoreSync
