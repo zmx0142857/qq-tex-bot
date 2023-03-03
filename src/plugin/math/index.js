@@ -146,15 +146,28 @@ async function convert (tex) {
   return msg
 }
 
+let amVersion = ''
+async function help () {
+  if (!amVersion) {
+    try {
+      const amPackage = await fs.promises.readFile('node_modules/asciimath-parser/package.json', 'utf-8')
+      amVersion = JSON.parse(amPackage).version
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  return 'asciimath-parser ' + amVersion + '\n' + strings.help
+}
+
 async function text (src) {
-  if (!src) return strings.help
+  if (!src) return help()
   src = contextHelper(src)
   src = lineHelper(src)
   return convert(src)
 }
 
 async function tex (src) {
-  if (!src) return strings.help
+  if (!src) return help()
   const msg = await convert(src)
   if (/\\\\|\\newline/.test(src) && !/begin|displaylines/.test(src)) {
     msg.push(message.plain(strings.aligned)[0])
@@ -163,7 +176,7 @@ async function tex (src) {
 }
 
 async function am (src) {
-  if (!src) return strings.help
+  if (!src) return help()
   const tex = lineHelper(src, v => amParser.toTex(v))
   const msg = await convert(tex)
   // if (/\\[a-zA-Z]/.test(src)) {
