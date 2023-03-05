@@ -95,4 +95,10 @@ module.exports = {
     type: 'Plain',
     text: '出错啦 qwq, 没有找到图片'
   },
+  mathHelp: `用法:
+/am <asciimath公式>
+/tex <tex公式>
+/text <tex文本>
+帮助文档在这里喔: https://asciimath.widcard.win
+旧版文档: https://zmx0142857.github.io/note`,
 }

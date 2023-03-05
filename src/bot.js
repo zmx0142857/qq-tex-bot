@@ -84,7 +84,7 @@ function autoRecall () {
         const key = group && group.id ? 'group' : 'friend'
         bot.sendMessage({
           [key]: target,
-          message: [message.mathHelp]
+          message: message.mathHelp
         })
       }
     }
