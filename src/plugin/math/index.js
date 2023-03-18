@@ -1,5 +1,5 @@
 const tex2svg = require('./tex2svg')
-const { AsciiMath } = require('asciimath-parser')
+const { AsciiMath } = require('asciimath-parser-nearley')
 const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
@@ -145,13 +145,13 @@ let amVersion = ''
 async function help () {
   if (!amVersion) {
     try {
-      const amPackage = await fs.promises.readFile('node_modules/asciimath-parser/package.json', 'utf-8')
+      const amPackage = await fs.promises.readFile('node_modules/asciimath-parser-nearley/package.json', 'utf-8')
       amVersion = JSON.parse(amPackage).version
     } catch (e) {
       console.error(e)
     }
   }
-  return 'asciimath-parser ' + amVersion + '\n' + strings.help
+  return 'asciimath-parser-nearley ' + amVersion + '\n' + strings.help
 }
 
 async function text (src) {
@@ -165,14 +165,24 @@ async function tex (src) {
   if (!src) return help()
   const msg = await convert(src)
   if (/\\\\|\\newline/.test(src) && !/begin|displaylines/.test(src)) {
-    msg.push(message.plain(strings.aligned)[0])
+    const newline = msg[0] && msg[0].type === 'Plain' ? '\n' : ''
+    msg.push(message.plain(newline + strings.aligned)[0])
   }
   return msg
 }
 
 async function am (src) {
   if (!src) return help()
-  const tex = lineHelper(src, v => amParser.toTex(v))
+  // const tex = lineHelper(src, v => amParser.toTex(v))
+  if (!/verb/.test(src)) {
+    if (/&/.test(src)) {
+      src = src.replace(/\n/g, '\n\n')
+    } else {
+      const align = /\n/.test(src) ? '& ' : ''
+      src = align + src.replace(/\n/g, '\n\n& ')
+    }
+  }
+  const tex = amParser.toTex(src)
   const msg = await convert(tex)
   // if (/\\[a-zA-Z]/.test(src)) {
   //   msg.push(message.plain(strings.useTex)[0])
