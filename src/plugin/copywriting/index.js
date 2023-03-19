@@ -1,6 +1,7 @@
 const message = require('../../message')
 const fs = require('fs')
 const config = require('../../config')
+const { pager } = require('../../utils')
 let store
 
 const mod = []
@@ -34,12 +35,25 @@ async function main (text) {
     return message.plain('缓存已刷新')
   } else {
     let [key, ...args] = text.trim().split(/\s+/)
-    key = key.toLowerCase()
-    const item = store[key]
-    if (item) {
-      return factory(key)(args.join(' '))
+    let page = parseInt(key)
+    if (!(page > 0)) {
+      page = 1
+      key = key.toLowerCase()
+      const item = store[key]
+      if (item) {
+        return factory(key)(args.join(' '))
+      }
     }
-    return message.plain('用法: /文案 关键字\n可用关键字: ' + Object.keys(store).join('、'))
+    return message.plain(
+      '用法: /文案 关键字\n可用关键字: ' +
+      pager({
+        data: Object.keys(store),
+        page,
+        pageSize: 20,
+        mapList: v => v,
+        eol: '、',
+      })
+    )
   }
 }
 
