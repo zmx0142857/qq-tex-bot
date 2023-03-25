@@ -1,5 +1,5 @@
 const readline = require('readline')
-const { bot } = require('./bot')
+const bot = require('./bot')
 const config = require('./config')
 const message = require('./message')
 

@@ -96,9 +96,17 @@ npm install
 
 ```js
 module.exports = {
+  // 如使用 mirai, 需配置 server
   server: {
     verifyKey: '', // mirai-api-http 2.x 提供的 verifyKey
     // authKey: '', // mirai-api-http 1.x 提供的 authKey
+    qq: 123456, // 机器人的 qq 号
+  },
+  // 如使用 go-cqhttp 框架, 需配置 gocq
+  gocq: {
+    host: 'localhost',
+    reversePort: 8888, // 反向上报端口
+    port: 52566, // 正向端口
     qq: 123456, // 机器人的 qq 号
   },
   groups: {

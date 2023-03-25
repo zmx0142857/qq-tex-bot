@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
 const message = require('../../message')
-const { picDict } = require('../../bot')
+const bot = require('../../bot')
 const config = require('../../config')
 
 // 处理旋转图片的请求
@@ -20,7 +20,7 @@ async function rotateImage (text, sender, chain) {
   if (!quote || availbleCommands.indexOf(text) === -1) {
     return [message.invalidRotate]
   }
-  const url = picDict[quote.id]
+  const url = bot.picDict[quote.id]
   if (!url) {
     return [message.picNotFound]
   }

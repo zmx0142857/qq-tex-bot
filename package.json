@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "asciimath-parser-nearley": "^0.5.7",
+    "go-cqhttp-jsbot": "^1.0.5",
     "mathjax-full": "^3.1.4",
     "mirai-js": "^2.8.7",
+    "request": "^2.88.2",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.2",
     "svg2png": "^4.1.1",

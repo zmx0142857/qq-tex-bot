@@ -1,7 +1,7 @@
 const config = require('../../config')
 const message = require('../../message')
 const savepicService = require('./service')
-const { picDict } = require('../../bot')
+const bot = require('../../bot')
 
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
@@ -101,7 +101,7 @@ async function savePic (text, sender, chain) {
   if (!url) {
     msg = chain.find(item => item.type === 'Quote')
     if (msg) {
-      url = picDict[msg.id]
+      url = bot.picDict[msg.id]
     }
   }
 
