@@ -3,7 +3,7 @@ const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank
 const config = require('../../config')
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
-const { bot } = require('../../bot')
+const bot = require('../../bot')
 
 const store = {} // { groupId: { question, answer, raw, timer1, timer2, timer3 } }
 

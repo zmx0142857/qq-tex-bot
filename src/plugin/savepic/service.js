@@ -121,7 +121,7 @@ module.exports = {
   image (groupId, fileName) {
     return {
       type: 'Image',
-      path: path.join(moduleName, groupId, fileName),
+      path: path.join(config.image.path, moduleName, groupId, fileName),
     }
   },
 }

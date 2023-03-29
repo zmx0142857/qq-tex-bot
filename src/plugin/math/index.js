@@ -72,8 +72,9 @@ async function magick (svg) {
 async function phantom (svg) {
   const buf = await svg2png(svg)
   const name = config.image.name || 'tmp.png'
-  await fs.promises.writeFile(path.join(config.image.path, name), buf)
-  return message.image(name)
+  const imagePath = path.join(config.image.path, name)
+  await fs.promises.writeFile(imagePath, buf)
+  return message.image(imagePath)
 }
 
 function contextHelper (src) {

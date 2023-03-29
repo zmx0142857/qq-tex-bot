@@ -1,10 +1,11 @@
 # qq-tex-bot
 
-使用 [mirai](https://github.com/mamoe/mirai), [mirai-js](https://github.com/Drincann/Mirai-js) 和 [mathjax](http://mathjax.org) 实现的用于渲染数学公式的 qq 机器人.
+基于 [mathjax](http://mathjax.org) 的用于渲染数学公式 (和其它一些额外功能) 的 qq 机器人;
+同时支持 [go-cqhttp](https://docs.go-cqhttp.org/) 和 [mirai](https://docs.mirai.mamoe.net/) 两种 bot 框架.
 
 ## 功能展示
 
-目前支持的命令:
+支持的命令:
 
 - `/am`: [asciimath](https://zmx0142857.gitee.io/note/#math/example/asciimath), 简易版本的公式标记语言
 - `/tex`: tex 公式, 较复杂, 但功能更全
@@ -15,7 +16,7 @@
 - `/文案`: 文案生成器
 
 管理员命令:
-- `/remake`: 重新载入配置 (开发中)
+- `/remake`: 重新载入配置
 - `/block <qq号>`: 临时拉黑某人, bot 下次启动时拉黑自动解除
 
 <div>
@@ -25,7 +26,24 @@
 
 ## 快速上手
 
-### 1. 安装 mirai
+> go-cqhttp 和 mirai 选择一个安装即可. 推荐 go-cqhttp 因为它更稳定而且配置简单.
+
+### 0. 安装 go-cqhttp
+
+- [下载最新的 go-cqhttp](https://github.com/Mrs4s/go-cqhttp/releases).
+- 初次运行 gocq 时选择正向 websocket 协议, gocq 会自动生成配置文件 `config.yml`.
+- 打开配置文件, 填写
+  - `account.uin`: bot 的 qq 号
+  - `account.password`: bot 的密码
+  - `message.post-format`: 上报类型, 从 string 改为 array.
+
+具体配置可以参考本仓库的 `gocq/config.yml`.
+
+<!--
+我们的配置使用两个端口, `5700` 用于接收 bot 发出的消息并转发到 qq 群, `5701` 用于接收群聊消息并上报给 bot.
+-->
+
+### 1. 安装 mirai (可选)
 
 mirai 是全平台、开源的 qq 机器人框架, 使用 java 和 kotlin 编写.  [官方用户手册](https://github.com/mamoe/mirai/blob/dev/docs/UserManual.md)
 
@@ -96,25 +114,24 @@ npm install
 
 ```js
 module.exports = {
-  // 如使用 mirai, 需配置 server
-  server: {
-    verifyKey: '', // mirai-api-http 2.x 提供的 verifyKey
-    // authKey: '', // mirai-api-http 1.x 提供的 authKey
-    qq: 123456, // 机器人的 qq 号
-  },
   // 如使用 go-cqhttp 框架, 需配置 gocq
   gocq: {
-    host: 'localhost',
-    reversePort: 8888, // 反向上报端口
-    port: 52566, // 正向端口
+    ws: 'ws://0.0.0.0:8080/',
     qq: 123456, // 机器人的 qq 号
   },
+  // 如使用 mirai, 需配置 server
+  // server: {
+  //   verifyKey: '', // mirai-api-http 2.x 提供的 verifyKey
+  //   // authKey: '', // mirai-api-http 1.x 提供的 authKey
+  //   qq: 123456, // 机器人的 qq 号
+  // },
   groups: {
     112233: '群名称', // 群号和群名称
   },
   image: {
     // 图片目录绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows
-    path: '/path/to/mirai', // mirai-api-http 2.x
+    path: '/path/to/gocq/data', // gocq
+    // path: '/path/to/mirai', // mirai-api-http 2.x
     // path: '??/mirai/data/net.mamoe.mirai-api-http/images', // mirai-api-http 1.x
   },
   auth: {
@@ -125,6 +142,8 @@ module.exports = {
     // whiteGroup: [], // 群聊白名单
   },
   // 启用的插件
+  // math 和 savepic 在各个群都能使用
+  // 1a2b, riddle, copywriting, mma 只在 whiteGroup 指定的群中可用
   plugins: {
     math: {},
     savepic: {
@@ -152,13 +171,13 @@ module.exports = {
 
 |参数|解释|类型|是否必填|
 |----|----|----|----|
-| server.verifyKey | mirai-api-http 提供的 verifyKey, 请妥善保存, 不要泄露 | String | <span style="color:red">必填</span> |
-| server.qq | 机器人的 qq 号 | Number | <span style="color:red">必填</span> |
+| gocq.ws | gocq 服务地址 | String | 默认值 ws://0.0.0.0:8080/ |
+| gocq.qq | 机器人的 qq 号 | Number | <span style="color:red">使用 gocq 时必填</span> |
+| server.baseUrl | mirai 服务地址 | String | 默认值 http://localhost:8080 |
+| server.verifyKey | mirai-api-http 提供的 verifyKey, 请妥善保存, 不要泄露 | String | <span style="color:red">使用 mirai 时必填</span> |
+| server.qq | 机器人的 qq 号 | Number | <span style="color:red">使用 mirai 时必填</span> |
 | groups | 机器人加入的群, 以 `群号: 群名` 的格式填写, 可填多个 | Object | <span style="color:red">必填</span> |
 | image.path | mirai 图片目录的绝对路径. 分隔符一律用斜杠 (/), 不要用反斜杠, 即使你是 windows | String | <span style="color:red">必填</span> |
-| plugins | 开启的插件 | Object | <span style="color:red">必填</span> |
-| server.baseUrl | mirai 服务的地址 | String | 默认值 http://localhost:8080 |
-| tex.ex | 公式的字体大小 | Number | 默认值 16 |
 | image.engine | svg 转 png 的图片引擎, 可选 phantom 或 magick. 如果选择 magick 引擎, 还需要安装 [image magick](https://imagemagick.org), 并保证 path 环境变量中有 `magick` 命令 | String | 默认值 phantom |
 | image.name | 临时图片的文件名 | String | 默认值 tmp.png |
 | replyFriend | 是否回复好友消息 | Boolean | 默认值 false |
@@ -167,6 +186,9 @@ module.exports = {
 | auth.whiteList | 白名单 | Number[] | 默认为空 |
 | auth.blackGroup | 群聊黑名单 | Number[] | 默认为空 |
 | auth.whiteGroup | 群聊白名单 | Number[] | 默认为空 |
+| plugins | 开启的插件 | Object | <span style="color:red">必填</span> |
+| plugins.math.display | 公式是否为 displayStyle | Boolean | 默认值 true |
+| plugins.math.ex | 公式的字体大小 | Number | 默认值 16 |
 
 最后, 运行 `npm start` 或 `node index.js` 启动机器人.
 

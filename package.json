@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "asciimath-parser-nearley": "^0.5.7",
-    "go-cqhttp-jsbot": "^1.0.5",
     "mathjax-full": "^3.1.4",
     "mirai-js": "^2.8.7",
     "request": "^2.88.2",

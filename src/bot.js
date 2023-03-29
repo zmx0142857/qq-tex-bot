@@ -1,2 +1,3 @@
-// module.exports = require('./bot-mirai')
-module.exports = require('./bot-gocq')
+const config = require('./config')
+const Bot = config.server ? require('./platform/mirai') : require('./platform/gocq')
+module.exports = new Bot()

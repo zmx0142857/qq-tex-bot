@@ -85,7 +85,7 @@ module.exports = async function tex2svg (formula) {
     em: 32,
     ex: 16,
     containerWidth: 80 * 16,
-    ...(config.tex || {})
+    ...(config.math || {})
   }
 
   const node = await MathJax.tex2svgPromise(formula, texConfig)

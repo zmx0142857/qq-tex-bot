@@ -69,7 +69,7 @@ function checkBlack(list, group, sender) {
   return true
 }
 
-function exeCommands (text, sender, chain) {
+function plugin (text, sender, chain) {
   const { whiteList, whiteGroup, blackList, blackGroup } = config.auth
   // 名单过滤
   if (!config.auth.admin || !config.auth.admin.includes(sender.id)) {
@@ -116,6 +116,4 @@ function exeCommands (text, sender, chain) {
 }
 
 loadCommands()
-module.exports = {
-  exeCommands,
-}
+module.exports = plugin
