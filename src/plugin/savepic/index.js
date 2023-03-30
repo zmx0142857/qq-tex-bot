@@ -95,12 +95,13 @@ async function savePic (text, sender, chain) {
   // 在 chain 中找图
   let msg, url
   if (!url) {
-    msg = chain.find(m => m.type === 'Image')
+    msg = chain.find(item => item.type === 'Image')
     url = msg && msg.url
   }
   if (!url) {
     msg = chain.find(item => item.type === 'Quote')
     if (msg) {
+      console.log('# bot', bot, bot.picDict)
       url = bot.picDict[msg.id]
     }
   }
