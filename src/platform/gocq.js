@@ -55,7 +55,6 @@ class GocqBot extends BaseBot {
   // send_private_msg, upload_private_file, upload_group_file, get_msg, delete_msg
   async sendMessage ({ friend, group, message }) {
     message = fromMessageChain(message)
-    console.log('send', message)
     let params
     if (friend) {
       params = {

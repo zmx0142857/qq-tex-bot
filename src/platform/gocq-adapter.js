@@ -103,7 +103,12 @@ function getMessageChainFromRaw (rawMessage) {
 //   }
 // ]
 function getMessageChain (data) {
-  const chain = data.message.map(msg => CQTypes[msg.type] ? CQTypes[msg.type](msg.data) : { ...msg.data, type: msg.type })
+  const { message } = data
+  // gocq 回复的 at 后面自带一个空格，我把这个空格去掉
+  if (message.length === 3 && message[0].type === 'reply' && message[1].type === 'at' && message[2].type === 'text') {
+    message[2].data.text = message[2].data.text.slice(1)
+  }
+  const chain = message.map(msg => CQTypes[msg.type] ? CQTypes[msg.type](msg.data) : { ...msg.data, type: msg.type })
   chain.unshift({
     type: 'Source',
     id: data.message_id,
