@@ -2,7 +2,6 @@ const WebSocket = require('ws')
 const message = require('../../message')
 const config = require('../../config')
 const tex = require('../math/index')[1].method
-const bot = require('../../bot')
 
 const hides = [
   /Wolfram Language .* Engine for .* x86 (64-bit)/,
@@ -61,7 +60,7 @@ function initWs () {
   })
 }
 
-async function mma (text, sender, chain) {
+async function mma (text, sender, chain, bot) {
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
   const coolDown = 20

@@ -1,7 +1,6 @@
 const config = require('../../config')
 const message = require('../../message')
 const savepicService = require('./service')
-const bot = require('../../bot')
 
 const extReg = /\.jpg$|\.jpeg$|\.png$|\.gif$/i
 const invalidChars = /[/\\*:?"<>|]/g
@@ -80,7 +79,7 @@ async function parseArgs (text, sender) {
   return [groupId, fileName]
 }
 
-async function savePic (text, sender, chain) {
+async function savePic (text, sender, chain, bot) {
   if (!text) return message.plain(help())
 
   const senderGroupId = getGroupId(sender)
@@ -101,7 +100,6 @@ async function savePic (text, sender, chain) {
   if (!url) {
     msg = chain.find(item => item.type === 'Quote')
     if (msg) {
-      console.log('# bot', bot, bot.picDict)
       url = bot.picDict[msg.id]
     }
   }

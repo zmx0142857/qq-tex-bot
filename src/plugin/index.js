@@ -69,7 +69,7 @@ function checkBlack(list, group, sender) {
   return true
 }
 
-function plugin (text, sender, chain) {
+function plugin (text, sender, chain, bot) {
   const { whiteList, whiteGroup, blackList, blackGroup } = config.auth
   // 名单过滤
   if (!config.auth.admin || !config.auth.admin.includes(sender.id)) {
@@ -107,7 +107,7 @@ function plugin (text, sender, chain) {
     // 构造响应体
     return {
       recall,
-      message: method(text, sender, chain).catch(e => {
+      message: method(text, sender, chain, bot).catch(e => {
         console.error(e)
         return [message.error]
       })

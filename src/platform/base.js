@@ -50,8 +50,7 @@ class BaseBot {
     this.onFriendMsg = async ({ messageChain, sender }) => {
       this.savePicUrl(messageChain, sender.id, '')
       const { text } = messageChain[1]
-      console.log(sender.id, text)
-      const res = plugin(text, sender, messageChain)
+      const res = plugin(text, sender, messageChain, this)
       if (!res) return
       const msg = await res.message
       if (!msg) return
@@ -84,7 +83,7 @@ class BaseBot {
       message.trigger(groupId, text, context)
       message.match(groupId, text, context)
 
-      const res = plugin(text, sender, messageChain)
+      const res = plugin(text, sender, messageChain, this)
       if (!res) return
       const msg = await res.message
       if (!msg) return

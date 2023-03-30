@@ -3,12 +3,11 @@ const fs = require('fs')
 const path = require('path')
 const child = require('child_process')
 const message = require('../../message')
-const bot = require('../../bot')
 const config = require('../../config')
 
 // 处理旋转图片的请求
 // 但自己发的图片除外
-async function rotateImage (text, sender, chain) {
+async function rotateImage (text, sender, chain, bot) {
   const availbleCommands = [
     '90',
     '180',

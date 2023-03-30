@@ -3,7 +3,6 @@ const { loadRank, saveRank, loadScore, saveScore, clearScore } = require('./rank
 const config = require('../../config')
 const { getRiddle, resetRiddle, putBackRiddle } = require('./source')
 const helpDict = require('./help')
-const bot = require('../../bot')
 
 const store = {} // { groupId: { question, answer, raw, timer1, timer2, timer3 } }
 
@@ -17,7 +16,7 @@ function invalidateRiddle (groupId) {
   delete store[groupId]
 }
 
-async function newRiddle (groupId) {
+async function newRiddle (groupId, bot) {
   const res = await getRiddle(groupId) // 谜面 谜目 谜底
   if (res.code !== 0) return message.plain(res.message)
   const { question, answer, hint } = res
@@ -54,12 +53,12 @@ async function newRiddle (groupId) {
   return message.plain(question)
 }
 
-async function riddle (text, sender, chain) {
+async function riddle (text, sender, chain, bot) {
   const groupId = sender.group && sender.group.id
   if (text === 'get') {
     const group = store[groupId]
     if (group) return message.plain(group.question)
-    return newRiddle(groupId)
+    return newRiddle(groupId, bot)
   } else if (/^rank( \d+)?/.test(text)) {
     const page = parseInt(text.slice(5)) || 1
     const rank = await loadRank(groupId, page)
