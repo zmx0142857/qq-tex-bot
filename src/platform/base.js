@@ -2,6 +2,9 @@ const message = require('../message')
 const plugin = require('../plugin')
 const config = require('../config')
 
+/**
+ * 继承此类需实现 sendMessage, recallMessage 两个方法
+ */
 class BaseBot {
   constructor (bot) {
     this._bot = bot
@@ -18,7 +21,7 @@ class BaseBot {
       const target = (group && group.id) || authorId
       if (!reply) return
       console.log(authorId + ' recalled ' + messageId)
-      this._bot.recall({
+      this.recallMessage({
         messageId: reply.id,
         target,
       })
@@ -122,7 +125,7 @@ class BaseBot {
       const key = '1a2b'
       const messageId = this.recallQueue[key]
       if (messageId) {
-        this._bot.recall({
+        this.recallMessage({
           messageId,
           target,
         })

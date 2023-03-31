@@ -1,5 +1,6 @@
 {
   "name": "qq-tex-bot",
+  "private": true,
   "version": "2.1.1",
   "description": "render tex formula on qq",
   "main": "src/index.js",

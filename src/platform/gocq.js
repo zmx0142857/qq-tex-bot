@@ -50,31 +50,33 @@ class GocqBot extends BaseBot {
     })
   }
 
-  // 发送消息 (目前仅支持群聊)
-  // TODO: other action types:
-  // send_private_msg, upload_private_file, upload_group_file, get_msg, delete_msg
+  // 发送消息
   async sendMessage ({ friend, group, message }) {
     message = fromMessageChain(message)
-    let params
+    let action, params
     if (friend) {
-      params = {
-        action: 'send_private_msg',
-        params: { user_id: friend, message }
-      }
+      action = 'send_private_msg'
+      params = { user_id: friend, message }
     } else if (group) {
-      params = {
-        action: 'send_group_msg',
-        params: { group_id: group, message }
-      }
+      action = 'send_group_msg'
+      params = { group_id: group, message }
     } else {
       return console.error('missing argument friend or group', friend, group)
     }
-    this.ws.send(JSON.stringify(params))
+    this.ws.send(action, params)
     const messageId = await new Promise((resolve, reject) => {
       this.sendMessageQueue.push(resolve)
     })
     return messageId
   }
+
+  // 撤回消息
+  recallMessage ({ messageId, target }) {
+    this.ws.send('delete_msg', { message_id: messageId })
+  }
+
+  // TODO: other action types:
+  // upload_private_file, upload_group_file, get_msg
 }
 
 module.exports = GocqBot

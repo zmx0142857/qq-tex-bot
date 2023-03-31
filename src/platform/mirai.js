@@ -46,6 +46,14 @@ class MiraiBot extends BaseBot {
       console.error('连接失败, 请确认 mirai-api-http 已经启动\n', err)
     }
   }
+
+  sendMessage (params) {
+    return this._bot.sendMessage(params)
+  }
+
+  recallMessage (params) {
+    return this._bot.recall(params)
+  }
 }
 
 module.exports = MiraiBot

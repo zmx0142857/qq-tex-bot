@@ -23,7 +23,12 @@ function initWs ({ url = 'ws://0.0.0.0:8080/', onMessage = console.log, encoding
       console.error(TAG, 'unexpected response', req, res)
     })
   })
-  return Promise.resolve(ws)
+  return Promise.resolve({
+    ws,
+    send (action, params) {
+      ws.send(JSON.stringify({ action, params }))
+    },
+  })
 }
 
 module.exports = initWs
