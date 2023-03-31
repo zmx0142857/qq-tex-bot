@@ -16,7 +16,7 @@ class GocqBot extends BaseBot {
       if (data.message_type === 'group') this.processGroupMsg(data)
 
       // 发送消息的响应
-      if (Object.prototype.hasOwnProperty.call(data, 'retcode')) {
+      else if (Object.prototype.hasOwnProperty.call(data, 'retcode')) {
         const callback = this.sendMessageQueue.shift()
         if (data.retcode === 0) {
           callback?.(data.data.message_id)
@@ -25,7 +25,18 @@ class GocqBot extends BaseBot {
           callback?.()
         }
       }
+      // 消息撤回
+      else if (data.post_type === 'notice' && data.notice_type === 'group_recall') {
+        this.onRecall({
+          messageId: data.message_id,
+          authorId: data.user_id,
+          group: { id: data.group_id },
+        })
+      }
       // TODO: 其它消息类型
+      else {
+        // console.log(data)
+      }
     }
   }
 
