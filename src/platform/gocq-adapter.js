@@ -119,7 +119,7 @@ function getMessageChain (data) {
 
 function fromMessageChain (chain) {
   if (typeof chain === 'string') {
-    return chain
+    return [{ type: 'text', data: { text: chain } }]
   } else if (Array.isArray(chain)) {
     return chain.map(msg => MiraiTypes[msg.type] ? MiraiTypes[msg.type](msg) : msg)
   } else {

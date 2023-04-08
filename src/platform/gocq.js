@@ -62,8 +62,15 @@ class GocqBot extends BaseBot {
   }
 
   // 发送消息
-  async sendMessage ({ friend, group, message }) {
+  async sendMessage ({ friend, group, message, quote }) {
     message = fromMessageChain(message)
+    if (!message) return
+    if (quote) {
+      message.unshift({
+        type: 'reply',
+        data: { id: quote }
+      })
+    }
     let action, params
     if (friend) {
       action = 'send_private_msg'
