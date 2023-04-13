@@ -21,6 +21,8 @@ const strings = {
 // customize asciimath
 const amParser = new AsciiMath({
   replaceBeforeTokenizing: [
+    [/\r\n/g, '\n'],
+    [/\r/g, '\n'],
     [/\*\*/g, '^'],
     [/([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+)/g, '^($1)'],
     [/([₀₁₂₃₄₅₆₇₈₉₊₋]+)/g, '_($1)'],
