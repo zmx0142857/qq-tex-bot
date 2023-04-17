@@ -1,15 +1,19 @@
 const WebSocket = require('ws')
+const path = require('path')
 const message = require('../../message')
 const config = require('../../config')
 const tex = require('../math/index')[1].method
 
-const hides = [
-  /Wolfram Language .* Engine for .* x86 (64-bit)/,
-  /Copyright \d+-\d+ Wolfram Research, Inc\./,
-  /^In\[\d+\]:=/
+const reg = {
+  hides: [
+    /Wolfram Language .* Engine for .* x86 (64-bit)/,
+    /Copyright \d+-\d+ Wolfram Research, Inc\./,
+    /^In\[\d+\]:=/
+  ],
+  texForm: /^Out\[\d+\]\/\/TeXForm=/,
+  plot: /^Plot\[/,
+  'export': /\bExport\b/,
 ]
-
-const texForm = /^Out\[\d+\]\/\/TeXForm=/
 
 let ws
 let resolve
@@ -17,10 +21,11 @@ let timer
 const buf = []
 const lastTime = {}
 const limit = 3000
+const filepath = path.join(config.image.path, config.image.name || 'tmp.png')
 
 function onMessage (data) {
   const msg = String(data, 'utf-8')
-  if (hides.some(reg => reg.test(msg))) return
+  if (reg.hides.some(reg => reg.test(msg))) return
 
   clearTimeout(timer)
   buf.push(msg)
@@ -31,8 +36,12 @@ function onMessage (data) {
         out = out.slice(0, limit) + '...'
       }
       console.log(out)
-      if (texForm.test(out)) {
-        tex(out.replace(texForm, '')).then(resolve)
+      if (reg.texForm.test(out)) {
+        // 公式图片
+        tex(out.replace(reg.texForm, '')).then(resolve)
+      } else if (out === filepath) {
+        // mma Export file
+        resolve(message.image(filepath))
       } else {
         resolve(message.plain(out))
       }
@@ -60,6 +69,15 @@ function initWs () {
   })
 }
 
+function dealRequest (text) {
+  if (reg.plot.test(text)) {
+    text = `Export["${filepath}", ${text}]`
+  } else if (reg.export.test(text)) {
+    throw new Error('不支持直接使用 Export')
+  }
+  return text
+}
+
 async function mma (text, sender, chain, bot) {
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
@@ -76,6 +94,13 @@ async function mma (text, sender, chain, bot) {
     })
     await initWs()
   }
+
+  try {
+    text = dealRequest(text)
+  } catch (err) {
+    return err.message
+  }
+
   return new Promise((res, rej) => {
     resolve = res
     ws.send(text)
