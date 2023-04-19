@@ -11,17 +11,24 @@ const reg = {
     /^In\[\d+\]:=/
   ],
   texForm: /^Out\[\d+\]\/\/TeXForm=/,
-  plot: /^Plot\[/,
+  plot: /\b(Plot|Rasterize)\b/,
   'export': /\bExport\b/,
-]
+}
 
 let ws
 let resolve
 let timer
 const buf = []
 const lastTime = {}
-const limit = 3000
 const filepath = path.join(config.image.path, config.image.name || 'tmp.png')
+
+function limit (str, len = 3000) {
+  if (str.length + 3 > len) {
+    str = str.slice(0, len) + '...'
+  }
+  console.log(str)
+  return str
+}
 
 function onMessage (data) {
   const msg = String(data, 'utf-8')
@@ -32,18 +39,16 @@ function onMessage (data) {
   timer = setTimeout(() => {
     if (resolve) {
       let out = buf.join('\n').trimEnd()
-      if (out.length + 3 > limit) {
-        out = out.slice(0, limit) + '...'
-      }
-      console.log(out)
       if (reg.texForm.test(out)) {
         // 公式图片
         tex(out.replace(reg.texForm, '')).then(resolve)
+        limit(out)
       } else if (out === filepath) {
         // mma Export file
         resolve(message.image(filepath))
+        limit(out)
       } else {
-        resolve(message.plain(out))
+        resolve(message.plain(limit(out)))
       }
     }
     buf.length = 0
@@ -79,6 +84,9 @@ function dealRequest (text) {
 }
 
 async function mma (text, sender, chain, bot) {
+  if (!text) {
+    return '用法: /mma <wolfram language>'
+  }
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
   const coolDown = 20

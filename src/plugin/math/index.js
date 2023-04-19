@@ -60,11 +60,12 @@ async function magick (svg) {
   await fs.promises.writeFile('tmp.svg', svg)
   return new Promise((resolve, reject) => {
     const name = config.image.name || 'tmp.png'
-    child.exec(`magick ${path.resolve()}/tmp.svg ${path.join(config.image.path, name)}`, err => {
+    const imagePath = path.join(config.image.path, name)
+    child.exec(`magick ${path.resolve()}/tmp.svg ${imagePath}`, err => {
       if (err) {
         reject(err)
       } else {
-        resolve(message.image(name))
+        resolve(message.image(imagePath))
       }
     })
   })
@@ -136,7 +137,7 @@ async function convert (tex) {
   if (res.error) {
     return message.plain(res.error)
   }
-  const imageEngine = config.engine === 'magick' ? magick : phantom
+  const imageEngine = config.image.engine === 'magick' ? magick : phantom
   const msg = await imageEngine(res.svg)
   if (res.width > res.height * 20) {
     msg.push(message.plain(strings.tooWide)[0])

@@ -19,7 +19,7 @@ class GocqBot extends BaseBot {
       else if (Object.prototype.hasOwnProperty.call(data, 'retcode')) {
         const callback = this.sendMessageQueue.shift()
         if (data.retcode === 0) {
-          callback?.(data.data.message_id)
+          callback?.(data.data?.message_id)
         } else {
           console.error(data)
           callback?.()
