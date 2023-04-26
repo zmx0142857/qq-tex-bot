@@ -60,7 +60,13 @@ const MiraiTypes = {
     data: {
       qq: obj.target,
     }
-  })
+  }),
+  Face: (obj) => ({
+    type: 'face',
+    data: {
+      id: obj.faceId,
+    }
+  }),
 }
 
 // get mirai message chain from CQ string

@@ -3,6 +3,7 @@ const path = require('path')
 const message = require('../../message')
 const config = require('../../config')
 const tex = require('../math/index')[1].method
+const helpDict = require('./help')
 
 const reg = {
   hides: [
@@ -21,6 +22,10 @@ let timer
 const buf = []
 const lastTime = {}
 const filepath = path.join(config.image.path, config.image.name || 'tmp.png')
+
+async function help (text) {
+  return helpDict[text] || '用法: /mma <wolfram language>'
+}
 
 function limit (str, len = 3000) {
   if (str.length + 3 > len) {
@@ -85,7 +90,7 @@ function dealRequest (text) {
 
 async function mma (text, sender, chain, bot) {
   if (!text) {
-    return '用法: /mma <wolfram language>'
+    return help()
   }
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
@@ -115,10 +120,19 @@ async function mma (text, sender, chain, bot) {
   })
 }
 
-module.exports = () => ({
-  reg: /^\/mma/i,
-  method: mma,
-  whiteGroup: config.plugins.mma.whiteGroup,
-  whiteList: config.plugins.mma.whiteList,
-  recall: 'mma',
-})
+module.exports = () => ([
+  {
+    reg: /^\/mma\?/i,
+    method: help,
+    whiteGroup: config.plugins.mma.whiteGroup,
+    whiteList: config.plugins.mma.whiteList,
+    recall: 'mma',
+  },
+  {
+    reg: /^\/mma/i,
+    method: mma,
+    whiteGroup: config.plugins.mma.whiteGroup,
+    whiteList: config.plugins.mma.whiteList,
+    recall: 'mma',
+  },
+])
