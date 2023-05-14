@@ -109,8 +109,10 @@ function getMessageChainFromRaw (rawMessage) {
 //   }
 // ]
 function getMessageChain (data) {
-  const { message } = data
   // gocq 回复的 at 后面自带一个空格，我把这个空格去掉
+  const message = data.message.filter(msg => {
+    return msg.type !== 'text' || (msg.data.text && msg.data.text.trim())
+  })
   message.forEach((msg, index) => {
     if (msg.type === 'text' && index > 0) {
       msg.data.text = msg.data.text.replace(/^ /, '')
