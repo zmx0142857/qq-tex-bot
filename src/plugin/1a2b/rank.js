@@ -1,7 +1,7 @@
 const { readJson, writeJson, pager } = require('../../utils')
 
-async function loadRank (groupId, page) {
-  const filename = `1a2b.${groupId}.json`
+async function loadRank (groupId, page, plugin = '1a2b') {
+  const filename = `${plugin}.${groupId}.json`
   return pager({
     data: await readJson(filename),
     page,
@@ -10,8 +10,8 @@ async function loadRank (groupId, page) {
   })
 }
 
-async function saveRank (groupId, sender) {
-  const filename = `1a2b.${groupId}.json`
+async function saveRank (groupId, sender, plugin = '1a2b') {
+  const filename = `${plugin}.${groupId}.json`
   const data = await readJson(filename)
   const record = data.find(d => d.id === sender.id)
   if (record) {
