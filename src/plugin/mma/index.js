@@ -13,7 +13,7 @@ const reg = {
   ],
   texForm: /^Out\[\d+\]\/\/TeXForm=/,
   plot: /\b(Plot|Rasterize)\b/,
-  'export': /\bExport\b/,
+  blackList: /\b(Export|RunProcess)\b/,
 }
 
 let ws
@@ -48,7 +48,7 @@ function onMessage (data) {
         // 公式图片
         tex(out.replace(reg.texForm, '')).then(resolve)
         limit(out)
-      } else if (out === filepath) {
+      } else if (out.includes(']= ' + filepath)) {
         // mma Export file
         resolve(message.image(filepath))
         limit(out)
@@ -82,8 +82,8 @@ function initWs () {
 function dealRequest (text) {
   if (reg.plot.test(text)) {
     text = `Export["${filepath}", ${text}]`
-  } else if (reg.export.test(text)) {
-    throw new Error('不支持直接使用 Export')
+  } else if (reg.blackList.test(text)) {
+    throw new Error('你在干坏事吗？嗯哼！')
   }
   return text
 }

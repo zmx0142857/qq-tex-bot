@@ -17,10 +17,11 @@ async function newGame () {
   const game = {
     len: defaultLen,
     maxGuess,
-    timer: setTimeout(() => { game.timer = null }, 5000),
-    word: dict[Math.random() * dict.length | 0],
+    timer: true,
+    word: dict[Math.random() * dict.length | 0].trim(),
     output: [],
   }
+  setTimeout(() => { game.timer = null }, 5000)
   return game
 }
 
@@ -72,7 +73,7 @@ async function wordle (text, sender) {
     if (current && current.timer) return
     const game = await newGame()
     store[groupId] = game
-    return `新单词已生成 (${game.len} 个字母)`
+    return `新单词已生成 (${game.len}个字母)`
   } else if (/^rank( \d+)?$/.test(text)) {
     const page = parseInt(text.slice(5)) || 1
     return loadRank(groupId, page, pluginName)
@@ -81,7 +82,7 @@ async function wordle (text, sender) {
     if (!current) return `游戏尚未开始。输入 ${keyword} new 开始游戏`
     const { len, word, output, maxGuess } = current
     if (text.length === len) {
-      if (!dict.some(dictWord => dictWord === text)) return '请输入一个单词'
+      if (!dict.some(dictWord => dictWord.trim() === text)) return '请输入一个单词'
       const buf = compare(word, text)
       output.push(buf.join('') + ' ' + text)
       if (buf.every(c => c === token.GREEN)) {
@@ -91,7 +92,7 @@ async function wordle (text, sender) {
         delete store[groupId]
         return `已达 ${maxGuess} 次，游戏结束\n答案: ${word}\n` + output.join('\n')
       } else {
-        return `输入 ${keyword} <${len} 个字母的单词> 参与游戏\n` + output.join('\n')
+        return `输入 ${keyword} <${len}个字母的单词> 参与游戏\n` + output.join('\n')
       }
     } else {
       return `请输入 ${len} 个字母的单词`
