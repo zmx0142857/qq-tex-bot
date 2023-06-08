@@ -14,6 +14,7 @@
 - `/1a2b`: 老少皆宜的猜数字小游戏
 - `/riddle`: 猜灯谜
 - `/文案`: 文案生成器
+- `/wdl`: wordle 游戏
 
 管理员命令:
 - `/remake`: 重新载入配置
@@ -143,7 +144,7 @@ module.exports = {
   },
   // 启用的插件
   // math 和 savepic 在各个群都能使用
-  // 1a2b, riddle, copywriting, mma 只在 whiteGroup 指定的群中可用
+  // 1a2b, riddle, copywriting, mma, wordle 只在 whiteGroup 指定的群中可用
   plugins: {
     math: {},
     savepic: {
@@ -164,7 +165,10 @@ module.exports = {
       // whiteList: config.auth.admin,
       whiteGroup: [],
       whiteList: [],
-    }
+    },
+    wordle {
+      whiteGroup: [],
+    },
   },
 }
 ```
