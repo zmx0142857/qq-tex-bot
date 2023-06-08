@@ -10,7 +10,7 @@ const picDir = () => path.join(config.image.path, moduleName)
 
 function mkdir (dir) {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir)
+    fs.mkdirSync(dir, { recursive: true })
   }
 }
 
