@@ -87,6 +87,7 @@ async function wordle (text, sender) {
       output.push(buf.join('') + ' ' + text)
       if (buf.every(c => c === token.GREEN)) {
         saveRank(groupId, sender, pluginName)
+        delete store[groupId]
         return `Wordle ${output.length}/${maxGuess}\n` + output.join('\n')
       } if (output.length === maxGuess) {
         delete store[groupId]

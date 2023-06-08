@@ -4,6 +4,7 @@ const message = require('../../message')
 const config = require('../../config')
 const tex = require('../math/index')[1].method
 const helpDict = require('./help')
+const child = require('child_process')
 
 const reg = {
   hides: [
@@ -91,6 +92,18 @@ function dealRequest (text) {
 async function mma (text, sender, chain, bot) {
   if (!text) {
     return help()
+  } else if (text === 'remake') {
+    if (!config.auth.admin.includes(sender.id)) return
+    ws = null
+    return new Promise((resolve, reject) => {
+      child.exec(`pm2 reload mma`, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve('mma 已重置')
+        }
+      })
+    })
   }
   const newTime = new Date()
   const diff = newTime - lastTime[sender.id]
