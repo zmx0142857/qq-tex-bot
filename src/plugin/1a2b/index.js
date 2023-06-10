@@ -81,7 +81,7 @@ const limitMap = [0, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12]
 
 async function oneATwoB (text, sender, chain) {
   const groupId = sender.group && sender.group.id
-  if (/new( \d+)?( \d+)?$/.test(text)) {
+  if (/^new( \d+)?( \d+)?$/.test(text)) {
     const current = store[groupId]
     if (current && current.timer) return
     let [, len, limit] = text.split(/\s+/)
@@ -95,7 +95,7 @@ async function oneATwoB (text, sender, chain) {
     const page = parseInt(text.slice(5)) || 1
     const rank = await loadRank(groupId, page)
     return message.plain(rank)
-  } else if (/\d+/.test(text)) {
+  } else if (/^\d+$/.test(text)) {
     const current = store[groupId]
     if (!current) {
       return message.plain('当前未开始游戏，输入 /1a2b new 开始新游戏')

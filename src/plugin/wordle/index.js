@@ -68,7 +68,7 @@ ${keyword} <单词> 参与游戏`
 
 async function wordle (text, sender) {
   const groupId = sender.group && sender.group.id
-  if (/new( \d+)?$/.test(text)) {
+  if (/^new( \d+)?$/.test(text)) {
     const current = store[groupId]
     if (current && current.timer) return
     const game = await newGame()
@@ -77,7 +77,7 @@ async function wordle (text, sender) {
   } else if (/^rank( \d+)?$/.test(text)) {
     const page = parseInt(text.slice(5)) || 1
     return loadRank(groupId, page, pluginName)
-  } else if (/[a-z]+/.test(text)) {
+  } else if (/^[a-z]+$/.test(text)) {
     const current = store[groupId]
     if (!current) return `游戏尚未开始。输入 ${keyword} new 开始游戏`
     const { len, word, output, maxGuess } = current
