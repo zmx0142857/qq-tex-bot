@@ -53,6 +53,7 @@ const amParser = new AsciiMath({
     [/！/g, '!'],
     [/？/g, '?'],
     [/√/g, 'sqrt'],
+    [/º/g, '^@'],
   ]
 })
 
