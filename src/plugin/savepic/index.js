@@ -180,6 +180,8 @@ async function randPic (text, sender, chain) {
     }
   }
 
+  if (fileName) console.log(fileName)
+
   return fileName && [
     { type: 'Plain', text: fileName },
     savepicService.image(groupId, fileName),

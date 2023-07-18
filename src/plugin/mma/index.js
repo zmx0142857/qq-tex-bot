@@ -95,8 +95,9 @@ async function mma (text, sender, chain, bot) {
   } else if (text === 'remake') {
     if (!config.auth.admin.includes(sender.id)) return
     ws = null
+    buf.length = 0
     return new Promise((resolve, reject) => {
-      child.exec(`pm2 reload mma`, err => {
+      child.exec('pm2 reload mma', err => {
         if (err) {
           reject(err)
         } else {
@@ -116,7 +117,7 @@ async function mma (text, sender, chain, bot) {
   if (!ws) {
     bot.sendMessage({
       group: sender.group.id,
-      message: '在启动啦ˉ\\_(ツ)_/ˉ...',
+      message: '在启动啦喵——',
     })
     await initWs()
   }
