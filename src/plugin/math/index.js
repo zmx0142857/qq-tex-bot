@@ -45,6 +45,7 @@ const amParser = new AsciiMath({
     [/＊/g, '*'],
     [/／/g, '/'],
     [/＝/g, '='],
+    [/≠/g, '!='],
     [/Σ/g, 'sum'],
     [/∏/g, 'prod'],
     [/；/g, ';'],

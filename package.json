@@ -12,7 +12,7 @@
     "lint": "eslint --fix src"
   },
   "dependencies": {
-    "asciimath-parser-nearley": "^0.6.0",
+    "asciimath-parser-nearley": "^0.6.1",
     "mathjax-full": "^3.2.2",
     "mirai-js": "^2.8.7",
     "request": "^2.88.2",

@@ -101,6 +101,8 @@ function plugin (text, sender, chain, bot) {
       // trim 模式的命令后至少有一空白符，如：/riddle get 是合法命令，/riddleget 则不是
       if (text && !/\s/.test(text[0])) return
       text = text.trim()
+       .replace(/\r\n/g, '\n')
+       .replace(/\r/g, '\n')
     }
     console.log(sender.id, reg, text)
 

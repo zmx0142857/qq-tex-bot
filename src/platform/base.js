@@ -35,11 +35,11 @@ class BaseBot {
         this.recallDate[authorId] = now
       }
       if (now - last < timeDelta) {
-        // 节流, timeDelta 内只提示一次
+        // 节流, 5 * timeDelta 内只提示一次
         this.recallDate[authorId] = NaN // 表示冷却中
         setTimeout(() => {
           this.recallDate[authorId] = undefined
-        }, timeDelta)
+        }, 5 * timeDelta)
 
         const key = group && group.id ? 'group' : 'friend'
         this.sendMessage({
